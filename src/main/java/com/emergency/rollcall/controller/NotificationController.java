@@ -15,30 +15,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.Message;
+import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-import com.emergency.rollcall.service.AssemblyService;
+import com.emergency.rollcall.service.EmergencyService;
+import com.emergency.rollcall.service.NotificationService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("assembly")
-public class AssemblyController {
+@RequestMapping("notification")
+public class NotificationController {
 
 	@Autowired
-	private AssemblyService assemblyService;
+	private NotificationService notificationService;
 
-	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveAssembly(@RequestBody AssemblyDto assemblyDto) {
+	@PostMapping("/save")
+	public ResponseEntity<Response<ResponseDto>> saveNotification(@RequestBody NotificationDto notiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (assemblyDto != null) {
-			responseDto = assemblyService.saveAssembly(assemblyDto);
-			message.setCode("200");
-			message.setMessage("Save successfully");
+		if (notiDto != null) {
+			responseDto = notificationService.saveNotification(notiDto);
+			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setCode("200");
+				message.setMessage(responseDto.getMessage());
+			}
+
 		} else {
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
@@ -49,15 +54,15 @@ public class AssemblyController {
 
 	}
 
-	@GetMapping("")
-	public ResponseEntity<Response<AssemblyDto>> getById(@RequestParam("id") Long id) {
-		AssemblyDto assemblyDto = new AssemblyDto();
-		Response<AssemblyDto> response = new Response<>();
+	@GetMapping("/notification")
+	public ResponseEntity<Response<NotificationDto>> getById(@RequestParam("id") Long id) {
+		NotificationDto notiDto = new NotificationDto();
+		Response<NotificationDto> response = new Response<>();
 		Message message = new Message();
 
 		if (id != null) {
-			assemblyDto = assemblyService.getById(id);
-			if (assemblyDto.getSyskey() != 0) {
+			notiDto = notificationService.getById(id);
+			if (notiDto != null) {
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 
@@ -70,18 +75,18 @@ public class AssemblyController {
 			message.setMessage("No Data found");
 		}
 		response.setMessage(message);
-		response.setData(assemblyDto);
+		response.setData(notiDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PostMapping("/update")
-	public ResponseEntity<Response<ResponseDto>> updateAssebmly(@RequestBody AssemblyDto data) {
+	public ResponseEntity<Response<ResponseDto>> updateNotification(@RequestBody NotificationDto notiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.updateAssembly(data);
+		if (notiDto != null) {
+			responseDto = notificationService.updateNotification(notiDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -99,12 +104,12 @@ public class AssemblyController {
 	}
 
 	@PostMapping("/delete")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody AssemblyDto data) {
+	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody NotificationDto notiDto) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.deleteAssembly(data);
+		if (notiDto != null) {
+			responseDto = notificationService.deleteNotification(notiDto);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -121,14 +126,15 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/assembly-list")
-	public ResponseEntity<ResponseList<AssemblyDto>> assemblyList() { 		
-		ResponseList<AssemblyDto> response = new ResponseList<>();
-		Message message = new Message();
-		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		assemblyDtoList = assemblyService.getAllList();
+	@GetMapping("/get-list")
+	public ResponseEntity<ResponseList<NotificationDto>> emergencyList() {
 
-		if (!assemblyDtoList.isEmpty()) {
+		ResponseList<NotificationDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<NotificationDto> notificationDtoList = new ArrayList<>();
+		notificationDtoList = notificationService.getAllList();
+
+		if (!notificationDtoList.isEmpty()) {
 			message.setCode("200");
 			message.setMessage("Data is successfully");
 
@@ -138,7 +144,7 @@ public class AssemblyController {
 		}
 
 		response.setMessage(message);
-		response.setData(assemblyDtoList);
+		response.setData(notificationDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

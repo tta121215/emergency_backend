@@ -1,17 +1,12 @@
 package com.emergency.rollcall.dto;
 
-import java.math.BigDecimal;
-
-public class AssemblyDto {
+public class ConditionDto {
 	private long syskey;
 	private String name;
-	private String latitude;
-	private String longtiude;
-	private String ipaddress;
+	private String code;
 	private String status;
 	private String createddate;
 	private String modifieddate;
-	private String accesstype;
 
 	public long getSyskey() {
 		return syskey;
@@ -29,28 +24,12 @@ public class AssemblyDto {
 		this.name = name;
 	}
 
-	public String getLatitude() {
-		return latitude;
+	public String getCode() {
+		return code;
 	}
 
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-
-	public String getLongtiude() {
-		return longtiude;
-	}
-
-	public void setLongtiude(String longtiude) {
-		this.longtiude = longtiude;
-	}
-
-	public String getIpaddress() {
-		return ipaddress;
-	}
-
-	public void setIpaddress(String ipaddress) {
-		this.ipaddress = ipaddress;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getStatus() {
@@ -75,14 +54,6 @@ public class AssemblyDto {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
-	}
-
-	public String getAccesstype() {
-		return accesstype;
-	}
-
-	public void setAccesstype(String accesstype) {
-		this.accesstype = accesstype;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

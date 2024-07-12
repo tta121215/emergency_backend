@@ -3,7 +3,6 @@ package com.emergency.rollcall.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,6 +33,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		// Entry points
 		http.authorizeRequests().antMatchers("/api/user/login").permitAll().antMatchers("/api/customer/login")
 				.permitAll().antMatchers("/assembly").permitAll()
+				.antMatchers("/appuser/login").permitAll().antMatchers("/assembly/update").permitAll()
+				.antMatchers("/assembly/delete").permitAll().antMatchers("/assembly/assembly-list").permitAll()
+				.antMatchers("/emergency").permitAll().antMatchers("/emergency/delete").permitAll()
+				.antMatchers("/emergency/emergency-list").permitAll()
 				.antMatchers("/api/customer/seller-register").permitAll().antMatchers("/api/customer/seller-login")
 				.permitAll()
 				// Disallow everything else..
@@ -51,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(12);
+		return new BCryptPasswordEncoder();
 	}
 
 //	@Override

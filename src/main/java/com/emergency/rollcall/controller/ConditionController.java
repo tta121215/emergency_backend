@@ -15,30 +15,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.ConditionDto;
+import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-import com.emergency.rollcall.service.AssemblyService;
+import com.emergency.rollcall.service.ConditionService;
+import com.emergency.rollcall.service.EmergencyService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("assembly")
-public class AssemblyController {
+@RequestMapping("condition")
+public class ConditionController {
 
 	@Autowired
-	private AssemblyService assemblyService;
+	private ConditionService conditionService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveAssembly(@RequestBody AssemblyDto assemblyDto) {
+	public ResponseEntity<Response<ResponseDto>> saveCondition(@RequestBody ConditionDto conditionDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (assemblyDto != null) {
-			responseDto = assemblyService.saveAssembly(assemblyDto);
-			message.setCode("200");
-			message.setMessage("Save successfully");
+		if (conditionDto != null) {
+			responseDto = conditionService.saveCondition(conditionDto);
+			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setCode("200");
+				message.setMessage(responseDto.getMessage());
+			}
+
 		} else {
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
@@ -50,14 +55,14 @@ public class AssemblyController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<Response<AssemblyDto>> getById(@RequestParam("id") Long id) {
-		AssemblyDto assemblyDto = new AssemblyDto();
-		Response<AssemblyDto> response = new Response<>();
+	public ResponseEntity<Response<ConditionDto>> getById(@RequestParam("id") Long id) {
+		ConditionDto conditionDto = new ConditionDto();
+		Response<ConditionDto> response = new Response<>();
 		Message message = new Message();
 
 		if (id != null) {
-			assemblyDto = assemblyService.getById(id);
-			if (assemblyDto.getSyskey() != 0) {
+			conditionDto = conditionService.getById(id);
+			if (conditionDto.getSyskey() != 0) {
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 
@@ -70,18 +75,18 @@ public class AssemblyController {
 			message.setMessage("No Data found");
 		}
 		response.setMessage(message);
-		response.setData(assemblyDto);
+		response.setData(conditionDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PostMapping("/update")
-	public ResponseEntity<Response<ResponseDto>> updateAssebmly(@RequestBody AssemblyDto data) {
+	public ResponseEntity<Response<ResponseDto>> updateCondition(@RequestBody ConditionDto conditionDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.updateAssembly(data);
+		if (conditionDto != null) {
+			responseDto = conditionService.updateCondition(conditionDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -99,12 +104,12 @@ public class AssemblyController {
 	}
 
 	@PostMapping("/delete")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody AssemblyDto data) {
+	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody ConditionDto conditionDto) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.deleteAssembly(data);
+		if (conditionDto != null) {
+			responseDto = conditionService.deleteCondition(conditionDto);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -121,14 +126,15 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/assembly-list")
-	public ResponseEntity<ResponseList<AssemblyDto>> assemblyList() { 		
-		ResponseList<AssemblyDto> response = new ResponseList<>();
-		Message message = new Message();
-		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		assemblyDtoList = assemblyService.getAllList();
+	@GetMapping("/condition-list")
+	public ResponseEntity<ResponseList<ConditionDto>> conditionList() {
 
-		if (!assemblyDtoList.isEmpty()) {
+		ResponseList<ConditionDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<ConditionDto> conditionDtoList = new ArrayList<>();
+		conditionDtoList = conditionService.getAllList();
+
+		if (!conditionDtoList.isEmpty()) {
 			message.setCode("200");
 			message.setMessage("Data is successfully");
 
@@ -138,7 +144,7 @@ public class AssemblyController {
 		}
 
 		response.setMessage(message);
-		response.setData(assemblyDtoList);
+		response.setData(conditionDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

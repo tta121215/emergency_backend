@@ -1,7 +1,5 @@
 package com.emergency.rollcall.entity;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,20 +8,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ASSEMBLY")
-public class Assembly {
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "Condition")
+public class Condition {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
 	private String name;
-	private String latitude;
-	private String longtiude;
-	private String ipaddress;
+	private String code;
 	private String status;
-	private String accesstype;
 	private String createddate;
 	private String modifieddate;
 
@@ -43,28 +37,12 @@ public class Assembly {
 		this.name = name;
 	}
 
-	public String getLatitude() {
-		return latitude;
+	public String getCode() {
+		return code;
 	}
 
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
-	}
-
-	public String getLongtiude() {
-		return longtiude;
-	}
-
-	public void setLongtiude(String longtiude) {
-		this.longtiude = longtiude;
-	}
-
-	public String getIpaddress() {
-		return ipaddress;
-	}
-
-	public void setIpaddress(String ipaddress) {
-		this.ipaddress = ipaddress;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getStatus() {
@@ -73,14 +51,6 @@ public class Assembly {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public String getAccesstype() {
-		return accesstype;
-	}
-
-	public void setAccesstype(String accesstype) {
-		this.accesstype = accesstype;
 	}
 
 	public String getCreateddate() {

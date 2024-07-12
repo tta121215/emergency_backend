@@ -1,7 +1,5 @@
 package com.emergency.rollcall.entity;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,93 +8,62 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ASSEMBLY")
-public class Assembly {
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "Noti")
+public class Notification {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
-	private String name;
-	private String latitude;
-	private String longtiude;
-	private String ipaddress;
+	private String notimode;
+	private String notisubject;
+	private String notimessage;
 	private String status;
-	private String accesstype;
 	private String createddate;
 	private String modifieddate;
-
 	public long getSyskey() {
 		return syskey;
 	}
-
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
 	}
-
-	public String getName() {
-		return name;
+	public String getNotimode() {
+		return notimode;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setNotimode(String notimode) {
+		this.notimode = notimode;
 	}
-
-	public String getLatitude() {
-		return latitude;
+	public String getNotisubject() {
+		return notisubject;
 	}
-
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
+	public void setNotisubject(String notisubject) {
+		this.notisubject = notisubject;
 	}
-
-	public String getLongtiude() {
-		return longtiude;
+	public String getNotimessage() {
+		return notimessage;
 	}
-
-	public void setLongtiude(String longtiude) {
-		this.longtiude = longtiude;
+	public void setNotimessage(String notimessage) {
+		this.notimessage = notimessage;
 	}
-
-	public String getIpaddress() {
-		return ipaddress;
-	}
-
-	public void setIpaddress(String ipaddress) {
-		this.ipaddress = ipaddress;
-	}
-
+	
 	public String getStatus() {
 		return status;
 	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-	public String getAccesstype() {
-		return accesstype;
-	}
-
-	public void setAccesstype(String accesstype) {
-		this.accesstype = accesstype;
-	}
-
 	public String getCreateddate() {
 		return createddate;
 	}
-
 	public void setCreateddate(String createddate) {
 		this.createddate = createddate;
 	}
-
 	public String getModifieddate() {
 		return modifieddate;
 	}
-
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
 	}
 
+	
 }
