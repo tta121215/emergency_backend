@@ -1,6 +1,7 @@
 package com.emergency.rollcall.dto;
 
 public class Message {
+	private boolean state;
 	private String code;
     private String message;
 
@@ -11,13 +12,22 @@ public class Message {
         this.code = code;
         this.message = message;
     }
-
+    
     // Getters and Setters
+    
     public String getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public boolean isState() {
+		return state;
+	}
+
+	public void setState(boolean state) {
+		this.state = state;
+	}
+
+	public void setCode(String code) {
         this.code = code;
     }
 
