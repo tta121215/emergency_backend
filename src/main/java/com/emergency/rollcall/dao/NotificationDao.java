@@ -15,5 +15,8 @@ public interface NotificationDao extends JpaRepository<Notification, Long> {
 
 	@Query("SELECT n FROM Notification n WHERE LOWER(n.notisubject) LIKE LOWER(CONCAT('%', :params, '%'))")
 	Page<Notification> findByNotisubject(Pageable pageable, @Param("params") String params);
+	
+	@Query("SELECT n FROM Notification n")
+	Page<Notification> findByNotisubject(Pageable pageable);
 
 }

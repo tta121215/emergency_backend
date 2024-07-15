@@ -14,5 +14,8 @@ public interface ConditionDao extends JpaRepository<Condition, Long> {
 
 	@Query("SELECT c FROM Condition c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<Condition> findByNameOrCode(Pageable pageable, @Param("param") String param);
+	
+	@Query("SELECT c FROM Condition c")
+	Page<Condition> findByNameOrCode(Pageable pageable);
 
 }

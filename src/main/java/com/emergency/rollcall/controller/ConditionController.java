@@ -43,11 +43,13 @@ public class ConditionController {
 		if (conditionDto != null) {
 			responseDto = conditionService.saveCondition(conditionDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
 		}
@@ -66,14 +68,17 @@ public class ConditionController {
 		if (id != null) {
 			conditionDto = conditionService.getById(id);
 			if (conditionDto.getSyskey() != 0) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 
 			} else {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}
@@ -94,10 +99,12 @@ public class ConditionController {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
 		}
@@ -114,13 +121,16 @@ public class ConditionController {
 		if (id != 0) {
 			responseDto = conditionService.deleteCondition(id);
 			if (responseDto.getMessage().equals("No data found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
 		}
@@ -128,31 +138,9 @@ public class ConditionController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
-	@GetMapping("")
-	public ResponseEntity<ResponseList<ConditionDto>> conditionList() {
-
-		ResponseList<ConditionDto> response = new ResponseList<>();
-		Message message = new Message();
-		List<ConditionDto> conditionDtoList = new ArrayList<>();
-		conditionDtoList = conditionService.getAllList();
-
-		if (!conditionDtoList.isEmpty()) {
-			message.setCode("200");
-			message.setMessage("Data is successfully");
-
-		} else {
-			message.setCode("401");
-			message.setMessage("No Data found");
-		}
-
-		response.setMessage(message);
-		response.setData(conditionDtoList);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
-	}
 	
-	@GetMapping("/search-by-params")
+	
+	@GetMapping("")
 	public ResponseEntity<ResponseList<ConditionDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params) {
 
@@ -162,10 +150,12 @@ public class ConditionController {
 		Page<ConditionDto> conditionPage = conditionService.searchByParams(page,size,params);
 		conditionDtoList = conditionPage.getContent();
 		if (!conditionDtoList.isEmpty()) {
+			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}

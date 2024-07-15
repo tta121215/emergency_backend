@@ -15,4 +15,7 @@ public interface EmergencyDao extends JpaRepository<Emergency, Long> {
 	@Query("SELECT c FROM Emergency c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<Emergency> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
+	@Query("SELECT c FROM Emergency c")
+	Page<Emergency> findByNameOrCode(Pageable pageable);
+
 }

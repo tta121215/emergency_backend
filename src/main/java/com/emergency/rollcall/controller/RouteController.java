@@ -20,31 +20,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-import com.emergency.rollcall.service.AssemblyService;
+
+import com.emergency.rollcall.service.RouteService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("assembly")
-public class AssemblyController {
+@RequestMapping("route")
+public class RouteController {
 
 	@Autowired
-	private AssemblyService assemblyService;
+	private RouteService routeService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveAssembly(@RequestBody AssemblyDto assemblyDto) {
+	public ResponseEntity<Response<ResponseDto>> saveCondition(@RequestBody RouteDto routeDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (assemblyDto != null) {
-			responseDto = assemblyService.saveAssembly(assemblyDto);
-			message.setState(true);
-			message.setCode("200");
-			message.setMessage("Save successfully");
+		if (routeDto != null) {
+			responseDto = routeService.saveRoute(routeDto);
+			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage(responseDto.getMessage());
+			}
+
 		} else {
 			message.setState(false);
 			message.setCode("401");
@@ -57,14 +61,14 @@ public class AssemblyController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<Response<AssemblyDto>> getById(@RequestParam("id") Long id) {
-		AssemblyDto assemblyDto = new AssemblyDto();
-		Response<AssemblyDto> response = new Response<>();
+	public ResponseEntity<Response<RouteDto>> getById(@RequestParam("id") Long id) {
+		RouteDto routeDto = new RouteDto();
+		Response<RouteDto> response = new Response<>();
 		Message message = new Message();
 
 		if (id != null) {
-			assemblyDto = assemblyService.getById(id);
-			if (assemblyDto.getSyskey() != 0) {
+			routeDto = routeService.getById(id);
+			if (routeDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
@@ -80,19 +84,20 @@ public class AssemblyController {
 			message.setMessage("No Data found");
 		}
 		response.setMessage(message);
-		response.setData(assemblyDto);
+		response.setData(routeDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateAssebmly(@RequestBody AssemblyDto data) {
+	public ResponseEntity<Response<ResponseDto>> updateCondition(@RequestBody RouteDto routeDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.updateAssembly(data);
+		if (routeDto != null) {
+			responseDto = routeService.updateRoute(routeDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
@@ -101,7 +106,6 @@ public class AssemblyController {
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
-			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
 		}
@@ -111,13 +115,14 @@ public class AssemblyController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@PathParam("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteCondition(@PathParam ("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
 		if (id != 0) {
-			responseDto = assemblyService.deleteAssembly(id);
+			responseDto = routeService.deleteRoute(id);
 			if (responseDto.getMessage().equals("No data found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
@@ -137,14 +142,15 @@ public class AssemblyController {
 	
 	
 	@GetMapping("")
-	public ResponseEntity<ResponseList<AssemblyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam ("params") String params) { 		
-		ResponseList<AssemblyDto> response = new ResponseList<>();
+	public ResponseEntity<ResponseList<RouteDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params) {
+
+		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params);
-		assemblyDtoList = assemblyPage.getContent();
-		if (!assemblyDtoList.isEmpty()) {
+		List<RouteDto> routeDtoList = new ArrayList<>();
+		Page<RouteDto> routepage = routeService.searchByParams(page,size,params);
+		routeDtoList = routepage.getContent();
+		if (!routeDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -156,10 +162,9 @@ public class AssemblyController {
 		}
 
 		response.setMessage(message);
-		response.setData(assemblyDtoList);
+		response.setData(routeDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-
 
 }

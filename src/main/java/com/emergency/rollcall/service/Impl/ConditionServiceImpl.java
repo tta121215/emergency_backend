@@ -138,15 +138,28 @@ public class ConditionServiceImpl implements ConditionService {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Condition> conditionList;
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
-
-		conditionList = conditionDao.findByNameOrCode(pageRequest,params);
-		if (conditionList != null) {
-			for (Condition condition : conditionList) {
-				ConditionDto conditionDto = new ConditionDto();
-				conditionDto = modelMapper.map(condition, ConditionDto.class);
-				conditionDtoList.add(conditionDto);
+		if(params == null || params.isEmpty()) {
+			conditionList = conditionDao.findByNameOrCode(pageRequest);
+			if (conditionList != null) {
+				for (Condition condition : conditionList) {
+					ConditionDto conditionDto = new ConditionDto();
+					conditionDto = modelMapper.map(condition, ConditionDto.class);
+					conditionDtoList.add(conditionDto);
+				}
+			}
+			
+		}else {
+			conditionList = conditionDao.findByNameOrCode(pageRequest,params);
+			if (conditionList != null) {
+				for (Condition condition : conditionList) {
+					ConditionDto conditionDto = new ConditionDto();
+					conditionDto = modelMapper.map(condition, ConditionDto.class);
+					conditionDtoList.add(conditionDto);
+				}
 			}
 		}
+
+		
 		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
 	}
 

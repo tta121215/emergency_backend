@@ -6,22 +6,10 @@ public class UserDto {
 	private String email;
 	private String username;
 	private String password;
-	private String status;
+	private int status;
 	private String createddate;
 	private String modifieddate;
 	private String token;
-
-//	public UserDto(long id, String mobileNo, String email, String username, String password, int status,
-//			String createddate, String modifieddate) {
-//		super();
-//		this.id = id;
-//		this.mobileNo = mobileNo;
-//		this.email = email;
-//		this.username = username;
-//		this.password = password;
-//		this.status = status;
-//		this.createddate = ddMMyyyFormat(createddate);
-//	}
 
 	public int getId() {
 		return id;
@@ -63,11 +51,11 @@ public class UserDto {
 		this.password = password;
 	}
 
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 

@@ -1,6 +1,5 @@
 package com.emergency.rollcall.dto;
 
-import java.math.BigDecimal;
 
 public class AssemblyDto {
 	private long syskey;
@@ -8,7 +7,7 @@ public class AssemblyDto {
 	private String latitude;
 	private String longtiude;
 	private String ipaddress;
-	private String status;
+	private int status;
 	private String createddate;
 	private String modifieddate;
 	private String accesstype;
@@ -53,11 +52,11 @@ public class AssemblyDto {
 		this.ipaddress = ipaddress;
 	}
 
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 

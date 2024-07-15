@@ -134,15 +134,27 @@ public class NotificationServiceImpl implements NotificationService {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Notification> notiList;
 		List<NotificationDto> notiDtoList = new ArrayList<>();
-
-		notiList = notificationDao.findByNotisubject(pageRequest, params);
-		if (notiList != null) {
-			for (Notification notification : notiList) {
-				NotificationDto notiDto = new NotificationDto();
-				notiDto = modelMapper.map(notification, NotificationDto.class);
-				notiDtoList.add(notiDto);
+		if(params == null || params.isEmpty()) {
+			notiList = notificationDao.findByNotisubject(pageRequest);
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					notiDtoList.add(notiDto);
+				}
+			}
+		}else {
+			notiList = notificationDao.findByNotisubject(pageRequest, params);
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					notiDtoList.add(notiDto);
+				}
 			}
 		}
+
+		
 		return new PageImpl<>(notiDtoList, pageRequest, notiList.getTotalElements());
 	}
 

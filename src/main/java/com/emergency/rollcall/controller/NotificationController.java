@@ -44,11 +44,13 @@ public class NotificationController {
 		if (notiDto != null) {
 			responseDto = notificationService.saveNotification(notiDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
 		}
@@ -67,14 +69,17 @@ public class NotificationController {
 		if (id != 0) {
 			notiDto = notificationService.getById(id);
 			if (notiDto != null) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 
 			} else {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}
@@ -92,13 +97,16 @@ public class NotificationController {
 		if (notiDto != null) {
 			responseDto = notificationService.updateNotification(notiDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
 		}
@@ -108,20 +116,23 @@ public class NotificationController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathParam ("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathParam("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
 		if (id != 0) {
 			responseDto = notificationService.deleteNotification(id);
 			if (responseDto.getMessage().equals("No data found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
 		}
@@ -131,43 +142,21 @@ public class NotificationController {
 	}
 
 	@GetMapping("")
-	public ResponseEntity<ResponseList<NotificationDto>> notificationList() {
-
-		ResponseList<NotificationDto> response = new ResponseList<>();
-		Message message = new Message();
-		List<NotificationDto> notificationDtoList = new ArrayList<>();
-		notificationDtoList = notificationService.getAllList();
-
-		if (!notificationDtoList.isEmpty()) {
-			message.setCode("200");
-			message.setMessage("Data is successfully");
-
-		} else {
-			message.setCode("401");
-			message.setMessage("No Data found");
-		}
-
-		response.setMessage(message);
-		response.setData(notificationDtoList);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
-	}
-	
-	@GetMapping("/search-by-params")
 	public ResponseEntity<ResponseList<NotificationDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-			@RequestParam("params") String params) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
 
 		ResponseList<NotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotificationDto> notificationDtoList = new ArrayList<>();
-		Page<NotificationDto>  notiDto= notificationService.searchByParams(page, size,params);
+		Page<NotificationDto> notiDto = notificationService.searchByParams(page, size, params);
 		notificationDtoList = notiDto.getContent();
 		if (!notificationDtoList.isEmpty()) {
+			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}

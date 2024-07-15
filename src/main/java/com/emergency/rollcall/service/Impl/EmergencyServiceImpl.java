@@ -134,15 +134,28 @@ public class EmergencyServiceImpl implements EmergencyService {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Emergency> emergencyList;
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-
-		emergencyList = emergencyDao.findByNameOrCode(pageRequest,params);
-		if (emergencyDtoList != null) {
-			for (Emergency emergency : emergencyList) {
-				EmergencyDto emergencyDto = new EmergencyDto();
-				emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-				emergencyDtoList.add(emergencyDto);
+		if(params == null || params.isEmpty()) {
+			emergencyList = emergencyDao.findByNameOrCode(pageRequest);
+			if (emergencyDtoList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
+				}
+			}
+			
+		}else {
+			emergencyList = emergencyDao.findByNameOrCode(pageRequest,params);
+			if (emergencyDtoList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
+				}
 			}
 		}
+
+		
 		return new PageImpl<>(emergencyDtoList, pageRequest, emergencyList.getTotalElements());
 	}
 

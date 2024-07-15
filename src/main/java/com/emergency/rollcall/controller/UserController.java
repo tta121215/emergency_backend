@@ -29,9 +29,11 @@ public class UserController {
 		Message message = new Message();
 		UserDto userDto = userservice.login(userDTO.getUsername(), userDTO.getPassword());
 		if (userDto != null && "Login Sucess".equals(userDto.getToken())) {
+			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Login success");
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Login failed");
 		}
