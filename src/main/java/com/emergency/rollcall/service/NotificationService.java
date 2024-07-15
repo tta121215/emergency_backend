@@ -2,6 +2,8 @@ package com.emergency.rollcall.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 
@@ -9,12 +11,14 @@ public interface NotificationService {
 
 	ResponseDto saveNotification(NotificationDto notiDto);
 
-	NotificationDto getById(Long id);
+	NotificationDto getById(long id);
 
 	ResponseDto updateNotification(NotificationDto notiDto);
 
-	ResponseDto deleteNotification(NotificationDto notiDto);
+	ResponseDto deleteNotification(long id);
 
 	List<NotificationDto> getAllList();
+	
+	Page<NotificationDto> searchByParams(int page, int size,String params);
 
 }

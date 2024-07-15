@@ -8,14 +8,15 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Assembly;
-import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.service.AssemblyService;
 
 @Service
@@ -36,13 +37,11 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);		
 		entity = modelMapper.map(data, Assembly.class);
-		// entity.setAccesstype(data.get);
-
 		entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 
 		if (entity.getSyskey() == 0) {
 			Assembly entityres = assemblyDao.save(entity);
-			if (entityres.getSyskey() > 0) {
+			if (entityres.getSyskey() > 0) {				
 				res.setStatus_code(200);
 				res.setMessage("Successfully Saved.");
 			}
@@ -100,11 +99,11 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	}
 	
 	@Override
-	public ResponseDto deleteAssembly(AssemblyDto data) {
+	public ResponseDto deleteAssembly(long id) {
 		ResponseDto res = new ResponseDto();
 		Assembly assembly = new Assembly();
 		
-		Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
+		Optional<Assembly> assemblyOptional = assemblyDao.findById(id);
 		if (assemblyOptional.isPresent()) {
 			assembly = assemblyOptional.get();
 			assemblyDao.delete(assembly);
@@ -133,6 +132,24 @@ public class AssemblyrServiceImpl implements AssemblyService {
 			}
 		}
 		return assemblyDtoList;
+	}
+	
+
+	@Override
+	public Page<AssemblyDto> searchByParams(int page,int size,String params) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<Assembly> assemblyList;
+		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		
+		assemblyList= assemblyDao.searchByParams(pageRequest,params);
+		if(assemblyList != null) {
+			for(Assembly assembly : assemblyList) {
+				AssemblyDto assemblyDto = new AssemblyDto();
+				assemblyDto = modelMapper.map(assembly,AssemblyDto.class);
+				assemblyDtoList.add(assemblyDto);
+			}
+		}
+		return new PageImpl<>(assemblyDtoList, pageRequest, assemblyList.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {

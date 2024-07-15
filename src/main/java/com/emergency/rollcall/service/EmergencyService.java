@@ -2,6 +2,8 @@ package com.emergency.rollcall.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.ResponseDto;
 
@@ -9,12 +11,14 @@ public interface EmergencyService {
 
 	ResponseDto saveEmergency(EmergencyDto emergencyDto);
 
-	EmergencyDto getById(Long id);
+	EmergencyDto getById(long id);
 
 	ResponseDto updateEmergency(EmergencyDto emergencyDto);
 	
-	ResponseDto deleteEmergency(EmergencyDto emergencyDto);
+	ResponseDto deleteEmergency(long id);
 	
 	List<EmergencyDto> getAllList();
+	
+	Page<EmergencyDto> searchByParams(int page,int size,String params);
 
 }

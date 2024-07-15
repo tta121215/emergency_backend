@@ -3,12 +3,17 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +54,7 @@ public class AssemblyController {
 
 	}
 
-	@GetMapping("")
+	@GetMapping("{id}")
 	public ResponseEntity<Response<AssemblyDto>> getById(@RequestParam("id") Long id) {
 		AssemblyDto assemblyDto = new AssemblyDto();
 		Response<AssemblyDto> response = new Response<>();
@@ -75,7 +80,7 @@ public class AssemblyController {
 
 	}
 
-	@PostMapping("/update")
+	@PutMapping("")
 	public ResponseEntity<Response<ResponseDto>> updateAssebmly(@RequestBody AssemblyDto data) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
@@ -98,13 +103,13 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/delete")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody AssemblyDto data) {
+	@DeleteMapping("{id}")
+	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@PathParam("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		if (data != null) {
-			responseDto = assemblyService.deleteAssembly(data);
+		if (id != 0) {
+			responseDto = assemblyService.deleteAssembly(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -121,7 +126,7 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/assembly-list")
+	@GetMapping("")
 	public ResponseEntity<ResponseList<AssemblyDto>> assemblyList() { 		
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
@@ -142,5 +147,29 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/search-by-params")
+	public ResponseEntity<ResponseList<AssemblyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,@RequestParam ("params") String params) { 		
+		ResponseList<AssemblyDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params);
+		assemblyDtoList = assemblyPage.getContent();
+		if (!assemblyDtoList.isEmpty()) {
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(assemblyDtoList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }

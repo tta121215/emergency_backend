@@ -8,7 +8,9 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.emergency.rollcall.dao.ConditionDao;
@@ -59,7 +61,7 @@ public class ConditionServiceImpl implements ConditionService {
 	}
 
 	@Override
-	public ConditionDto getById(Long id) {
+	public ConditionDto getById(long id) {
 		ConditionDto conditionDto = new ConditionDto();
 		Condition condition = new Condition();
 		Optional<Condition> condtionOptional = conditionDao.findById(id);
@@ -95,11 +97,11 @@ public class ConditionServiceImpl implements ConditionService {
 	}
 
 	@Override
-	public ResponseDto deleteCondition(ConditionDto conditionDto) {
+	public ResponseDto deleteCondition(long id) {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
 
-		Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
+		Optional<Condition> conditionOptional = conditionDao.findById(id);
 		if (conditionOptional.isPresent()) {
 			condition = conditionOptional.get();
 			conditionDao.delete(condition);
@@ -128,6 +130,24 @@ public class ConditionServiceImpl implements ConditionService {
 			}
 		}
 		return conditionDtoList;
+	}
+	
+
+	@Override
+	public Page<ConditionDto> searchByParams(int page, int size,String params) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<Condition> conditionList;
+		List<ConditionDto> conditionDtoList = new ArrayList<>();
+
+		conditionList = conditionDao.findByNameOrCode(pageRequest,params);
+		if (conditionList != null) {
+			for (Condition condition : conditionList) {
+				ConditionDto conditionDto = new ConditionDto();
+				conditionDto = modelMapper.map(condition, ConditionDto.class);
+				conditionDtoList.add(conditionDto);
+			}
+		}
+		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {

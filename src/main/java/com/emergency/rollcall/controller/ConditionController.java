@@ -3,12 +3,17 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.ConditionDto;
-import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
 import com.emergency.rollcall.service.ConditionService;
-import com.emergency.rollcall.service.EmergencyService;
 
 @RestController
 @CrossOrigin
@@ -54,7 +57,7 @@ public class ConditionController {
 
 	}
 
-	@GetMapping("")
+	@GetMapping("{id}")
 	public ResponseEntity<Response<ConditionDto>> getById(@RequestParam("id") Long id) {
 		ConditionDto conditionDto = new ConditionDto();
 		Response<ConditionDto> response = new Response<>();
@@ -80,7 +83,7 @@ public class ConditionController {
 
 	}
 
-	@PostMapping("/update")
+	@PutMapping("")
 	public ResponseEntity<Response<ResponseDto>> updateCondition(@RequestBody ConditionDto conditionDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
@@ -103,13 +106,13 @@ public class ConditionController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/delete")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody ConditionDto conditionDto) {
+	@DeleteMapping("{id}")
+	public ResponseEntity<Response<ResponseDto>> deleteCondition(@PathParam ("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		if (conditionDto != null) {
-			responseDto = conditionService.deleteCondition(conditionDto);
+		if (id != 0) {
+			responseDto = conditionService.deleteCondition(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
@@ -126,7 +129,7 @@ public class ConditionController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/condition-list")
+	@GetMapping("")
 	public ResponseEntity<ResponseList<ConditionDto>> conditionList() {
 
 		ResponseList<ConditionDto> response = new ResponseList<>();
@@ -134,6 +137,30 @@ public class ConditionController {
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
 		conditionDtoList = conditionService.getAllList();
 
+		if (!conditionDtoList.isEmpty()) {
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(conditionDtoList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+	
+	@GetMapping("/search-by-params")
+	public ResponseEntity<ResponseList<ConditionDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params) {
+
+		ResponseList<ConditionDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<ConditionDto> conditionDtoList = new ArrayList<>();
+		Page<ConditionDto> conditionPage = conditionService.searchByParams(page,size,params);
+		conditionDtoList = conditionPage.getContent();
 		if (!conditionDtoList.isEmpty()) {
 			message.setCode("200");
 			message.setMessage("Data is successfully");
