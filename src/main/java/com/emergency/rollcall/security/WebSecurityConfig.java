@@ -37,6 +37,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/assembly/delete").permitAll().antMatchers("/assembly/assembly-list").permitAll()
 				.antMatchers("/emergency").permitAll().antMatchers("/emergency/delete").permitAll()
 				.antMatchers("/emergency/emergency-list").permitAll()
+				.antMatchers("/condition").permitAll().antMatchers("/condition/update").permitAll()
+				.antMatchers("/condition/condition-list").permitAll().antMatchers("/condition/delete").permitAll()
+				.antMatchers("/noti").permitAll().antMatchers("/noti/update").permitAll()
+				.antMatchers("/noti/noti-list").permitAll().antMatchers("/noti/delete").permitAll()
+				.antMatchers("/noti/search-by-params").permitAll().antMatchers("/condition/search-by-params").permitAll()
 				.antMatchers("/api/customer/seller-register").permitAll().antMatchers("/api/customer/seller-login")
 				.permitAll()
 				// Disallow everything else..

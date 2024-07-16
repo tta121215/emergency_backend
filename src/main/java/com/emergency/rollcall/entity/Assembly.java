@@ -1,7 +1,5 @@
 package com.emergency.rollcall.entity;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,7 +20,7 @@ public class Assembly {
 	private String latitude;
 	private String longtiude;
 	private String ipaddress;
-	private String status;
+	private int status;
 	private String accesstype;
 	private String createddate;
 	private String modifieddate;
@@ -67,11 +65,11 @@ public class Assembly {
 		this.ipaddress = ipaddress;
 	}
 
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 

@@ -1,22 +1,9 @@
-package com.emergency.rollcall.entity;
+package com.emergency.rollcall.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "Condition")
-public class Condition {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
-	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
+public class RouteDto {
 	private long syskey;
 	private String name;
-	private String code;
+	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
@@ -37,12 +24,12 @@ public class Condition {
 		this.name = name;
 	}
 
-	public String getCode() {
-		return code;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public int getStatus() {
@@ -67,6 +54,16 @@ public class Condition {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public String ddMMyyyFormat(String aDate) {
+		String l_Date = "";
+		if (!aDate.equals("") && aDate != null)
+			// l_Date = aDate.substring(6) + "/" + aDate.substring(4, 6) + "/" +
+			// aDate.substring(0, 4);
+			l_Date = aDate.substring(0, 4) + "-" + aDate.substring(4, 6) + "-" + aDate.substring(6);
+
+		return l_Date;
 	}
 
 }

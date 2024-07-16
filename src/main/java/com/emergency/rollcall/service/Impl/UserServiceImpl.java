@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 		UserDto res = new UserDto();
 		User user = userdao.findByUsername(username);
 		if (user != null) {
-			if (user.getStatus().equals(1)) {
+			if (user.getStatus() == 1) {
 				if (passwordEncoder.matches(password, user.getPassword())) {
 					res = modelMapper.map(user, UserDto.class);
 					res.setPassword("");
@@ -41,8 +41,7 @@ public class UserServiceImpl implements UserService {
 			}
 		} else {
 			res.setToken("No user found");
-		}
-		System.out.println("Token " + res.getToken());
+		}		
 		return res; 
 	}
 

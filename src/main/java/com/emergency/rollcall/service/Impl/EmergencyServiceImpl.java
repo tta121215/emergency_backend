@@ -8,7 +8,9 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.emergency.rollcall.dao.EmergencyDao;
@@ -56,7 +58,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 	}
 
 	@Override
-	public EmergencyDto getById(Long id) {
+	public EmergencyDto getById(long id) {
 		EmergencyDto emergencyDto = new EmergencyDto();
 		Emergency emergency = new Emergency();
 		Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
@@ -92,11 +94,11 @@ public class EmergencyServiceImpl implements EmergencyService {
 	}
 
 	@Override
-	public ResponseDto deleteEmergency(EmergencyDto emergencyDto) {
+	public ResponseDto deleteEmergency(long id) {
 		ResponseDto res = new ResponseDto();
 		Emergency emergency = new Emergency();
 
-		Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
+		Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
 		if (emergencyOptional.isPresent()) {
 			emergency = emergencyOptional.get();
 			emergencyDao.delete(emergency);
@@ -125,6 +127,36 @@ public class EmergencyServiceImpl implements EmergencyService {
 			}
 		}
 		return emergencyDtoList;
+	}
+	
+	@Override
+	public Page<EmergencyDto> searchByParams(int page,int size,String params) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<Emergency> emergencyList;
+		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
+		if(params == null || params.isEmpty()) {
+			emergencyList = emergencyDao.findByNameOrCode(pageRequest);
+			if (emergencyDtoList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
+				}
+			}
+			
+		}else {
+			emergencyList = emergencyDao.findByNameOrCode(pageRequest,params);
+			if (emergencyDtoList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
+				}
+			}
+		}
+
+		
+		return new PageImpl<>(emergencyDtoList, pageRequest, emergencyList.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {

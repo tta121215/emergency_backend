@@ -2,56 +2,67 @@ package com.emergency.rollcall.dto;
 
 public class NotificationDto {
 	private long syskey;
-	private String mode;
-	private String subject;
-	private String message;
-	private String status;
+	private String notimode;
+	private String notisubject;
+	private String notimessage;
+	private int status;
 	private String createddate;
 	private String modifieddate;
+
 	public long getSyskey() {
 		return syskey;
 	}
+
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
 	}
-	public String getMode() {
-		return mode;
+
+	public String getNotimode() {
+		return notimode;
 	}
-	public void setMode(String mode) {
-		this.mode = mode;
+
+	public void setNotimode(String notimode) {
+		this.notimode = notimode;
 	}
-	public String getSubject() {
-		return subject;
+
+	public String getNotisubject() {
+		return notisubject;
 	}
-	public void setSubject(String subject) {
-		this.subject = subject;
+
+	public void setNotisubject(String notisubject) {
+		this.notisubject = notisubject;
 	}
-	public String getMessage() {
-		return message;
+
+	public String getNotimessage() {
+		return notimessage;
 	}
-	public void setMessage(String message) {
-		this.message = message;
+
+	public void setNotimessage(String notimessage) {
+		this.notimessage = notimessage;
 	}
-	
-	public String getStatus() {
+
+	public int getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+
+	public void setStatus(int status) {
 		this.status = status;
 	}
+
 	public String getCreateddate() {
 		return createddate;
 	}
+
 	public void setCreateddate(String createddate) {
 		this.createddate = createddate;
 	}
+
 	public String getModifieddate() {
 		return modifieddate;
 	}
+
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
 	}
-	
 
-	
 }

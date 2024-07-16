@@ -3,12 +3,17 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,11 +43,13 @@ public class EmergencyController {
 		if (emergencyDto != null) {
 			responseDto = emergencyService.saveEmergency(emergencyDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
 		}
@@ -52,23 +59,26 @@ public class EmergencyController {
 
 	}
 
-	@GetMapping("")
-	public ResponseEntity<Response<EmergencyDto>> getById(@RequestParam("id") Long id) {
+	@GetMapping("{id}")
+	public ResponseEntity<Response<EmergencyDto>> getById(@RequestParam("id") long id) {
 		EmergencyDto emergencyDto = new EmergencyDto();
 		Response<EmergencyDto> response = new Response<>();
 		Message message = new Message();
 
-		if (id != null) {
+		if (id != 0) {
 			emergencyDto = emergencyService.getById(id);
 			if (emergencyDto.getSyskey() != 0) {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 
 			} else {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}
@@ -78,7 +88,7 @@ public class EmergencyController {
 
 	}
 
-	@PostMapping("/update")
+	@PutMapping("")
 	public ResponseEntity<Response<ResponseDto>> updateEmergency(@RequestBody EmergencyDto emergencyDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
@@ -86,13 +96,16 @@ public class EmergencyController {
 		if (emergencyDto != null) {
 			responseDto = emergencyService.updateEmergency(emergencyDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
+				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
 		}
@@ -101,21 +114,23 @@ public class EmergencyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/delete")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@RequestBody EmergencyDto emergencyDto) {
+	@DeleteMapping("{id}")
+	public ResponseEntity<Response<ResponseDto>> deleteEmergency(@PathParam("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		if (emergencyDto != null) {
-			responseDto = emergencyService.deleteEmergency(emergencyDto);
+		if (id != 0) {
+			responseDto = emergencyService.deleteEmergency(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 			} else {
+				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 			}
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
 		}
@@ -124,19 +139,22 @@ public class EmergencyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/emergency-list")
-	public ResponseEntity<ResponseList<EmergencyDto>> emergencyList() {
+	@GetMapping("")
+	public ResponseEntity<ResponseList<EmergencyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
 
 		ResponseList<EmergencyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-		emergencyDtoList = emergencyService.getAllList();
-
+		Page<EmergencyDto> emergencyPage = emergencyService.searchByParams(page, size, params);
+		emergencyDtoList = emergencyPage.getContent();
 		if (!emergencyDtoList.isEmpty()) {
+			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
 
 		} else {
+			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 		}

@@ -27,7 +27,7 @@ public class User {
 
 	private String password;
 
-	private String status;
+	private int status;
 
 	private String createdDate;
 
@@ -73,11 +73,11 @@ public class User {
 		this.password = password;
 	}
 
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 

@@ -8,17 +8,14 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import com.emergency.rollcall.dao.ConditionDao;
 import com.emergency.rollcall.dao.NotificationDao;
-import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
-import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.Notification;
-import com.emergency.rollcall.service.ConditionService;
 import com.emergency.rollcall.service.NotificationService;
 
 @Service
@@ -37,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);	
+		String strCreatedDate = dateTime.format(formatter);
 
 		notification = modelMapper.map(notiDto, Notification.class);
 
@@ -61,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public NotificationDto getById(Long id) {
+	public NotificationDto getById(long id) {
 		NotificationDto conditionDto = new NotificationDto();
 		Notification notification = new Notification();
 		Optional<Notification> notificationOptional = notificationDao.findById(id);
@@ -97,11 +94,11 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public ResponseDto deleteNotification(NotificationDto notiDto) {
+	public ResponseDto deleteNotification(long id) {
 		ResponseDto res = new ResponseDto();
 		Notification notification = new Notification();
 
-		Optional<Notification> notiOptional = notificationDao.findById(notiDto.getSyskey());
+		Optional<Notification> notiOptional = notificationDao.findById(id);
 		if (notiOptional.isPresent()) {
 			notification = notiOptional.get();
 			notificationDao.delete(notification);
@@ -130,6 +127,35 @@ public class NotificationServiceImpl implements NotificationService {
 			}
 		}
 		return notiDtoList;
+	}
+
+	@Override
+	public Page<NotificationDto> searchByParams(int page, int size, String params) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<Notification> notiList;
+		List<NotificationDto> notiDtoList = new ArrayList<>();
+		if(params == null || params.isEmpty()) {
+			notiList = notificationDao.findByNotisubject(pageRequest);
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					notiDtoList.add(notiDto);
+				}
+			}
+		}else {
+			notiList = notificationDao.findByNotisubject(pageRequest, params);
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					notiDtoList.add(notiDto);
+				}
+			}
+		}
+
+		
+		return new PageImpl<>(notiDtoList, pageRequest, notiList.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {

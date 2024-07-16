@@ -18,7 +18,7 @@ public class Notification {
 	private String notimode;
 	private String notisubject;
 	private String notimessage;
-	private String status;
+	private int status;
 	private String createddate;
 	private String modifieddate;
 	public long getSyskey() {
@@ -46,10 +46,10 @@ public class Notification {
 		this.notimessage = notimessage;
 	}
 	
-	public String getStatus() {
+	public int getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 	public String getCreateddate() {

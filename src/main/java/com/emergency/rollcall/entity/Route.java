@@ -8,15 +8,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Condition")
-public class Condition {
+@Table(name = "Route")
+public class Route {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
 	private String name;
-	private String code;
+	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
@@ -37,12 +37,12 @@ public class Condition {
 		this.name = name;
 	}
 
-	public String getCode() {
-		return code;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public int getStatus() {
