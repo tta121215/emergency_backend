@@ -10,10 +10,10 @@
 		<relativePath />
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>t2d3d</artifactId>
+	<artifactId>emergency</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>t2d3d</name>
+	<name>emergency</name>
 	<description>t2d3d project for Spring Boot</description>
 
 	<properties>
