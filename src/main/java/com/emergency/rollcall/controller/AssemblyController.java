@@ -145,7 +145,7 @@ public class AssemblyController {
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params,sortBy,direction);
+		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params);
 		assemblyDtoList = assemblyPage.getContent();
 		if (!assemblyDtoList.isEmpty()) {
 			message.setState(true);
