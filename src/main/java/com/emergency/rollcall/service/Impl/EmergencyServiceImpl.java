@@ -74,7 +74,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 	public ResponseDto updateEmergency(EmergencyDto emergencyDto) {
 		ResponseDto res = new ResponseDto();
 		Emergency emergency = new Emergency();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -82,7 +82,9 @@ public class EmergencyServiceImpl implements EmergencyService {
 		Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
 		if (emergencyOptional.isPresent()) {
 			emergency = emergencyOptional.get();
+			createdDate = emergency.getCreateddate();
 			emergency = modelMapper.map(emergencyDto, Emergency.class);
+			emergency.setCreateddate(createdDate);
 			emergency.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			emergencyDao.save(emergency);
 			res.setStatus_code(200);

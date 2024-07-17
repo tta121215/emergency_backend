@@ -74,7 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public ResponseDto updateNotification(NotificationDto notiDto) {
 		ResponseDto res = new ResponseDto();
 		Notification notification = new Notification();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -82,8 +82,10 @@ public class NotificationServiceImpl implements NotificationService {
 		Optional<Notification> notiOptional = notificationDao.findById(notiDto.getSyskey());
 		if (notiOptional.isPresent()) {
 			notification = notiOptional.get();
-			notification = modelMapper.map(notiDto, Notification.class);
+			createdDate = notification.getCreateddate();	
+			notification = modelMapper.map(notiDto, Notification.class);			
 			notification.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+			notification.setCreateddate(createdDate);
 			notificationDao.save(notification);
 			res.setStatus_code(200);
 			res.setMessage("Successfully Updated");

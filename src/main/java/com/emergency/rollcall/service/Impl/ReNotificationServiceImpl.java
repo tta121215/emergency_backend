@@ -73,7 +73,7 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 	public ResponseDto updateReNotification(ReNotificationDto notiDto) {
 		ResponseDto res = new ResponseDto();
 		Renotification renotification = new Renotification();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -81,7 +81,9 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 		Optional<Renotification> notiOptional = renotificationDao.findById(notiDto.getSyskey());
 		if (notiOptional.isPresent()) {
 			renotification = notiOptional.get();
+			createdDate = renotification.getCreateddate();
 			renotification = modelMapper.map(notiDto, Renotification.class);
+			renotification.setCreateddate(createdDate);
 			renotification.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			renotificationDao.save(renotification);
 			res.setStatus_code(200);

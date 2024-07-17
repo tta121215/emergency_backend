@@ -75,7 +75,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	public ResponseDto updateAssembly(AssemblyDto data) {
 		ResponseDto res = new ResponseDto();
 		Assembly assembly = new Assembly();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);	
@@ -83,8 +83,11 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
 		if (assemblyOptional.isPresent()) {
 			assembly = assemblyOptional.get();
+			createdDate = assembly.getCreateddate();
 			assembly = modelMapper.map(data, Assembly.class);
+			assembly.setCreateddate(assembly.getCreateddate());
 			assembly.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+			assembly.setCreateddate(createdDate);
 			assemblyDao.save(assembly);
 			res.setStatus_code(200);
 			res.setMessage("Successfully Updated");

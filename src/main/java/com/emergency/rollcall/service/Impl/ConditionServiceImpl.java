@@ -77,7 +77,7 @@ public class ConditionServiceImpl implements ConditionService {
 	public ResponseDto updateCondition(ConditionDto conditionDto) {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -86,8 +86,9 @@ public class ConditionServiceImpl implements ConditionService {
 		if (conditionOptional.isPresent()) {
 			
 			condition = conditionOptional.get();
+			createdDate = condition.getCreateddate();
 			condition = modelMapper.map(conditionDto, Condition.class);
-			condition.setCreateddate(condition.getCreateddate());
+			condition.setCreateddate(createdDate);
 			condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			conditionDao.save(condition);
 			res.setStatus_code(200);

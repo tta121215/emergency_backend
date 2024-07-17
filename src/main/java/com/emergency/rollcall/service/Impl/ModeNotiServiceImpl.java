@@ -73,7 +73,7 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 	public ResponseDto updateModeNoti(ModeNotiDto ModeNotiDto) {
 		ResponseDto res = new ResponseDto();
 		ModeNoti modeNoti = new ModeNoti();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -81,7 +81,9 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		Optional<ModeNoti> ModeNotiOptional = modeNotiDao.findById(ModeNotiDto.getSyskey());
 		if (ModeNotiOptional.isPresent()) {
 			modeNoti = ModeNotiOptional.get();
+			createdDate = modeNoti.getCreateddate();
 			modeNoti = modelMapper.map(ModeNotiDto, ModeNoti.class);
+			modeNoti.setCreateddate(createdDate);
 			modeNoti.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			modeNotiDao.save(modeNoti);
 			res.setStatus_code(200);

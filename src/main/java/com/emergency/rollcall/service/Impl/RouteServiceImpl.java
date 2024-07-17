@@ -73,7 +73,7 @@ public class RouteServiceImpl implements RouteService {
 	public ResponseDto updateRoute(RouteDto routeDto) {
 		ResponseDto res = new ResponseDto();
 		Route route = new Route();
-
+		String createdDate;
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -81,7 +81,9 @@ public class RouteServiceImpl implements RouteService {
 		Optional<Route> routeOptional = routeDao.findById(routeDto.getSyskey());
 		if (routeOptional.isPresent()) {
 			route = routeOptional.get();
+			createdDate = route.getCreateddate();
 			route = modelMapper.map(routeDto, Route.class);
+			route.setCreateddate(createdDate);
 			route.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			routeDao.save(route);
 			res.setStatus_code(200);
