@@ -139,11 +139,13 @@ public class AssemblyController {
 	
 	@GetMapping("")
 	public ResponseEntity<ResponseList<AssemblyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam ("params") String params) { 		
+            @RequestParam(defaultValue = "10") int size,@RequestParam ("params") String params,
+            @RequestParam(defaultValue = "syskey") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) { 		
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params);
+		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params,sortBy,direction);
 		assemblyDtoList = assemblyPage.getContent();
 		if (!assemblyDtoList.isEmpty()) {
 			message.setState(true);

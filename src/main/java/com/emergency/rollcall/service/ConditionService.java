@@ -16,6 +16,6 @@ public interface ConditionService {
 
 	ResponseDto deleteCondition(long id);
 
-	Page<ConditionDto> searchByParams(int page, int size, String params);
+	Page<ConditionDto> searchByParams(int page, int size, String params,String sortBy,String direction);
 
 }
