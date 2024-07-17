@@ -1,7 +1,6 @@
 package com.emergency.rollcall.entity;
 
 import javax.persistence.Entity;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,8 +8,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Emergency")
-public class Emergency {
+@Table(name = "EActivate")
+public class EmergencyActivate {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
@@ -21,10 +20,9 @@ public class Emergency {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-
-//	@ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "emergency_activate_syskey")
-//    private EmergencyActivate emergencyActivate;
+//
+//	@OneToMany(mappedBy = "emergencyActivate", fetch = FetchType.LAZY)
+//	private List<Emergency> emergencies = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -74,12 +72,12 @@ public class Emergency {
 		this.modifieddate = modifieddate;
 	}
 
-//	public EmergencyActivate getEmergencyActivate() {
-//		return emergencyActivate;
+//	public List<Emergency> getEmergencies() {
+//		return emergencies;
 //	}
 //
-//	public void setEmergencyActivate(EmergencyActivate emergencyActivate) {
-//		this.emergencyActivate = emergencyActivate;
+//	public void setEmergencies(List<Emergency> emergencies) {
+//		this.emergencies = emergencies;
 //	}
 
 }

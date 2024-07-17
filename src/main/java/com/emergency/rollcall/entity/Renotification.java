@@ -1,7 +1,6 @@
 package com.emergency.rollcall.entity;
 
 import javax.persistence.Entity;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,22 +8,18 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Emergency")
-public class Emergency {
+@Table(name = "Renofication")
+public class Renotification {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
-	private String name;
-	private String code;
+	private int time;
+	private int frequency;
 	private int status;
 	private String createddate;
 	private String modifieddate;
-
-//	@ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "emergency_activate_syskey")
-//    private EmergencyActivate emergencyActivate;
 
 	public long getSyskey() {
 		return syskey;
@@ -34,20 +29,20 @@ public class Emergency {
 		this.syskey = syskey;
 	}
 
-	public String getName() {
-		return name;
+	public int getTime() {
+		return time;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTime(int time) {
+		this.time = time;
 	}
 
-	public String getCode() {
-		return code;
+	public int getFrequency() {
+		return frequency;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setFrequency(int frequency) {
+		this.frequency = frequency;
 	}
 
 	public int getStatus() {
@@ -73,13 +68,5 @@ public class Emergency {
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
 	}
-
-//	public EmergencyActivate getEmergencyActivate() {
-//		return emergencyActivate;
-//	}
-//
-//	public void setEmergencyActivate(EmergencyActivate emergencyActivate) {
-//		this.emergencyActivate = emergencyActivate;
-//	}
 
 }

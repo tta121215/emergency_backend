@@ -118,23 +118,6 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	}
 
 	@Override
-	public List<AssemblyDto> getAllList() {
-
-		List<Assembly> assemblyList = new ArrayList<>();
-		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-
-		assemblyList = assemblyDao.findAll();
-		if (assemblyList != null) {
-			for (Assembly assembly : assemblyList) {
-				AssemblyDto assemblyDto = new AssemblyDto();
-				assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
-				assemblyDtoList.add(assemblyDto);
-			}
-		}
-		return assemblyDtoList;
-	}
-
-	@Override
 	public Page<AssemblyDto> searchByParams(int page, int size, String params) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Assembly> assemblyList;
@@ -152,7 +135,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 		} else {
 			assemblyList = assemblyDao.searchByParams(pageRequest, params);
-			
+
 		}
 
 		return new PageImpl<>(assemblyDtoList, pageRequest, assemblyList.getTotalElements());
