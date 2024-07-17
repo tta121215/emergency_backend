@@ -1,5 +1,7 @@
 package com.emergency.rollcall.security;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SuppressWarnings("deprecation")
@@ -25,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
+//		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -48,10 +52,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.anyRequest().authenticated();
 
 		// If a user try to access a resource without having enough permissions
-		http.exceptionHandling().accessDeniedPage("/login");
+	//	http.exceptionHandling().accessDeniedPage("/login");
 
 		// Apply JWT
-		http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+	//	http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
 
 		// Optional, if you want to test the API from a browser
 		// http.httpBasic();
@@ -61,6 +65,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
+	@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type",
+        		"X-Requested-With",
+        		"accept",
+        		"Origin",
+        		"authorization",
+        		"Access-Control-Request-Method",
+                "Access-Control-Request-Headers"));
+       // configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin",
+        		"Content-Disposition",
+        		"Access-Control-Allow-Credentials",
+        		"Content-Type"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 //	@Override
 //	@Bean
