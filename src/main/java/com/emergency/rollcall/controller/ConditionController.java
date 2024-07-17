@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,7 +61,7 @@ public class ConditionController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<Response<ConditionDto>> getById(@RequestParam("id") Long id) {
+	public ResponseEntity<Response<ConditionDto>> getById(@PathVariable Long id) {
 		ConditionDto conditionDto = new ConditionDto();
 		Response<ConditionDto> response = new Response<>();
 		Message message = new Message();

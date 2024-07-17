@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,7 +61,7 @@ public class ModeNotiController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<Response<ModeNotiDto>> getById(@RequestParam("id") Long id) {
+	public ResponseEntity<Response<ModeNotiDto>> getById(@PathVariable Long id) {
 		ModeNotiDto ModeNotiDto = new ModeNotiDto();
 		Response<ModeNotiDto> response = new Response<>();
 		Message message = new Message();

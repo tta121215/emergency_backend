@@ -38,15 +38,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		http.authorizeRequests().antMatchers("/api/user/login").permitAll().antMatchers("/api/customer/login")
 				.permitAll().antMatchers("/assembly").permitAll()
 				.antMatchers("/appuser/login").permitAll()
-				.antMatchers("/assembly").permitAll()				
-				.antMatchers("/emergency").permitAll()				
-				.antMatchers("/condition").permitAll()
-				.antMatchers("/route").permitAll()
-				.antMatchers("/noti").permitAll()
-				.antMatchers("/modenoti").permitAll()
-				.antMatchers("/renoti").permitAll()
-				.antMatchers("/api/customer/seller-register").permitAll().antMatchers("/api/customer/seller-login")
-				.permitAll()
+				.antMatchers("/assembly").permitAll().antMatchers("/assembly/**").permitAll()			
+				.antMatchers("/emergency").permitAll().antMatchers("/emergency/**").permitAll()		
+				.antMatchers("/condition").permitAll().antMatchers("/condition/**").permitAll()
+				.antMatchers("/route").permitAll().antMatchers("/route/**").permitAll()
+				.antMatchers("/noti").permitAll().antMatchers("/noti/**").permitAll()
+				.antMatchers("/modenoti").permitAll().antMatchers("/modenoti/**").permitAll()
+				.antMatchers("/renoti").permitAll().antMatchers("/renoti/**").permitAll()		
+				.antMatchers("/locemergency").permitAll().antMatchers("/locemergency/**").permitAll()
 				// Disallow everything else..
 				.anyRequest().authenticated();
 

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,7 +62,7 @@ public class RouteController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<Response<RouteDto>> getById(@RequestParam("id") Long id) {
+	public ResponseEntity<Response<RouteDto>> getById(@PathVariable Long id) {
 		RouteDto routeDto = new RouteDto();
 		Response<RouteDto> response = new Response<>();
 		Message message = new Message();
