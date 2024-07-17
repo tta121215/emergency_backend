@@ -83,6 +83,7 @@ public class ConditionServiceImpl implements ConditionService {
 
 		Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
 		if (conditionOptional.isPresent()) {
+
 			condition = conditionOptional.get();
 			condition = modelMapper.map(conditionDto, Condition.class);
 			condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
@@ -90,6 +91,7 @@ public class ConditionServiceImpl implements ConditionService {
 			res.setStatus_code(200);
 			res.setMessage("Successfully Updated");
 		} else {
+			res.setStatus_code(401);
 			res.setMessage("Data does not found");
 		}
 

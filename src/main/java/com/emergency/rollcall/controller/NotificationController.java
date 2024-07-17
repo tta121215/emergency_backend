@@ -69,7 +69,7 @@ public class NotificationController {
 
 		if (id != 0) {
 			notiDto = notificationService.getById(id);
-			if (notiDto != null) {
+			if (notiDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");

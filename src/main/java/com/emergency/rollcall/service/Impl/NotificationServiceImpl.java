@@ -87,6 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
 			res.setStatus_code(200);
 			res.setMessage("Successfully Updated");
 		} else {
+			res.setStatus_code(401);
 			res.setMessage("Data does not found");
 		}
 
