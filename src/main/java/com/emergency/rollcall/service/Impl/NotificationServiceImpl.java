@@ -113,28 +113,11 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public List<NotificationDto> getAllList() {
-
-		List<Notification> notiList = new ArrayList<>();
-		List<NotificationDto> notiDtoList = new ArrayList<>();
-
-		notiList = notificationDao.findAll();
-		if (notiList != null) {
-			for (Notification notification : notiList) {
-				NotificationDto notiDto = new NotificationDto();
-				notiDto = modelMapper.map(notification, NotificationDto.class);
-				notiDtoList.add(notiDto);
-			}
-		}
-		return notiDtoList;
-	}
-
-	@Override
 	public Page<NotificationDto> searchByParams(int page, int size, String params) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Notification> notiList;
 		List<NotificationDto> notiDtoList = new ArrayList<>();
-		if(params == null || params.isEmpty()) {
+		if (params == null || params.isEmpty()) {
 			notiList = notificationDao.findByNotisubject(pageRequest);
 			if (notiList != null) {
 				for (Notification notification : notiList) {
@@ -143,7 +126,7 @@ public class NotificationServiceImpl implements NotificationService {
 					notiDtoList.add(notiDto);
 				}
 			}
-		}else {
+		} else {
 			notiList = notificationDao.findByNotisubject(pageRequest, params);
 			if (notiList != null) {
 				for (Notification notification : notiList) {
@@ -154,7 +137,6 @@ public class NotificationServiceImpl implements NotificationService {
 			}
 		}
 
-		
 		return new PageImpl<>(notiDtoList, pageRequest, notiList.getTotalElements());
 	}
 

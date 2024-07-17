@@ -12,16 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import com.emergency.rollcall.dao.ConditionDao;
 import com.emergency.rollcall.dao.RouteDao;
-import com.emergency.rollcall.dto.ConditionDto;
-
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
-import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.Route;
-import com.emergency.rollcall.service.ConditionService;
 import com.emergency.rollcall.service.RouteService;
 
 @Service
@@ -125,7 +119,7 @@ public class RouteServiceImpl implements RouteService {
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		if (params == null || params.isEmpty()) {
 			routeList = routeDao.findByNameOrCode(pageRequest);
-			if (routeDtoList != null) {
+			if (routeList != null) {
 				for (Route route : routeList) {
 					RouteDto routeDto = new RouteDto();
 					routeDto = modelMapper.map(route, RouteDto.class);
@@ -134,8 +128,8 @@ public class RouteServiceImpl implements RouteService {
 			}
 
 		} else {
-			routeList = routeDao.findByNameOrCode(pageRequest,params);
-			if (routeDtoList != null) {
+			routeList = routeDao.findByNameOrCode(pageRequest, params);
+			if (routeList != null) {
 				for (Route route : routeList) {
 					RouteDto routeDto = new RouteDto();
 					routeDto = modelMapper.map(route, RouteDto.class);

@@ -34,10 +34,10 @@ public class ConditionServiceImpl implements ConditionService {
 	public ResponseDto saveCondition(ConditionDto conditionDto) {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
-		
+
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);	
+		String strCreatedDate = dateTime.format(formatter);
 
 		condition = modelMapper.map(conditionDto, Condition.class);
 
@@ -116,29 +116,11 @@ public class ConditionServiceImpl implements ConditionService {
 	}
 
 	@Override
-	public List<ConditionDto> getAllList() {
-
-		List<Condition> conditionList = new ArrayList<>();
-		List<ConditionDto> conditionDtoList = new ArrayList<>();
-
-		conditionList = conditionDao.findAll();
-		if (conditionList != null) {
-			for (Condition condition : conditionList) {
-				ConditionDto conditionDto = new ConditionDto();
-				conditionDto = modelMapper.map(condition, ConditionDto.class);
-				conditionDtoList.add(conditionDto);
-			}
-		}
-		return conditionDtoList;
-	}
-	
-
-	@Override
-	public Page<ConditionDto> searchByParams(int page, int size,String params) {
+	public Page<ConditionDto> searchByParams(int page, int size, String params) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Condition> conditionList;
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
-		if(params == null || params.isEmpty()) {
+		if (params == null || params.isEmpty()) {
 			conditionList = conditionDao.findByNameOrCode(pageRequest);
 			if (conditionList != null) {
 				for (Condition condition : conditionList) {
@@ -147,9 +129,9 @@ public class ConditionServiceImpl implements ConditionService {
 					conditionDtoList.add(conditionDto);
 				}
 			}
-			
-		}else {
-			conditionList = conditionDao.findByNameOrCode(pageRequest,params);
+
+		} else {
+			conditionList = conditionDao.findByNameOrCode(pageRequest, params);
 			if (conditionList != null) {
 				for (Condition condition : conditionList) {
 					ConditionDto conditionDto = new ConditionDto();
@@ -159,7 +141,6 @@ public class ConditionServiceImpl implements ConditionService {
 			}
 		}
 
-		
 		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
 	}
 

@@ -36,7 +36,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);	
+		String strCreatedDate = dateTime.format(formatter);
 
 		emergency.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 
@@ -113,40 +113,23 @@ public class EmergencyServiceImpl implements EmergencyService {
 	}
 
 	@Override
-	public List<EmergencyDto> getAllList() {
-
-		List<Emergency> emergencyList = new ArrayList<>();
-		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-
-		emergencyList = emergencyDao.findAll();
-		if (emergencyDtoList != null) {
-			for (Emergency emergency : emergencyList) {
-				EmergencyDto emergencyDto = new EmergencyDto();
-				emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-				emergencyDtoList.add(emergencyDto);
-			}
-		}
-		return emergencyDtoList;
-	}
-	
-	@Override
-	public Page<EmergencyDto> searchByParams(int page,int size,String params) {
+	public Page<EmergencyDto> searchByParams(int page, int size, String params) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<Emergency> emergencyList;
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-		if(params == null || params.isEmpty()) {
+		if (params == null || params.isEmpty()) {			
 			emergencyList = emergencyDao.findByNameOrCode(pageRequest);
-			if (emergencyDtoList != null) {
+			if (emergencyList != null) {
 				for (Emergency emergency : emergencyList) {
 					EmergencyDto emergencyDto = new EmergencyDto();
 					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
 					emergencyDtoList.add(emergencyDto);
 				}
 			}
-			
-		}else {
-			emergencyList = emergencyDao.findByNameOrCode(pageRequest,params);
-			if (emergencyDtoList != null) {
+
+		} else {
+			emergencyList = emergencyDao.findByNameOrCode(pageRequest, params);
+			if (emergencyList != null) {
 				for (Emergency emergency : emergencyList) {
 					EmergencyDto emergencyDto = new EmergencyDto();
 					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
@@ -155,7 +138,6 @@ public class EmergencyServiceImpl implements EmergencyService {
 			}
 		}
 
-		
 		return new PageImpl<>(emergencyDtoList, pageRequest, emergencyList.getTotalElements());
 	}
 
