@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.emergency.rollcall.dao.AssemblyDao;
@@ -77,16 +78,12 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 		LocalDateTime dateTime = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
-
+		String strCreatedDate = dateTime.format(formatter);	
+		
 		Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
 		if (assemblyOptional.isPresent()) {
 			assembly = assemblyOptional.get();
-			assembly.setName(data.getName());
-			assembly.setLatitude(data.getLatitude());
-			assembly.setLongtiude(data.getLongtiude());
-			assembly.setStatus(data.getStatus());
-			assembly.setAccesstype(data.getAccesstype());
+			assembly = modelMapper.map(data, Assembly.class);
 			assembly.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			assemblyDao.save(assembly);
 			res.setStatus_code(200);
@@ -119,8 +116,9 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	}
 
 	@Override
-	public Page<AssemblyDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<AssemblyDto> searchByParams(int page, int size, String params,String sortBy,String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+	    PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));		
 		Page<Assembly> assemblyList;
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
 

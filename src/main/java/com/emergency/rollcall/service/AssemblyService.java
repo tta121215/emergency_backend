@@ -12,6 +12,6 @@ public interface AssemblyService {
 	AssemblyDto getById(Long id);
 	ResponseDto updateAssembly(AssemblyDto data);
 	ResponseDto deleteAssembly(long id);	
-	Page<AssemblyDto> searchByParams(int page,int size,String params);
+	Page<AssemblyDto> searchByParams(int page,int size,String params,String sortBy,String direction);
 
 }

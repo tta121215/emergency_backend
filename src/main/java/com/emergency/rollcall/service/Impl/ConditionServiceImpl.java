@@ -84,9 +84,10 @@ public class ConditionServiceImpl implements ConditionService {
 
 		Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
 		if (conditionOptional.isPresent()) {
-
+			
 			condition = conditionOptional.get();
 			condition = modelMapper.map(conditionDto, Condition.class);
+			condition.setCreateddate(condition.getCreateddate());
 			condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 			conditionDao.save(condition);
 			res.setStatus_code(200);

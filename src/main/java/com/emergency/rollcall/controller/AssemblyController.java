@@ -3,8 +3,6 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -145,7 +143,7 @@ public class AssemblyController {
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params);
+		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params,sortBy,direction);
 		assemblyDtoList = assemblyPage.getContent();
 		if (!assemblyDtoList.isEmpty()) {
 			message.setState(true);
