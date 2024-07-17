@@ -148,8 +148,8 @@ public class NotificationController {
 		ResponseList<NotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotificationDto> notificationDtoList = new ArrayList<>();
-		Page<NotificationDto> notiDto = notificationService.searchByParams(page, size, params);
-		notificationDtoList = notiDto.getContent();
+		Page<NotificationDto> notiDtoPage = notificationService.searchByParams(page, size, params);
+		notificationDtoList = notiDtoPage.getContent();
 		if (!notificationDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
@@ -163,6 +163,9 @@ public class NotificationController {
 
 		response.setMessage(message);
 		response.setData(notificationDtoList);
+		response.setTotalItems(notiDtoPage.getSize());
+		response.setTotalPages(notiDtoPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

@@ -146,10 +146,10 @@ public class LocEmergencyController {
 
 		ResponseList<LocEmergencyDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<LocEmergencyDto> LocEmergencyDtoList = new ArrayList<>();
-		Page<LocEmergencyDto> LocEmergencypage = locEmergencyService.searchByParams(page,size,params);
-		LocEmergencyDtoList = LocEmergencypage.getContent();
-		if (!LocEmergencyDtoList.isEmpty()) {
+		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
+		Page<LocEmergencyDto> locEmergencyPage = locEmergencyService.searchByParams(page,size,params);
+		locEmergencyDtoList = locEmergencyPage.getContent();
+		if (!locEmergencyDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -161,7 +161,10 @@ public class LocEmergencyController {
 		}
 
 		response.setMessage(message);
-		response.setData(LocEmergencyDtoList);
+		response.setData(locEmergencyDtoList);
+		response.setTotalItems(locEmergencyPage.getSize());
+		response.setTotalPages(locEmergencyPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

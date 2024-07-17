@@ -148,8 +148,8 @@ public class RouteController {
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<RouteDto> routeDtoList = new ArrayList<>();
-		Page<RouteDto> routepage = routeService.searchByParams(page,size,params);
-		routeDtoList = routepage.getContent();
+		Page<RouteDto> routePage = routeService.searchByParams(page,size,params);
+		routeDtoList = routePage.getContent();
 		if (!routeDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
@@ -163,6 +163,9 @@ public class RouteController {
 
 		response.setMessage(message);
 		response.setData(routeDtoList);
+		response.setTotalItems(routePage.getSize());
+		response.setTotalPages(routePage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

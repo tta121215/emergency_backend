@@ -29,7 +29,7 @@ import com.emergency.rollcall.service.ReNotificationService;
 
 @RestController
 @CrossOrigin
-@RequestMapping("renotification")
+@RequestMapping("renoti")
 public class ReNotificationController {
 
 	@Autowired
@@ -147,8 +147,8 @@ public class ReNotificationController {
 		ResponseList<ReNotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<ReNotificationDto> ReNotificationDtoList = new ArrayList<>();
-		Page<ReNotificationDto> LocEmergencypage = reNotificationService.searchByParams(page,size,params);
-		ReNotificationDtoList = LocEmergencypage.getContent();
+		Page<ReNotificationDto> reNotiPage = reNotificationService.searchByParams(page,size,params);
+		ReNotificationDtoList = reNotiPage.getContent();
 		if (!ReNotificationDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
@@ -162,6 +162,9 @@ public class ReNotificationController {
 
 		response.setMessage(message);
 		response.setData(ReNotificationDtoList);
+		response.setTotalItems(reNotiPage.getSize());
+		response.setTotalPages(reNotiPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

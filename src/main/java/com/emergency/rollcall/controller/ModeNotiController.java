@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-import com.emergency.rollcall.service.LocEmergencyService;
+import com.emergency.rollcall.service.ModeNotiService;
 
 @RestController
 @CrossOrigin
@@ -33,15 +33,15 @@ import com.emergency.rollcall.service.LocEmergencyService;
 public class ModeNotiController {
 
 	@Autowired
-	private LocEmergencyService locEmergencyService;
+	private ModeNotiService modeNotiService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveLocEmergency(@RequestBody LocEmergencyDto LocEmergencyDto) {
+	public ResponseEntity<Response<ResponseDto>> saveModeNoti(@RequestBody ModeNotiDto ModeNotiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (LocEmergencyDto != null) {
-			responseDto = locEmergencyService.saveLocEmergency(LocEmergencyDto);
+		if (ModeNotiDto != null) {
+			responseDto = modeNotiService.saveModeNoti(ModeNotiDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
 				message.setState(true);
 				message.setCode("200");
@@ -60,14 +60,14 @@ public class ModeNotiController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<Response<LocEmergencyDto>> getById(@RequestParam("id") Long id) {
-		LocEmergencyDto LocEmergencyDto = new LocEmergencyDto();
-		Response<LocEmergencyDto> response = new Response<>();
+	public ResponseEntity<Response<ModeNotiDto>> getById(@RequestParam("id") Long id) {
+		ModeNotiDto ModeNotiDto = new ModeNotiDto();
+		Response<ModeNotiDto> response = new Response<>();
 		Message message = new Message();
 
 		if (id != null) {
-			LocEmergencyDto = locEmergencyService.getById(id);
-			if (LocEmergencyDto.getSyskey() != 0) {
+			ModeNotiDto = modeNotiService.getById(id);
+			if (ModeNotiDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
@@ -83,18 +83,18 @@ public class ModeNotiController {
 			message.setMessage("No Data found");
 		}
 		response.setMessage(message);
-		response.setData(LocEmergencyDto);
+		response.setData(ModeNotiDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody LocEmergencyDto LocEmergencyDto) {
+	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody ModeNotiDto ModeNotiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (LocEmergencyDto != null) {
-			responseDto = locEmergencyService.updateLocEmergency(LocEmergencyDto);
+		if (ModeNotiDto != null) {
+			responseDto = modeNotiService.updateModeNoti(ModeNotiDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
@@ -114,12 +114,12 @@ public class ModeNotiController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteLocEmergency(@PathParam ("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteLocEmergency(@PathParam("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
 		if (id != 0) {
-			responseDto = locEmergencyService.deleteLocEmergency(id);
+			responseDto = modeNotiService.deleteModeNoti(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setState(false);
 				message.setCode("401");
@@ -138,18 +138,17 @@ public class ModeNotiController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
-	@GetMapping("")
-	public ResponseEntity<ResponseList<LocEmergencyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params) {
 
-		ResponseList<LocEmergencyDto> response = new ResponseList<>();
+	@GetMapping("")
+	public ResponseEntity<ResponseList<ModeNotiDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
+
+		ResponseList<ModeNotiDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<LocEmergencyDto> LocEmergencyDtoList = new ArrayList<>();
-		Page<LocEmergencyDto> LocEmergencypage = locEmergencyService.searchByParams(page,size,params);
-		LocEmergencyDtoList = LocEmergencypage.getContent();
-		if (!LocEmergencyDtoList.isEmpty()) {
+		List<ModeNotiDto> ModeNotiDtoList = new ArrayList<>();
+		Page<ModeNotiDto> modeNotiPage = modeNotiService.searchByParams(page, size, params);
+		ModeNotiDtoList = modeNotiPage.getContent();
+		if (!ModeNotiDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -161,7 +160,10 @@ public class ModeNotiController {
 		}
 
 		response.setMessage(message);
-		response.setData(LocEmergencyDtoList);
+		response.setData(ModeNotiDtoList);
+		response.setTotalItems(modeNotiPage.getSize());
+		response.setTotalPages(modeNotiPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
