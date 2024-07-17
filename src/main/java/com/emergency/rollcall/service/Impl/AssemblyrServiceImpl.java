@@ -135,6 +135,13 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 		} else {
 			assemblyList = assemblyDao.searchByParams(pageRequest, params);
+			if (assemblyList != null) {
+				for (Assembly assembly : assemblyList) {
+					AssemblyDto assemblyDto = new AssemblyDto();
+					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
+					assemblyDtoList.add(assemblyDto);
+				}
+			}
 
 		}
 
