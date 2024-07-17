@@ -139,18 +139,17 @@ public class ConditionController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("")
 	public ResponseEntity<ResponseList<ConditionDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params,
-            @RequestParam(defaultValue = "syskey") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {	
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<ConditionDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
-		Page<ConditionDto> conditionPage = conditionService.searchByParams(page,size,params,sortBy,direction);
+		Page<ConditionDto> conditionPage = conditionService.searchByParams(page, size, params, sortBy, direction);
 		conditionDtoList = conditionPage.getContent();
 		if (!conditionDtoList.isEmpty()) {
 			message.setState(true);
