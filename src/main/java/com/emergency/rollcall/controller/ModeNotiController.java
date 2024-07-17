@@ -161,7 +161,7 @@ public class ModeNotiController {
 
 		response.setMessage(message);
 		response.setData(ModeNotiDtoList);
-		response.setTotalItems(modeNotiPage.getSize());
+		response.setTotalItems(modeNotiPage.getTotalElements());
 		response.setTotalPages(modeNotiPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

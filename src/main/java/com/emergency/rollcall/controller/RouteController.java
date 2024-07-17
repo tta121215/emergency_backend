@@ -163,7 +163,7 @@ public class RouteController {
 
 		response.setMessage(message);
 		response.setData(routeDtoList);
-		response.setTotalItems(routePage.getSize());
+		response.setTotalItems(routePage.getTotalElements());
 		response.setTotalPages(routePage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

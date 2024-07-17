@@ -161,7 +161,7 @@ public class EmergencyController {
 
 		response.setMessage(message);
 		response.setData(emergencyDtoList);
-		response.setTotalItems(emergencyPage.getSize());
+		response.setTotalItems(emergencyPage.getTotalElements());
 		response.setTotalPages(emergencyPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

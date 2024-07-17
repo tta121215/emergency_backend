@@ -157,7 +157,7 @@ public class AssemblyController {
 
 		response.setMessage(message);
 		response.setData(assemblyDtoList);		
-		response.setTotalItems(assemblyPage.getSize());
+		response.setTotalItems(assemblyPage.getTotalElements());
 		response.setTotalPages(assemblyPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

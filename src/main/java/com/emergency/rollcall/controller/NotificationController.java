@@ -163,7 +163,7 @@ public class NotificationController {
 
 		response.setMessage(message);
 		response.setData(notificationDtoList);
-		response.setTotalItems(notiDtoPage.getSize());
+		response.setTotalItems(notiDtoPage.getTotalElements());
 		response.setTotalPages(notiDtoPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

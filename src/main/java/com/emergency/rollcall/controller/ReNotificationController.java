@@ -162,7 +162,7 @@ public class ReNotificationController {
 
 		response.setMessage(message);
 		response.setData(ReNotificationDtoList);
-		response.setTotalItems(reNotiPage.getSize());
+		response.setTotalItems(reNotiPage.getTotalElements());
 		response.setTotalPages(reNotiPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

@@ -162,7 +162,7 @@ public class ConditionController {
 
 		response.setMessage(message);
 		response.setData(conditionDtoList);
-		response.setTotalItems(conditionPage.getSize());
+		response.setTotalItems(conditionPage.getTotalElements());
 		response.setTotalPages(conditionPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);

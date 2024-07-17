@@ -162,7 +162,7 @@ public class LocEmergencyController {
 
 		response.setMessage(message);
 		response.setData(locEmergencyDtoList);
-		response.setTotalItems(locEmergencyPage.getSize());
+		response.setTotalItems(locEmergencyPage.getTotalElements());
 		response.setTotalPages(locEmergencyPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
