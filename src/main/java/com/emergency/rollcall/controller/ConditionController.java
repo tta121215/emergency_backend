@@ -115,7 +115,7 @@ public class ConditionController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteCondition(@PathParam ("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteCondition(@PathVariable("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();

@@ -117,7 +117,7 @@ public class NotificationController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathParam("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathVariable("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();

@@ -115,7 +115,7 @@ public class ReNotificationController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteLocEmergency(@PathParam ("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteLocEmergency(@PathVariable("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();

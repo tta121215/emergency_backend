@@ -112,7 +112,7 @@ public class AssemblyController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@PathParam("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteAssebmly(@PathVariable("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
