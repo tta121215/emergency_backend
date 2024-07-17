@@ -15,6 +15,6 @@ public interface NotificationService {
 
 	ResponseDto deleteNotification(long id);
 
-	Page<NotificationDto> searchByParams(int page, int size, String params);
+	Page<NotificationDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 
 }

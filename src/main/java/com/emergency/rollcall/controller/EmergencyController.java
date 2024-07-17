@@ -142,12 +142,14 @@ public class EmergencyController {
 
 	@GetMapping("")
 	public ResponseEntity<ResponseList<EmergencyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<EmergencyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-		Page<EmergencyDto> emergencyPage = emergencyService.searchByParams(page, size, params);
+		Page<EmergencyDto> emergencyPage = emergencyService.searchByParams(page, size, params,sortBy,direction);
 		emergencyDtoList = emergencyPage.getContent();
 		if (!emergencyDtoList.isEmpty()) {
 			message.setState(true);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.emergency.rollcall.dao.EmergencyDao;
@@ -114,11 +115,12 @@ public class EmergencyServiceImpl implements EmergencyService {
 	}
 
 	@Override
-	public Page<EmergencyDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<EmergencyDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+	    PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));		
 		Page<Emergency> emergencyList;
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-		if (params == null || params.isEmpty()) {			
+		if (params == null || params.isEmpty()) {
 			emergencyList = emergencyDao.findByNameOrCode(pageRequest);
 			if (emergencyList != null) {
 				for (Emergency emergency : emergencyList) {

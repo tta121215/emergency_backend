@@ -144,12 +144,14 @@ public class NotificationController {
 
 	@GetMapping("")
 	public ResponseEntity<ResponseList<NotificationDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<NotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotificationDto> notificationDtoList = new ArrayList<>();
-		Page<NotificationDto> notiDtoPage = notificationService.searchByParams(page, size, params);
+		Page<NotificationDto> notiDtoPage = notificationService.searchByParams(page, size, params, sortBy, direction);
 		notificationDtoList = notiDtoPage.getContent();
 		if (!notificationDtoList.isEmpty()) {
 			message.setState(true);

@@ -15,6 +15,6 @@ public interface EmergencyService {
 
 	ResponseDto deleteEmergency(long id);
 
-	Page<EmergencyDto> searchByParams(int page, int size, String params);
+	Page<EmergencyDto> searchByParams(int page, int size, String params,String sortBy,String direction);
 
 }

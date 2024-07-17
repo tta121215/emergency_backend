@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dto.NotificationDto;
@@ -114,8 +115,9 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public Page<NotificationDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<NotificationDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+	    PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));		
 		Page<Notification> notiList;
 		List<NotificationDto> notiDtoList = new ArrayList<>();
 		if (params == null || params.isEmpty()) {
