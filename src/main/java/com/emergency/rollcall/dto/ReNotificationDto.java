@@ -2,7 +2,7 @@ package com.emergency.rollcall.dto;
 
 public class ReNotificationDto {
 	private long syskey;
-	private String dateTime;
+	private String time;
 	private int frequency;
 	private int status;
 	private String createddate;
@@ -15,13 +15,14 @@ public class ReNotificationDto {
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
 	}
+	
 
-	public String getDateTime() {
-		return dateTime;
+	public String getTime() {
+		return time;
 	}
 
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
+	public void setTime(String time) {
+		this.time = time;
 	}
 
 	public int getFrequency() {
