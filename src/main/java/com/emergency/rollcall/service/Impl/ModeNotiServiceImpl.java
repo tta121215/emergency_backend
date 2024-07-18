@@ -144,6 +144,23 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		return new PageImpl<>(modeNotiDtoList, pageRequest, modeNotiList.getTotalElements());
 	}
 
+	@Override
+	public List<ModeNotiDto> getAllList() {
+
+		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+		List<ModeNoti> modeNotiList = new ArrayList<>();
+		modeNotiList = modeNotiDao.findAll();
+		if (modeNotiList != null) {
+			for (ModeNoti modeNoti : modeNotiList) {
+				ModeNotiDto modeNotiDto = new ModeNotiDto();
+				modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+				modeNotiDtoList.add(modeNotiDto);
+			}
+		}
+
+		return modeNotiDtoList;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)

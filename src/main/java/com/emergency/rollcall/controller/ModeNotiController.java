@@ -168,5 +168,31 @@ public class ModeNotiController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<ModeNotiDto>> getAllList() {
+
+		ResponseList<ModeNotiDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+		modeNotiDtoList= modeNotiService.getAllList();
+		
+		if (!modeNotiDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(modeNotiDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }
