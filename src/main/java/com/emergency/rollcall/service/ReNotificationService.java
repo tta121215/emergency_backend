@@ -15,6 +15,6 @@ public interface ReNotificationService {
 
 	ResponseDto deleteReNotification(long id);
 
-	Page<ReNotificationDto> searchByParams(int page, int size, String params);
+	Page<ReNotificationDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 
 }

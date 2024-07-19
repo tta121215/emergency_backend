@@ -16,7 +16,7 @@ public interface ModeNotiService {
 
 	ResponseDto deleteModeNoti(long id);
 
-	Page<ModeNotiDto> searchByParams(int page, int size, String params);
+	Page<ModeNotiDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
 	List<ModeNotiDto> getAllList();
 

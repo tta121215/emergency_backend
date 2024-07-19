@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.ResponseDto;
@@ -116,8 +117,9 @@ public class RouteServiceImpl implements RouteService {
 	}
 
 	@Override
-	public Page<RouteDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<RouteDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));	
 		Page<Route> routeList;
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		if (params == null || params.isEmpty()) {

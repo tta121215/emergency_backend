@@ -15,6 +15,6 @@ public interface RouteService {
 
 	ResponseDto deleteRoute(long id);
 
-	Page<RouteDto> searchByParams(int page, int size, String params);
+	Page<RouteDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 
 }

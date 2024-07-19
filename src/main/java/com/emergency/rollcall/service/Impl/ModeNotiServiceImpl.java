@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.ModeNotiDao;
 import com.emergency.rollcall.dto.ResponseDto;
@@ -116,8 +117,9 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 	}
 
 	@Override
-	public Page<ModeNotiDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<ModeNotiDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<ModeNoti> modeNotiList;
 		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
 		if (params == null || params.isEmpty()) {

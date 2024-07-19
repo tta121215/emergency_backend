@@ -142,12 +142,14 @@ public class ModeNotiController {
 
 	@GetMapping("")
 	public ResponseEntity<ResponseList<ModeNotiDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<ModeNotiDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<ModeNotiDto> ModeNotiDtoList = new ArrayList<>();
-		Page<ModeNotiDto> modeNotiPage = modeNotiService.searchByParams(page, size, params);
+		Page<ModeNotiDto> modeNotiPage = modeNotiService.searchByParams(page, size, params, sortBy, direction);
 		ModeNotiDtoList = modeNotiPage.getContent();
 		if (!ModeNotiDtoList.isEmpty()) {
 			message.setState(true);

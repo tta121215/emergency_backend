@@ -48,6 +48,10 @@ public class NotificationController {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+			}else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage(responseDto.getMessage());
 			}
 
 		} else {

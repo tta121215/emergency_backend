@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dto;
 
+
 public class ModeNotiDto {
 	private long syskey;
 	private String name;
@@ -7,7 +8,8 @@ public class ModeNotiDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-
+	
+	
 	public long getSyskey() {
 		return syskey;
 	}

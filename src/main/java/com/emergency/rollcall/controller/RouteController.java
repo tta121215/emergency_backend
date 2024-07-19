@@ -144,12 +144,14 @@ public class RouteController {
 	
 	@GetMapping("")
 	public ResponseEntity<ResponseList<RouteDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params) {
+            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<RouteDto> routeDtoList = new ArrayList<>();
-		Page<RouteDto> routePage = routeService.searchByParams(page,size,params);
+		Page<RouteDto> routePage = routeService.searchByParams(page,size,params,sortBy, direction);
 		routeDtoList = routePage.getContent();
 		if (!routeDtoList.isEmpty()) {
 			message.setState(true);

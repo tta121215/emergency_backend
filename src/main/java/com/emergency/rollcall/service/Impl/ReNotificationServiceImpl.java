@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.RenotificationDao;
 import com.emergency.rollcall.dto.ReNotificationDto;
@@ -116,8 +117,9 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 	}
 
 	@Override
-	public Page<ReNotificationDto> searchByParams(int page, int size, String params) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+	public Page<ReNotificationDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));		
 		Page<Renotification> notiList;
 		List<ReNotificationDto> notiDtoList = new ArrayList<>();
 		if (params == null || params.isEmpty()) {

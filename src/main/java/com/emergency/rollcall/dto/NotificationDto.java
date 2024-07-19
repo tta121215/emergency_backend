@@ -1,5 +1,9 @@
 package com.emergency.rollcall.dto;
 
+import java.util.List;
+
+import com.emergency.rollcall.entity.ModeNoti;
+
 public class NotificationDto {
 	private long syskey;
 	private String notimode;
@@ -8,6 +12,7 @@ public class NotificationDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private List<ModeNotiDto> modeNotiDto;
 
 	public long getSyskey() {
 		return syskey;
@@ -63,6 +68,14 @@ public class NotificationDto {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public List<ModeNotiDto> getModeNotiDto() {
+		return modeNotiDto;
+	}
+
+	public void setModeNotiDto(List<ModeNotiDto> modeNotiDto) {
+		this.modeNotiDto = modeNotiDto;
 	}
 
 }
