@@ -99,20 +99,24 @@ public class AssemblyController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Successfully retrive update data assembly " + data);
 		if (data != null) {
 			responseDto = assemblyService.updateAssembly(data);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Error update data assembly " + message.getMessage());
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully update data assembly " + message.getMessage());
 			}
 		} else {
 			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
+			logger.info("Error update data assembly " + data);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -124,20 +128,24 @@ public class AssemblyController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Successfully retrive delete data assembly " + id);
 		if (id != 0) {
 			responseDto = assemblyService.deleteAssembly(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Error delete data assembly " + message.getMessage());
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully retrive delete data assembly " + message.getMessage());
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
+			logger.info("Error delete data assembly " + message.getMessage());
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -153,17 +161,20 @@ public class AssemblyController {
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		logger.info("Successfully retrive serarch data assembly " + page +" page " + size + " size " + params + " params " + sortBy + " sortBy" + direction + " direction");
 		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params,sortBy,direction);
 		assemblyDtoList = assemblyPage.getContent();
 		if (!assemblyDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully retrive data assembly " + assemblyDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Successfully retrive update data assembly " + assemblyDtoList);
 		}
 
 		response.setMessage(message);

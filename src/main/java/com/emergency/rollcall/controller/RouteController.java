@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.Message;
+import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
@@ -169,6 +170,31 @@ public class RouteController {
 		response.setTotalItems(routePage.getTotalElements());
 		response.setTotalPages(routePage.getTotalPages());
 		response.setCurrentPage(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<RouteDto>> getAllList() {
+
+		ResponseList<RouteDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<RouteDto> routeDtoList = new ArrayList<>();
+		routeDtoList= routeService.getAllList();
+		
+		if (!routeDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(routeDtoList);		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

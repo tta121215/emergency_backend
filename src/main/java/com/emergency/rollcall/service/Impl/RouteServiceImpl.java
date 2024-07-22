@@ -182,6 +182,32 @@ public class RouteServiceImpl implements RouteService {
 		}
 		return new PageImpl<>(routeDtoList, pageRequest, routeList.getTotalElements());
 	}
+	
+	@Override
+	public List<RouteDto> getAllList() {
+
+		List<RouteDto> routeDtoList = new ArrayList<>();
+		List<Route> routeList = new ArrayList<>();
+		try {
+			routeList = routeDao.findAll();
+			if (routeList != null) {
+				for (Route route : routeList) {
+					RouteDto routeDto = new RouteDto();
+					routeDto = modelMapper.map(route, RouteDto.class);
+					routeDtoList.add(routeDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return routeDtoList;
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";

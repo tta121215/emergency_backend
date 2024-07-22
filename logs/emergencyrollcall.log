@@ -2798,3 +2798,306 @@ Using generated security password: 3418a82f-dd8d-4526-a27d-85b4a946f0a8
 2024-07-22 15:13:14 - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
 2024-07-22 15:13:14 - Writing [com.emergency.rollcall.dto.Response@761ee07b]
 2024-07-22 15:13:14 - Completed 200 OK
+2024-07-22 15:34:16 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:34:16 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:34:16 - HikariPool-42 - Shutdown initiated...
+2024-07-22 15:34:16 - HikariPool-42 - Shutdown completed.
+2024-07-22 15:34:18 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:34:18 - No active profile set, falling back to default profiles: default
+2024-07-22 15:34:18 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:34:18 - Finished Spring Data repository scanning in 37 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:34:18 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:18 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:34:18 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@174918fb' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:18 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:18 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:34:18 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:34:18 - Starting service [Tomcat]
+2024-07-22 15:34:18 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:34:18 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:34:18 - Root WebApplicationContext: initialization completed in 645 ms
+2024-07-22 15:34:19 - HikariPool-43 - Starting...
+2024-07-22 15:34:19 - HikariPool-43 - Start completed.
+2024-07-22 15:34:19 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:34:19 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:34:19 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:34:20 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:34:20 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:34:20 - LiveReload server is running on port 35729
+2024-07-22 15:34:20 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:34:20 - 
+
+Using generated security password: 5d5e4d01-e838-4ff8-b663-7442495add5d
+
+2024-07-22 15:34:20 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@432a1ff8, org.springframework.security.web.context.SecurityContextPersistenceFilter@390e3179, org.springframework.security.web.header.HeaderWriterFilter@1d368fa, org.springframework.security.web.authentication.logout.LogoutFilter@5d96ab3b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b92cda7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7503f52f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@12f274a3, org.springframework.security.web.session.SessionManagementFilter@2c404966, org.springframework.security.web.access.ExceptionTranslationFilter@48a3a5bc, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@70e57d32]
+2024-07-22 15:34:20 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:34:20 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:34:20 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:34:20 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:34:20 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:34:20 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:34:20 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:34:20 - Started Application in 2.658 seconds (JVM running for 16082.602)
+2024-07-22 15:34:20 - Condition evaluation unchanged
+2024-07-22 15:34:54 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:34:54 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:34:54 - HikariPool-43 - Shutdown initiated...
+2024-07-22 15:34:54 - HikariPool-43 - Shutdown completed.
+2024-07-22 15:34:55 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:34:55 - No active profile set, falling back to default profiles: default
+2024-07-22 15:34:55 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:34:55 - Finished Spring Data repository scanning in 34 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:34:55 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:55 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:34:55 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@22094d86' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:55 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:34:55 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:34:55 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:34:55 - Starting service [Tomcat]
+2024-07-22 15:34:55 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:34:55 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:34:55 - Root WebApplicationContext: initialization completed in 523 ms
+2024-07-22 15:34:55 - HikariPool-44 - Starting...
+2024-07-22 15:34:55 - HikariPool-44 - Start completed.
+2024-07-22 15:34:55 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:34:55 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:34:55 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:34:56 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:34:56 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:34:56 - LiveReload server is running on port 35729
+2024-07-22 15:34:56 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:34:56 - 
+
+Using generated security password: ee02e5fa-9733-4cc2-8c7c-49c376fe4858
+
+2024-07-22 15:34:56 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@622f803c, org.springframework.security.web.context.SecurityContextPersistenceFilter@11a16fd5, org.springframework.security.web.header.HeaderWriterFilter@1cdab289, org.springframework.security.web.authentication.logout.LogoutFilter@6c018209, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@581545a9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3dcad330, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@20b786f1, org.springframework.security.web.session.SessionManagementFilter@35b8b395, org.springframework.security.web.access.ExceptionTranslationFilter@26999a2f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@225e9e1d]
+2024-07-22 15:34:56 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:34:56 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:34:56 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:34:56 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:34:56 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:34:56 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:34:56 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:34:56 - Started Application in 1.861 seconds (JVM running for 16118.676)
+2024-07-22 15:34:56 - Condition evaluation unchanged
+2024-07-22 15:35:12 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:35:12 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:35:12 - HikariPool-44 - Shutdown initiated...
+2024-07-22 15:35:12 - HikariPool-44 - Shutdown completed.
+2024-07-22 15:35:12 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:35:12 - No active profile set, falling back to default profiles: default
+2024-07-22 15:35:12 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:35:12 - Finished Spring Data repository scanning in 34 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:35:12 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:35:12 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:35:12 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@59320076' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:35:12 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:35:13 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:35:13 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:35:13 - Starting service [Tomcat]
+2024-07-22 15:35:13 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:35:13 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:35:13 - Root WebApplicationContext: initialization completed in 360 ms
+2024-07-22 15:35:13 - HikariPool-45 - Starting...
+2024-07-22 15:35:13 - HikariPool-45 - Start completed.
+2024-07-22 15:35:13 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:35:13 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:35:13 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:35:13 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:35:13 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:35:13 - LiveReload server is running on port 35729
+2024-07-22 15:35:13 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:35:13 - 
+
+Using generated security password: 2743a01f-1903-460f-b8a3-078cd588a15a
+
+2024-07-22 15:35:14 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@56d7110b, org.springframework.security.web.context.SecurityContextPersistenceFilter@1f316f84, org.springframework.security.web.header.HeaderWriterFilter@54d7a95c, org.springframework.security.web.authentication.logout.LogoutFilter@71ebc466, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1fc7678f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@76b3a062, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@747322de, org.springframework.security.web.session.SessionManagementFilter@16e0ae49, org.springframework.security.web.access.ExceptionTranslationFilter@779eed00, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4e671053]
+2024-07-22 15:35:14 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:35:14 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:35:14 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:35:14 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:35:14 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:35:14 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:35:14 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:35:14 - Started Application in 1.503 seconds (JVM running for 16135.979)
+2024-07-22 15:35:14 - Condition evaluation unchanged
+2024-07-22 15:36:08 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:36:08 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:36:08 - HikariPool-45 - Shutdown initiated...
+2024-07-22 15:36:08 - HikariPool-45 - Shutdown completed.
+2024-07-22 15:36:08 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:36:08 - No active profile set, falling back to default profiles: default
+2024-07-22 15:36:09 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:36:09 - Finished Spring Data repository scanning in 34 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:36:09 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:36:09 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:36:09 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@1764ac3c' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:36:09 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:36:09 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:36:09 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:36:09 - Starting service [Tomcat]
+2024-07-22 15:36:09 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:36:09 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:36:09 - Root WebApplicationContext: initialization completed in 441 ms
+2024-07-22 15:36:09 - HikariPool-46 - Starting...
+2024-07-22 15:36:09 - HikariPool-46 - Start completed.
+2024-07-22 15:36:09 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:36:09 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:36:09 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:36:09 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:36:09 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:36:09 - LiveReload server is running on port 35729
+2024-07-22 15:36:10 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:36:10 - 
+
+Using generated security password: d37e6caf-ef77-41eb-a05e-d05a50c029a6
+
+2024-07-22 15:36:10 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@65651ac9, org.springframework.security.web.context.SecurityContextPersistenceFilter@53371682, org.springframework.security.web.header.HeaderWriterFilter@398fe5a6, org.springframework.security.web.authentication.logout.LogoutFilter@364ef75a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@76a22a11, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@30c643b6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2dd44d1f, org.springframework.security.web.session.SessionManagementFilter@794289f5, org.springframework.security.web.access.ExceptionTranslationFilter@19c79ef3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@5d6a463a]
+2024-07-22 15:36:10 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:36:10 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:36:10 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:36:10 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:36:10 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:36:10 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:36:10 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:36:10 - Started Application in 1.498 seconds (JVM running for 16192.212)
+2024-07-22 15:36:10 - Condition evaluation unchanged
+2024-07-22 15:37:38 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:37:38 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:37:38 - HikariPool-46 - Shutdown initiated...
+2024-07-22 15:37:38 - HikariPool-46 - Shutdown completed.
+2024-07-22 15:37:38 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:37:38 - No active profile set, falling back to default profiles: default
+2024-07-22 15:37:38 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:37:39 - Finished Spring Data repository scanning in 44 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:37:39 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:37:39 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:37:39 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@1177a400' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:37:39 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:37:39 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:37:39 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:37:39 - Starting service [Tomcat]
+2024-07-22 15:37:39 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:37:39 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:37:39 - Root WebApplicationContext: initialization completed in 467 ms
+2024-07-22 15:37:39 - HikariPool-47 - Starting...
+2024-07-22 15:37:39 - HikariPool-47 - Start completed.
+2024-07-22 15:37:39 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:37:39 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:37:39 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:37:39 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:37:39 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:37:39 - LiveReload server is running on port 35729
+2024-07-22 15:37:40 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:37:40 - 
+
+Using generated security password: 59b37a05-fad9-484f-a5f8-8b6242045095
+
+2024-07-22 15:37:40 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3f87351a, org.springframework.security.web.context.SecurityContextPersistenceFilter@365ba11f, org.springframework.security.web.header.HeaderWriterFilter@7f23b7eb, org.springframework.security.web.authentication.logout.LogoutFilter@4dc4fef9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@74308a1, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@653d7b4d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@713b159c, org.springframework.security.web.session.SessionManagementFilter@306e7d8f, org.springframework.security.web.access.ExceptionTranslationFilter@61da0e63, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@321176cf]
+2024-07-22 15:37:40 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:37:40 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:37:40 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:37:40 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:37:40 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:37:40 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:37:40 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:37:40 - Started Application in 1.793 seconds (JVM running for 16282.238)
+2024-07-22 15:37:40 - Condition evaluation unchanged
+2024-07-22 15:38:08 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:38:08 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:38:08 - HikariPool-47 - Shutdown initiated...
+2024-07-22 15:38:08 - HikariPool-47 - Shutdown completed.
+2024-07-22 15:38:08 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:38:08 - No active profile set, falling back to default profiles: default
+2024-07-22 15:38:08 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:38:08 - Finished Spring Data repository scanning in 35 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:38:08 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:38:08 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:38:08 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@62962ef6' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:38:08 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:38:08 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:38:08 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:38:08 - Starting service [Tomcat]
+2024-07-22 15:38:08 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:38:08 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:38:08 - Root WebApplicationContext: initialization completed in 358 ms
+2024-07-22 15:38:08 - HikariPool-48 - Starting...
+2024-07-22 15:38:08 - HikariPool-48 - Start completed.
+2024-07-22 15:38:08 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:38:08 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:38:08 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:38:09 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:38:09 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:38:09 - LiveReload server is running on port 35729
+2024-07-22 15:38:09 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:38:09 - 
+
+Using generated security password: e9329707-d90a-4566-9d7e-35af20470e15
+
+2024-07-22 15:38:09 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@42acd442, org.springframework.security.web.context.SecurityContextPersistenceFilter@7693beae, org.springframework.security.web.header.HeaderWriterFilter@732a196b, org.springframework.security.web.authentication.logout.LogoutFilter@5d6eea4c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@26165777, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5d4e39f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@c28caec, org.springframework.security.web.session.SessionManagementFilter@4b1f0376, org.springframework.security.web.access.ExceptionTranslationFilter@73846a29, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7149a282]
+2024-07-22 15:38:09 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:38:09 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:38:09 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:38:09 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:38:09 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:38:09 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:38:09 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:38:09 - Started Application in 1.485 seconds (JVM running for 16311.742)
+2024-07-22 15:38:09 - Condition evaluation unchanged
+2024-07-22 15:39:20 - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-22 15:39:20 - Initializing Servlet 'dispatcherServlet'
+2024-07-22 15:39:20 - Detected StandardServletMultipartResolver
+2024-07-22 15:39:20 - Detected AcceptHeaderLocaleResolver
+2024-07-22 15:39:20 - Detected FixedThemeResolver
+2024-07-22 15:39:20 - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@4991defb
+2024-07-22 15:39:20 - Detected org.springframework.web.servlet.support.SessionFlashMapManager@43e6bef
+2024-07-22 15:39:20 - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2024-07-22 15:39:20 - Completed initialization in 4 ms
+2024-07-22 15:39:20 - GET "/assembly?page=0&size=10&params=", parameters={masked}
+2024-07-22 15:39:20 - Mapped to com.emergency.rollcall.controller.AssemblyController#searchByParams(int, int, String, String, String)
+2024-07-22 15:39:20 - Successfully retrive serarch data assembly 0 page 10 size  params syskey sortByasc direction
+2024-07-22 15:39:21 - Successfully retrive data assembly [AssemblyDto{syskey=87, name='Assembly Point A', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='Mobile,Tablet', status='1', createddate=20240717, modifieddate=20240717}, AssemblyDto{syskey=139, name='Assembly Point B', latitude='12.3456', longtiude='13.5678', ipaddress='192.168.1.4', accesstype='Tablet', status='1', createddate=20240717, modifieddate=null}, AssemblyDto{syskey=161, name='AseemblyPoint C', latitude='12.234567', longtiude='13.234567', ipaddress='192.168.2.9', accesstype='Mobile,Tablet,Pass', status='1', createddate=20240718, modifieddate=20240718}, AssemblyDto{syskey=179, name='Test', latitude='test', longtiude='test', ipaddress='test', accesstype='Mobile', status='1', createddate=20240718, modifieddate=null}, AssemblyDto{syskey=201, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}, AssemblyDto{syskey=202, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}, AssemblyDto{syskey=203, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}, AssemblyDto{syskey=204, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}, AssemblyDto{syskey=205, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}, AssemblyDto{syskey=206, name='Assembly', latitude='39.3451', longtiude='38.8951', ipaddress='192.168.1.2', accesstype='ByPhone', status='1', createddate=20240720, modifieddate=null}]
+2024-07-22 15:39:21 - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2024-07-22 15:39:21 - Writing [com.emergency.rollcall.dto.ResponseList@1d909c95]
+2024-07-22 15:39:21 - Completed 200 OK
+2024-07-22 15:40:56 - Shutting down ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:40:56 - Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:40:56 - HikariPool-48 - Shutdown initiated...
+2024-07-22 15:40:56 - HikariPool-48 - Shutdown completed.
+2024-07-22 15:40:57 - Starting Application using Java 17.0.7 on MSI with PID 2568 (D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall\target\classes started by B11SB in D:\KZCNA\ForJob\OutsourceProject\emergencyrollcall)
+2024-07-22 15:40:57 - No active profile set, falling back to default profiles: default
+2024-07-22 15:40:58 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-07-22 15:40:58 - Finished Spring Data repository scanning in 30 ms. Found 9 JPA repository interfaces.
+2024-07-22 15:40:58 - Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$EnhancerBySpringCGLIB$$a09cede6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:40:58 - Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2024-07-22 15:40:58 - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@3f7251b2' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:40:58 - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2024-07-22 15:40:58 - Tomcat initialized with port(s): 8090 (http)
+2024-07-22 15:40:58 - Initializing ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:40:58 - Starting service [Tomcat]
+2024-07-22 15:40:58 - Starting Servlet engine: [Apache Tomcat/9.0.41]
+2024-07-22 15:40:58 - Initializing Spring embedded WebApplicationContext
+2024-07-22 15:40:58 - Root WebApplicationContext: initialization completed in 780 ms
+2024-07-22 15:40:58 - HikariPool-49 - Starting...
+2024-07-22 15:40:59 - HikariPool-49 - Start completed.
+2024-07-22 15:40:59 - H2 console available at '/h2-console'. Database available at 'jdbc:oracle:thin:@localhost:1521:orcl'
+2024-07-22 15:40:59 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-07-22 15:40:59 - HHH000400: Using dialect: org.hibernate.dialect.Oracle12cDialect
+2024-07-22 15:41:00 - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2024-07-22 15:41:00 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-07-22 15:41:00 - LiveReload server is running on port 35729
+2024-07-22 15:41:00 - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-07-22 15:41:00 - 
+
+Using generated security password: dee3c774-b5e9-43f7-809a-6eee8681e920
+
+2024-07-22 15:41:00 - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1bbffc62, org.springframework.security.web.context.SecurityContextPersistenceFilter@27b3c20e, org.springframework.security.web.header.HeaderWriterFilter@223f569b, org.springframework.security.web.authentication.logout.LogoutFilter@1d52466f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@9b21918, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@51e10d3b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@19414b60, org.springframework.security.web.session.SessionManagementFilter@24da20d5, org.springframework.security.web.access.ExceptionTranslationFilter@712bf090, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6ca2324d]
+2024-07-22 15:41:01 - Initializing ExecutorService 'applicationTaskExecutor'
+2024-07-22 15:41:01 - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2024-07-22 15:41:01 - 44 mappings in 'requestMappingHandlerMapping'
+2024-07-22 15:41:01 - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2024-07-22 15:41:01 - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2024-07-22 15:41:01 - Starting ProtocolHandler ["http-nio-8090"]
+2024-07-22 15:41:01 - Tomcat started on port(s): 8090 (http) with context path ''
+2024-07-22 15:41:01 - Started Application in 3.861 seconds (JVM running for 16483.204)
+2024-07-22 15:41:01 - Condition evaluation unchanged
