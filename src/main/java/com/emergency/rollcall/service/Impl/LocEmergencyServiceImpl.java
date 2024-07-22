@@ -137,7 +137,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 					}
 					locEmergency.setRouteList(routeList);
 				}
-				
+
 				locEmergencyDao.save(locEmergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -204,14 +204,14 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 								routeDto = new RouteDto();
 								routeDto = modelMapper.map(route, RouteDto.class);
 								routeDtoList.add(routeDto);
-							}				
-							
+							}
+
 							locEmergencyDto.setRouteList(routeDtoList);
 							routeDtoList = new ArrayList<>();
-							
+
 						}
 						locEmergencyDtoList.add(locEmergencyDto);
-						
+
 					}
 				}
 
@@ -223,10 +223,12 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 						locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
 						if (locEmergency.getRouteList() != null) {
 							for (Route route : locEmergency.getRouteList()) {
+								routeDto = new RouteDto();
 								routeDto = modelMapper.map(route, RouteDto.class);
 								routeDtoList.add(routeDto);
 							}
 							locEmergencyDto.setRouteList(routeDtoList);
+							routeDtoList = new ArrayList<>();
 						}
 						locEmergencyDtoList.add(locEmergencyDto);
 					}
