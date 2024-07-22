@@ -201,12 +201,17 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 						locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
 						if (locEmergency.getRouteList() != null) {
 							for (Route route : locEmergency.getRouteList()) {
+								routeDto = new RouteDto();
 								routeDto = modelMapper.map(route, RouteDto.class);
 								routeDtoList.add(routeDto);
-							}
+							}				
+							
 							locEmergencyDto.setRouteList(routeDtoList);
+							routeDtoList = new ArrayList<>();
+							
 						}
 						locEmergencyDtoList.add(locEmergencyDto);
+						
 					}
 				}
 
