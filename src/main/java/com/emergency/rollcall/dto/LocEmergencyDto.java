@@ -1,12 +1,17 @@
 package com.emergency.rollcall.dto;
 
+import java.util.List;
+
+
 public class LocEmergencyDto {
 	private long syskey;
+	private String code;
 	private String name;
 	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private List<RouteDto> routeList;
 
 	public long getSyskey() {
 		return syskey;
@@ -14,6 +19,14 @@ public class LocEmergencyDto {
 
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getName() {
@@ -54,6 +67,14 @@ public class LocEmergencyDto {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public List<RouteDto> getRouteList() {
+		return routeList;
+	}
+
+	public void setRouteList(List<RouteDto> routeList) {
+		this.routeList = routeList;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

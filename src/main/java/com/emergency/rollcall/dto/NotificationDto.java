@@ -2,8 +2,6 @@ package com.emergency.rollcall.dto;
 
 import java.util.List;
 
-import com.emergency.rollcall.entity.ModeNoti;
-
 public class NotificationDto {
 	private long syskey;
 	private String notimode;
@@ -13,6 +11,16 @@ public class NotificationDto {
 	private String createddate;
 	private String modifieddate;
 	private List<ModeNotiDto> modeNotiDto;
+	private List<EmergencyDto> emergencyDto;
+	private List<RouteDto> routeDto;
+
+	public List<RouteDto> getRouteDto() {
+		return routeDto;
+	}
+
+	public void setRouteDto(List<RouteDto> routeDto) {
+		this.routeDto = routeDto;
+	}
 
 	public long getSyskey() {
 		return syskey;
@@ -76,6 +84,14 @@ public class NotificationDto {
 
 	public void setModeNotiDto(List<ModeNotiDto> modeNotiDto) {
 		this.modeNotiDto = modeNotiDto;
+	}
+
+	public List<EmergencyDto> getEmergencyDto() {
+		return emergencyDto;
+	}
+
+	public void setEmergencyDto(List<EmergencyDto> emergencyDto) {
+		this.emergencyDto = emergencyDto;
 	}
 
 }

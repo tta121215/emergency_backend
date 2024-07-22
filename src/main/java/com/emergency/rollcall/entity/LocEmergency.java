@@ -1,9 +1,16 @@
 package com.emergency.rollcall.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -15,11 +22,16 @@ public class LocEmergency {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
+	private String code;
 	private String name;
 	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "loc_route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+	private List<Route> routeList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -27,6 +39,14 @@ public class LocEmergency {
 
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getName() {
@@ -68,5 +88,14 @@ public class LocEmergency {
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
 	}
+
+	public List<Route> getRouteList() {
+		return routeList;
+	}
+
+	public void setRouteList(List<Route> routeList) {
+		this.routeList = routeList;
+	}
+	
 
 }

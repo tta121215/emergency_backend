@@ -33,6 +33,14 @@ public class Notification {
 	@JoinTable(name = "noti_modenoti", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "mode_noti_syskey"))
 	private List<ModeNoti> modeNotiList = new ArrayList<>();
 
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "noti_emergency", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "emergency_syskey"))
+	private List<Emergency> emergencyList = new ArrayList<>();
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "noti_route", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+	private List<Route> routeList = new ArrayList<>();
+
 	public long getSyskey() {
 		return syskey;
 	}
@@ -95,6 +103,22 @@ public class Notification {
 
 	public void setModeNotiList(List<ModeNoti> modeNotiList) {
 		this.modeNotiList = modeNotiList;
+	}
+
+	public List<Emergency> getEmergencyList() {
+		return emergencyList;
+	}
+
+	public void setEmergencyList(List<Emergency> emergencyList) {
+		this.emergencyList = emergencyList;
+	}
+
+	public List<Route> getRouteList() {
+		return routeList;
+	}
+
+	public void setRouteList(List<Route> routeList) {
+		this.routeList = routeList;
 	}
 
 }

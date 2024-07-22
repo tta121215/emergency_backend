@@ -93,5 +93,20 @@ public class AssemblyDto {
 
 		return l_Date;
 	}
+	
+	@Override
+    public String toString() {
+        return "AssemblyDto{" +
+                "syskey=" + syskey +
+                ", name='" + name + '\'' +
+                ", latitude='" + latitude + '\'' + 
+                ", longtiude='" + longtiude + '\'' +
+                ", ipaddress='" + ipaddress + '\'' +
+                ", accesstype='" + accesstype + '\''+
+                ", status='" + status + '\'' +
+                ", createddate=" + createddate +
+                ", modifieddate=" + modifieddate +
+                '}';
+    }
 
 }

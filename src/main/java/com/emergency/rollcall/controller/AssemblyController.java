@@ -3,6 +3,8 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,8 @@ import com.emergency.rollcall.service.AssemblyService;
 @RequestMapping("assembly")
 public class AssemblyController {
 
+	private static final Logger logger = LoggerFactory.getLogger(AssemblyController.class);
+	
 	@Autowired
 	private AssemblyService assemblyService;
 
@@ -39,15 +43,18 @@ public class AssemblyController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to save assembly with data: {}", assemblyDto);
 		if (assemblyDto != null) {
 			responseDto = assemblyService.saveAssembly(assemblyDto);
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Save successfully");
+			logger.info("Successfully saved assembly: {}", responseDto);
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
+			logger.info("Assembly saved error occured");
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -60,23 +67,26 @@ public class AssemblyController {
 		AssemblyDto assemblyDto = new AssemblyDto();
 		Response<AssemblyDto> response = new Response<>();
 		Message message = new Message();
-
+		logger.info("Received request to get assembly by id " + id);
 		if (id != null) {
 			assemblyDto = assemblyService.getById(id);
 			if (assemblyDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
+				logger.info("Successfully retrive data assembly " + assemblyDto);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
+				logger.info("Assembly retrieve data error occured " + message.getMessage());
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Assembly retrieve data error occured " + message.getMessage());
 		}
 		response.setMessage(message);
 		response.setData(assemblyDto);

@@ -1,9 +1,13 @@
 package com.emergency.rollcall.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -20,6 +24,12 @@ public class Route {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+
+	@ManyToMany(mappedBy = "routeList")
+	private List<LocEmergency> locEmergencyList = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "routeList")
+	private List<Notification> notificationList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -67,6 +77,22 @@ public class Route {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public List<Notification> getNotificationList() {
+		return notificationList;
+	}
+
+	public void setNotificationList(List<Notification> notificationList) {
+		this.notificationList = notificationList;
+	}
+
+	public List<LocEmergency> getLocEmergencyList() {
+		return locEmergencyList;
+	}
+
+	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
+		this.locEmergencyList = locEmergencyList;
 	}
 
 }

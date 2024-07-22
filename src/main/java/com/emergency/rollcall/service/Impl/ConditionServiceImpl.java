@@ -1,6 +1,5 @@
 package com.emergency.rollcall.service.Impl;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +21,13 @@ import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Condition;
 
 import com.emergency.rollcall.service.ConditionService;
+
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 
 @Service
 public class ConditionServiceImpl implements ConditionService {
@@ -36,26 +43,33 @@ public class ConditionServiceImpl implements ConditionService {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
 
-		LocalDateTime dateTime = LocalDateTime.now();
+		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
 
 		condition = modelMapper.map(conditionDto, Condition.class);
 
 		condition.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
-
-		if (condition.getSyskey() == 0) {
-			Condition entityres = conditionDao.save(condition);
-			if (entityres.getSyskey() > 0) {
-				res.setStatus_code(200);
-				res.setMessage("Successfully Saved");
+		try {
+			if (condition.getSyskey() == 0) {
+				Condition entityres = conditionDao.save(condition);
+				if (entityres.getSyskey() > 0) {
+					res.setStatus_code(200);
+					res.setMessage("Successfully Saved");
+				}
+			} else {
+				Condition entityres = conditionDao.save(condition);
+				if (entityres.getSyskey() > 0) {
+					res.setStatus_code(200);
+					res.setMessage("Successfully Updated");
+				}
 			}
-		} else {
-			Condition entityres = conditionDao.save(condition);
-			if (entityres.getSyskey() > 0) {
-				res.setStatus_code(200);
-				res.setMessage("Successfully Updated");
-			}
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
 
 		return res;
@@ -65,11 +79,20 @@ public class ConditionServiceImpl implements ConditionService {
 	public ConditionDto getById(long id) {
 		ConditionDto conditionDto = new ConditionDto();
 		Condition condition = new Condition();
-		Optional<Condition> condtionOptional = conditionDao.findById(id);
-		if (condtionOptional.isPresent()) {
-			condition = condtionOptional.get();
-			conditionDto = modelMapper.map(condition, ConditionDto.class);
+		try {
+			Optional<Condition> condtionOptional = conditionDao.findById(id);
+			if (condtionOptional.isPresent()) {
+				condition = condtionOptional.get();
+				conditionDto = modelMapper.map(condition, ConditionDto.class);
+			}
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
+
 		return conditionDto;
 	}
 
@@ -78,24 +101,32 @@ public class ConditionServiceImpl implements ConditionService {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
 		String createdDate;
-		LocalDateTime dateTime = LocalDateTime.now();
+		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		try {
+			Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
+			if (conditionOptional.isPresent()) {
 
-		Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
-		if (conditionOptional.isPresent()) {
-			
-			condition = conditionOptional.get();
-			createdDate = condition.getCreateddate();
-			condition = modelMapper.map(conditionDto, Condition.class);
-			condition.setCreateddate(createdDate);
-			condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
-			conditionDao.save(condition);
-			res.setStatus_code(200);
-			res.setMessage("Successfully Updated");
-		} else {
-			res.setStatus_code(401);
-			res.setMessage("Data does not found");
+				condition = conditionOptional.get();
+				createdDate = condition.getCreateddate();
+				condition = modelMapper.map(conditionDto, Condition.class);
+				condition.setCreateddate(createdDate);
+				condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				conditionDao.save(condition);
+				res.setStatus_code(200);
+				res.setMessage("Successfully Updated");
+			} else {
+				res.setStatus_code(401);
+				res.setMessage("Data does not found");
+			}
+
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
 
 		return res;
@@ -105,46 +136,61 @@ public class ConditionServiceImpl implements ConditionService {
 	public ResponseDto deleteCondition(long id) {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
-
-		Optional<Condition> conditionOptional = conditionDao.findById(id);
-		if (conditionOptional.isPresent()) {
-			condition = conditionOptional.get();
-			conditionDao.delete(condition);
-			res.setStatus_code(200);
-			res.setMessage("Successfully Deleted");
-		} else {
-			res.setStatus_code(401);
-			res.setMessage("No data found");
+		try {
+			Optional<Condition> conditionOptional = conditionDao.findById(id);
+			if (conditionOptional.isPresent()) {
+				condition = conditionOptional.get();
+				conditionDao.delete(condition);
+				res.setStatus_code(200);
+				res.setMessage("Successfully Deleted");
+			} else {
+				res.setStatus_code(401);
+				res.setMessage("No data found");
+			}
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
 
 		return res;
 	}
 
 	@Override
-	public Page<ConditionDto> searchByParams(int page, int size, String params,String sortBy,String direction) {
+	public Page<ConditionDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-	    PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));		
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<Condition> conditionList;
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
-		if (params == null || params.isEmpty()) {
-			conditionList = conditionDao.findByNameOrCode(pageRequest);
-			if (conditionList != null) {
-				for (Condition condition : conditionList) {
-					ConditionDto conditionDto = new ConditionDto();
-					conditionDto = modelMapper.map(condition, ConditionDto.class);
-					conditionDtoList.add(conditionDto);
+		try {
+			if (params == null || params.isEmpty()) {
+				conditionList = conditionDao.findByNameOrCode(pageRequest);
+				if (conditionList != null) {
+					for (Condition condition : conditionList) {
+						ConditionDto conditionDto = new ConditionDto();
+						conditionDto = modelMapper.map(condition, ConditionDto.class);
+						conditionDtoList.add(conditionDto);
+					}
 				}
-			}
 
-		} else {
-			conditionList = conditionDao.findByNameOrCode(pageRequest, params);
-			if (conditionList != null) {
-				for (Condition condition : conditionList) {
-					ConditionDto conditionDto = new ConditionDto();
-					conditionDto = modelMapper.map(condition, ConditionDto.class);
-					conditionDtoList.add(conditionDto);
+			} else {
+				conditionList = conditionDao.findByNameOrCode(pageRequest, params);
+				if (conditionList != null) {
+					for (Condition condition : conditionList) {
+						ConditionDto conditionDto = new ConditionDto();
+						conditionDto = modelMapper.map(condition, ConditionDto.class);
+						conditionDtoList.add(conditionDto);
+					}
 				}
 			}
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
 		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
