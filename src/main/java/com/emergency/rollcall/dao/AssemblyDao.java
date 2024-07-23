@@ -21,4 +21,8 @@ public interface AssemblyDao extends JpaRepository<Assembly, Long> {
 	Page<Assembly> searchByParams(Pageable pageable);
 	
 	List<Assembly> findAllByStatus(int status);
+	
+
+	@Query("SELECT a FROM Assembly a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
+    List<Assembly> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 }

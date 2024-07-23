@@ -1,14 +1,23 @@
 package com.emergency.rollcall.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "EActivate")
+@Table(name = "Eemrgency_activate")
 public class EmergencyActivate {
 
 	@Id
@@ -16,13 +25,32 @@ public class EmergencyActivate {
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
 	private String name;
-	private String code;
 	private int status;
+	private String remark;
+	private String activateDate;
+	private String activateTime;
 	private String createddate;
 	private String modifieddate;
-//
-//	@OneToMany(mappedBy = "emergencyActivate", fetch = FetchType.LAZY)
-//	private List<Emergency> emergencies = new ArrayList<>();
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")	
+	private Emergency emergency;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "condition_syskey", referencedColumnName = "syskey")	
+	private Condition condition;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")	
+	private LocEmergency locEmergency;
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "activate_assembly", joinColumns = @JoinColumn(name = "Eemrgency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
+	private List<Assembly> assemblyList = new ArrayList<>();
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "activate_route", joinColumns = @JoinColumn(name = "Eemrgency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+	private List<Route> routeList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -40,20 +68,36 @@ public class EmergencyActivate {
 		this.name = name;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public int getStatus() {
 		return status;
 	}
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getActivateDate() {
+		return activateDate;
+	}
+
+	public void setActivateDate(String activateDate) {
+		this.activateDate = activateDate;
+	}
+
+	public String getActivateTime() {
+		return activateTime;
+	}
+
+	public void setActivateTime(String activateTime) {
+		this.activateTime = activateTime;
 	}
 
 	public String getCreateddate() {
@@ -72,12 +116,44 @@ public class EmergencyActivate {
 		this.modifieddate = modifieddate;
 	}
 
-//	public List<Emergency> getEmergencies() {
-//		return emergencies;
-//	}
-//
-//	public void setEmergencies(List<Emergency> emergencies) {
-//		this.emergencies = emergencies;
-//	}
+	public Emergency getEmergency() {
+		return emergency;
+	}
+
+	public void setEmergency(Emergency emergency) {
+		this.emergency = emergency;
+	}
+
+	public Condition getCondition() {
+		return condition;
+	}
+
+	public void setCondition(Condition condition) {
+		this.condition = condition;
+	}
+
+	public LocEmergency getLocEmergency() {
+		return locEmergency;
+	}
+
+	public void setLocEmergency(LocEmergency locEmergency) {
+		this.locEmergency = locEmergency;
+	}
+
+	public List<Assembly> getAssemblyList() {
+		return assemblyList;
+	}
+
+	public void setAssemblyList(List<Assembly> assemblyList) {
+		this.assemblyList = assemblyList;
+	}
+
+	public List<Route> getRouteList() {
+		return routeList;
+	}
+
+	public void setRouteList(List<Route> routeList) {
+		this.routeList = routeList;
+	}
 
 }

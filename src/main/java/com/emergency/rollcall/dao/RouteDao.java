@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.Route;
 
 @Repository
@@ -20,5 +22,8 @@ public interface RouteDao extends JpaRepository<Route, Long> {
 	Page<Route> findByNameOrCode(Pageable pageable);
 	
 	List<Route> findAllByStatus(int status);
+	
+	@Query("SELECT a FROM Route a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
+    List<Route> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 
 }

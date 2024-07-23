@@ -27,12 +27,20 @@ public class Route {
 
 	@ManyToMany(mappedBy = "routeList")
 	private List<LocEmergency> locEmergencyList = new ArrayList<>();
-//
-//	@ManyToMany(mappedBy = "routeList")
-//	private List<Notification> notificationList = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "routeList")
+	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
+	}
+
+	public List<EmergencyActivate> getEmergencyActivatesList() {
+		return emergencyActivatesList;
+	}
+
+	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
+		this.emergencyActivatesList = emergencyActivatesList;
 	}
 
 	public void setSyskey(long syskey) {

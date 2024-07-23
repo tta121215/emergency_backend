@@ -1,9 +1,13 @@
 package com.emergency.rollcall.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,6 +28,17 @@ public class Assembly {
 	private String accesstype;
 	private String createddate;
 	private String modifieddate;
+	
+	public List<EmergencyActivate> getEmergencyActivatesList() {
+		return emergencyActivatesList;
+	}
+
+	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
+		this.emergencyActivatesList = emergencyActivatesList;
+	}
+
+	@ManyToMany(mappedBy = "assemblyList")
+	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
