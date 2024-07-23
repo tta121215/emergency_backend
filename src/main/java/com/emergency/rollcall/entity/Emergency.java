@@ -1,14 +1,11 @@
 package com.emergency.rollcall.entity;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -25,9 +22,9 @@ public class Emergency {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-
-	@ManyToMany(mappedBy = "emergencyList")
-	private List<Notification> notificationList = new ArrayList<>();
+//
+//	@ManyToMany(mappedBy = "emergencyList")
+//	private List<Notification> notificationList = new ArrayList<>();
 
 //	@ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "emergency_activate_syskey")
@@ -81,14 +78,7 @@ public class Emergency {
 		this.modifieddate = modifieddate;
 	}
 
-	public List<Notification> getNotificationList() {
-		return notificationList;
-	}
-
-	public void setNotificationList(List<Notification> notificationList) {
-		this.notificationList = notificationList;
-	}
-
+	
 //	public EmergencyActivate getEmergencyActivate() {
 //		return emergencyActivate;
 //	}

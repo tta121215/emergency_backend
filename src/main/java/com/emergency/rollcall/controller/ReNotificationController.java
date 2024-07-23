@@ -2,9 +2,6 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -139,18 +136,18 @@ public class ReNotificationController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("")
 	public ResponseEntity<ResponseList<ReNotificationDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
 			@RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<ReNotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<ReNotificationDto> ReNotificationDtoList = new ArrayList<>();
-		Page<ReNotificationDto> reNotiPage = reNotificationService.searchByParams(page,size,params, sortBy, direction);
+		Page<ReNotificationDto> reNotiPage = reNotificationService.searchByParams(page, size, params, sortBy,
+				direction);
 		ReNotificationDtoList = reNotiPage.getContent();
 		if (!ReNotificationDtoList.isEmpty()) {
 			message.setState(true);

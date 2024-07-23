@@ -190,7 +190,7 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
 		List<ModeNoti> modeNotiList = new ArrayList<>();
 		try {
-			modeNotiList = modeNotiDao.findAll();
+			modeNotiList = modeNotiDao.findAllByStatus(1);
 			if (modeNotiList != null) {
 				for (ModeNoti modeNoti : modeNotiList) {
 					ModeNotiDto modeNotiDto = new ModeNotiDto();

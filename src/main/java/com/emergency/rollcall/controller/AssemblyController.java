@@ -185,6 +185,31 @@ public class AssemblyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<AssemblyDto>> getAllList() {
+
+		ResponseList<AssemblyDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		assemblyDtoList= assemblyService.getAllList();
+		
+		if (!assemblyDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(assemblyDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 
 }

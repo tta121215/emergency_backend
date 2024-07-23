@@ -18,12 +18,10 @@ import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.ModeNotiDao;
 import com.emergency.rollcall.dao.NotificationDao;
-import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
-import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.ModeNoti;
 import com.emergency.rollcall.entity.Notification;
@@ -43,9 +41,6 @@ public class NotificationServiceImpl implements NotificationService {
 	private EmergencyDao emergencyDao;
 
 	@Autowired
-	private RouteDao routeDao;
-
-	@Autowired
 	private ModelMapper modelMapper;
 
 	@Override
@@ -53,8 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
 		ResponseDto res = new ResponseDto();
 		Notification notification = new Notification();
 		List<ModeNoti> modeNoti = new ArrayList<>();
-		List<Emergency> emergency = new ArrayList<>();
-		List<Route> route = new ArrayList<>();
+		Emergency emergency = new Emergency();
 
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -76,35 +70,16 @@ public class NotificationServiceImpl implements NotificationService {
 				}
 				notification.setModeNotiList(modeNoti);
 			}
-
-			if (notiDto.getEmergencyDto() != null) {
-				for (EmergencyDto emergencyData : notiDto.getEmergencyDto()) {
-					Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyData.getSyskey());
-					if (emergencyOptional.isPresent() && emergencyOptional.get().getSyskey() != 0) {
-						emergency.add(emergencyOptional.get());
-
-					} else {
-						res.setStatus_code(401);
-						res.setMessage("Emergency data is invalid.");
-						return res;
-					}
+			if (notiDto.getEmergencySyskey() != 0) {
+				Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
+				if (emergencyOptional.isPresent()) {
+					emergency = emergencyOptional.get();
+					notification.setEmergency(emergency);
+				} else {
+					res.setStatus_code(401);
+					res.setMessage("Emergency data is invalid.");
+					return res;
 				}
-				notification.setEmergencyList(emergency);
-			}
-
-			if (notiDto.getRouteDto() != null) {
-				for (RouteDto routeData : notiDto.getRouteDto()) {
-					Optional<Route> routeOptional = routeDao.findById(routeData.getSyskey());
-					if (routeOptional.isPresent() && routeOptional.get().getSyskey() != 0) {
-						route.add(routeOptional.get());
-
-					} else {
-						res.setStatus_code(401);
-						res.setMessage("Route data is invalid.");
-						return res;
-					}
-				}
-				notification.setRouteList(route);
 			}
 
 			if (notification.getSyskey() == 0) {
@@ -166,11 +141,21 @@ public class NotificationServiceImpl implements NotificationService {
 	@Override
 	public NotificationDto getById(long id) {
 		NotificationDto notificationDto = new NotificationDto();
+		EmergencyDto emergencyDto = new EmergencyDto();
 		try {
 			Optional<Notification> notificationOptional = notificationDao.findById(id);
 			if (notificationOptional.isPresent()) {
 				Notification notification = notificationOptional.get();
 				notificationDto = modelMapper.map(notification, NotificationDto.class);
+				if (notificationDto.getEmergencySyskey() != 0) {
+					Optional<Emergency> emergencyOptional = emergencyDao.findById(notificationDto.getEmergencySyskey());
+					if (emergencyOptional.isPresent()) {
+						Emergency emergency = emergencyOptional.get();
+						emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+						notificationDto.setEmergencyDto(emergencyDto);
+
+					}
+				}
 			}
 			return notificationDto;
 		} catch (DataAccessException dae) {
@@ -187,8 +172,6 @@ public class NotificationServiceImpl implements NotificationService {
 	public ResponseDto updateNotification(NotificationDto notiDto) {
 		ResponseDto res = new ResponseDto();
 		List<ModeNoti> modeNotiList = new ArrayList<>();
-		List<Emergency> emergencyList = new ArrayList<>();
-		List<Route> routeList = new ArrayList<>();
 		Notification notification = new Notification();
 		String createdDate;
 		ZonedDateTime dateTime = ZonedDateTime.now();
@@ -215,32 +198,18 @@ public class NotificationServiceImpl implements NotificationService {
 					}
 					notification.setModeNotiList(modeNotiList);
 				}
-				if (notiDto.getEmergencyDto() != null) {
-					for (EmergencyDto emergencyDto : notiDto.getEmergencyDto()) {
-						Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
-						if (emergencyOptional.isPresent() && emergencyOptional.get().getSyskey() != 0) {
-							emergencyList.add(emergencyOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Mode Noti data is invalid.");
-							return res;
-						}
+				if (notiDto.getEmergencySyskey() != 0) {
+					Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
+					if (emergencyOptional.isPresent()) {
+						Emergency emergency = emergencyOptional.get();
+						notification.setEmergency(emergency);
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Emergency data is invalid.");
+						return res;
 					}
-					notification.setEmergencyList(emergencyList);
 				}
-				if (notiDto.getRouteDto() != null) {
-					for (RouteDto routeDto : notiDto.getRouteDto()) {
-						Optional<Route> routeOptional = routeDao.findById(routeDto.getSyskey());
-						if (routeOptional.isPresent() && routeOptional.get().getSyskey() != 0) {
-							routeList.add(routeOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Mode Noti data is invalid.");
-							return res;
-						}
-					}
-					notification.setRouteList(routeList);
-				}
+
 				notificationDao.save(notification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -305,8 +274,6 @@ public class NotificationServiceImpl implements NotificationService {
 			if (notiOptional.isPresent()) {
 				notification = notiOptional.get();
 				notification.setModeNotiList(new ArrayList<>());
-				notification.setEmergencyList(new ArrayList<>());
-				notification.setRouteList(new ArrayList<>());
 				notificationDao.save(notification);
 				notificationDao.delete(notification);
 				res.setStatus_code(200);
@@ -333,11 +300,8 @@ public class NotificationServiceImpl implements NotificationService {
 		Page<Notification> notiList;
 		List<NotificationDto> notiDtoList = new ArrayList<>();
 		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
-		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
-		List<RouteDto> routeDtoList = new ArrayList<>();
 		ModeNotiDto modeNotiDto = new ModeNotiDto();
-		EmergencyDto emergencyDto = new EmergencyDto();
-		RouteDto routeDto = new RouteDto();
+
 		try {
 			if (params == null || params.isEmpty()) {
 				notiList = notificationDao.findByNotisubject(pageRequest);
@@ -352,21 +316,12 @@ public class NotificationServiceImpl implements NotificationService {
 							}
 							notiDto.setModeNotiDto(modeNotiDtoList);
 						}
-						if (notification.getEmergencyList() != null) {
-							for (Emergency emergency : notification.getEmergencyList()) {
-								emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								emergencyDtoList.add(emergencyDto);
-							}
-							notiDto.setModeNotiDto(modeNotiDtoList);
+						modeNotiDtoList = new ArrayList<>();
+						if (notification.getEmergency().getSyskey() != 0) {
+							Emergency emergency = notification.getEmergency();
+							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+							notiDto.setEmergencyDto(emergencyDto);
 						}
-						if (notification.getRouteList() != null) {
-							for (Route route : notification.getRouteList()) {
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-							notiDto.setRouteDto(routeDtoList);
-						}
-
 						notiDtoList.add(notiDto);
 					}
 				}
@@ -383,21 +338,12 @@ public class NotificationServiceImpl implements NotificationService {
 							}
 							notiDto.setModeNotiDto(modeNotiDtoList);
 						}
-						if (notification.getEmergencyList() != null) {
-							for (Emergency emergency : notification.getEmergencyList()) {
-								emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								emergencyDtoList.add(emergencyDto);
-							}
-							notiDto.setModeNotiDto(modeNotiDtoList);
+						modeNotiDtoList = new ArrayList<>();
+						if (notification.getEmergency().getSyskey() != 0) {
+							Emergency emergency = notification.getEmergency();
+							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+							notiDto.setEmergencyDto(emergencyDto);
 						}
-						if (notification.getRouteList() != null) {
-							for (Route route : notification.getRouteList()) {
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-							notiDto.setRouteDto(routeDtoList);
-						}
-
 						notiDtoList.add(notiDto);
 					}
 				}

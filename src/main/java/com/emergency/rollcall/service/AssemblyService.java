@@ -1,5 +1,7 @@
 package com.emergency.rollcall.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.emergency.rollcall.dto.AssemblyDto;
@@ -13,5 +15,6 @@ public interface AssemblyService {
 	ResponseDto updateAssembly(AssemblyDto data);
 	ResponseDto deleteAssembly(long id);	
 	Page<AssemblyDto> searchByParams(int page,int size,String params,String sortBy,String direction);
+	List<AssemblyDto> getAllList();
 
 }

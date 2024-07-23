@@ -2,9 +2,6 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -170,5 +167,31 @@ public class EmergencyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<EmergencyDto>> getAllList() {
+
+		ResponseList<EmergencyDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
+		emergencyDtoList= emergencyService.getAllList();
+		
+		if (!emergencyDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(emergencyDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }

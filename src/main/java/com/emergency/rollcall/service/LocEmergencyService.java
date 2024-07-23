@@ -1,5 +1,7 @@
 package com.emergency.rollcall.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.emergency.rollcall.dto.LocEmergencyDto;
@@ -16,5 +18,7 @@ public interface LocEmergencyService {
 	ResponseDto deleteLocEmergency(long id);
 
 	Page<LocEmergencyDto> searchByParams(int page, int size, String params);
+	
+	List<LocEmergencyDto> getAllList();
 
 }

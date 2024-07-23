@@ -168,5 +168,31 @@ public class ConditionController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<ConditionDto>> getAllList() {
+
+		ResponseList<ConditionDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<ConditionDto> conditinDtoList = new ArrayList<>();
+		conditinDtoList= conditionService.getAllList();
+		
+		if (!conditinDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(conditinDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }

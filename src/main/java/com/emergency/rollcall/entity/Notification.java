@@ -5,14 +5,17 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
 
 @Entity
 @Table(name = "Noti")
@@ -32,14 +35,19 @@ public class Notification {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "noti_modenoti", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "mode_noti_syskey"))
 	private List<ModeNoti> modeNotiList = new ArrayList<>();
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "noti_emergency", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "emergency_syskey"))
-	private List<Emergency> emergencyList = new ArrayList<>();
 	
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "noti_route", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
-	private List<Route> routeList = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")	
+	private Emergency emergency;
+		
+//
+//	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+//	@JoinTable(name = "noti_emergency", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "emergency_syskey"))
+//	private List<Emergency> emergencyList = new ArrayList<>();
+	
+//	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+//	@JoinTable(name = "noti_route", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+//	private List<Route> routeList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -105,20 +113,13 @@ public class Notification {
 		this.modeNotiList = modeNotiList;
 	}
 
-	public List<Emergency> getEmergencyList() {
-		return emergencyList;
+	public Emergency getEmergency() {
+		return emergency;
 	}
 
-	public void setEmergencyList(List<Emergency> emergencyList) {
-		this.emergencyList = emergencyList;
+	public void setEmergency(Emergency emergency) {
+		this.emergency = emergency;
 	}
-
-	public List<Route> getRouteList() {
-		return routeList;
-	}
-
-	public void setRouteList(List<Route> routeList) {
-		this.routeList = routeList;
-	}
+	
 
 }

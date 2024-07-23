@@ -166,5 +166,31 @@ public class LocEmergencyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("all-list")
+	public ResponseEntity<ResponseList<LocEmergencyDto>> getAllList() {
+
+		ResponseList<LocEmergencyDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
+		locEmergencyDtoList= locEmergencyService.getAllList();
+		
+		if (!locEmergencyDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
+		response.setMessage(message);
+		response.setData(locEmergencyDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }

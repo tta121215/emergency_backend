@@ -243,6 +243,32 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		}
 		return new PageImpl<>(locEmergencyDtoList, pageRequest, locEmergencyList.getTotalElements());
 	}
+	
+	@Override
+	public List<LocEmergencyDto> getAllList() {
+
+		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
+		List<LocEmergency> locEmergencyList = new ArrayList<>();
+		try {
+			locEmergencyList = locEmergencyDao.findAllByStatus(1);
+			if (locEmergencyList != null) {
+				for (LocEmergency locEmergency : locEmergencyList) {
+					LocEmergencyDto locEmergencyDto = new LocEmergencyDto();
+					locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
+					locEmergencyDtoList.add(locEmergencyDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return locEmergencyDtoList;
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -22,5 +23,7 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 	
 	@EntityGraph(attributePaths = {"routeList"})
     Optional<LocEmergency> findById(Long id);
+	
+	List<LocEmergency> findAllByStatus(int status);
 
 }

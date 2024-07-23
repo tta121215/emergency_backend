@@ -24,7 +24,7 @@ import com.emergency.rollcall.service.AssemblyService;
 
 @Service
 public class AssemblyrServiceImpl implements AssemblyService {
-	
+
 	private final Logger logger = Logger.getLogger(AssemblyService.class.getName());
 
 	@Autowired
@@ -122,14 +122,13 @@ public class AssemblyrServiceImpl implements AssemblyService {
 				;
 				res.setMessage("Data does not found");
 			}
-		}catch (DataAccessException e) {
+		} catch (DataAccessException e) {
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
-		
 
 		return res;
 	}
@@ -150,14 +149,14 @@ public class AssemblyrServiceImpl implements AssemblyService {
 				res.setMessage("No data found");
 			}
 
-		}catch (DataAccessException e) {
+		} catch (DataAccessException e) {
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
-		
+
 		return res;
 	}
 
@@ -190,15 +189,41 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 			}
 
-		}catch (DataAccessException dae) {
+		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
-		
+
 		return new PageImpl<>(assemblyDtoList, pageRequest, assemblyList.getTotalElements());
+	}
+
+	@Override
+	public List<AssemblyDto> getAllList() {
+
+		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		List<Assembly> assemblyList = new ArrayList<>();
+		try {
+			assemblyList = assemblyDao.findAllByStatus(1);
+			if (assemblyList != null) {
+				for (Assembly assembly : assemblyList) {
+					AssemblyDto assemblyDto = new AssemblyDto();
+					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
+					assemblyDtoList.add(assemblyDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return assemblyDtoList;
 	}
 
 	public String ddMMyyyFormat(String aDate) {
@@ -216,7 +241,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 		return l_Date;
 	}
-	
+
 //	public String getTodayDate() {
 //		Date d = new Date();
 //		String data;

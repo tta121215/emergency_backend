@@ -21,13 +21,8 @@ import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Condition;
 
 import com.emergency.rollcall.service.ConditionService;
-
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
+
 
 @Service
 public class ConditionServiceImpl implements ConditionService {
@@ -194,6 +189,32 @@ public class ConditionServiceImpl implements ConditionService {
 		}
 
 		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
+	}
+	
+	@Override
+	public List<ConditionDto> getAllList() {
+
+		List<ConditionDto> conditionDtoList = new ArrayList<>();
+		List<Condition> conditionList = new ArrayList<>();
+		try {
+			conditionList = conditionDao.findAllByStatus(1);
+			if (conditionList != null) {
+				for (Condition condition : conditionList) {
+					ConditionDto conditionDto = new ConditionDto();
+					conditionDto = modelMapper.map(condition, ConditionDto.class);
+					conditionDtoList.add(conditionDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return conditionDtoList;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

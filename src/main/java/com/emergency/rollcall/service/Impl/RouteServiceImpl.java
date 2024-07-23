@@ -189,7 +189,7 @@ public class RouteServiceImpl implements RouteService {
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		try {
-			routeList = routeDao.findAll();
+			routeList = routeDao.findAllByStatus(1);
 			if (routeList != null) {
 				for (Route route : routeList) {
 					RouteDto routeDto = new RouteDto();

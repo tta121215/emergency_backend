@@ -1,5 +1,7 @@
 package com.emergency.rollcall.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import com.emergency.rollcall.dto.ConditionDto;
@@ -17,5 +19,7 @@ public interface ConditionService {
 	ResponseDto deleteCondition(long id);
 
 	Page<ConditionDto> searchByParams(int page, int size, String params,String sortBy,String direction);
+	
+	List<ConditionDto> getAllList();
 
 }

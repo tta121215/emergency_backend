@@ -1,6 +1,5 @@
 package com.emergency.rollcall.service.Impl;
 
-
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -185,6 +184,32 @@ public class EmergencyServiceImpl implements EmergencyService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 		return new PageImpl<>(emergencyDtoList, pageRequest, emergencyList.getTotalElements());
+	}
+
+	@Override
+	public List<EmergencyDto> getAllList() {
+
+		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
+		List<Emergency> emergencyList = new ArrayList<>();
+		try {
+			emergencyList = emergencyDao.findAllByStatus(1);
+			if (emergencyList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return emergencyDtoList;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

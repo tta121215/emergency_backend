@@ -1,5 +1,7 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +18,7 @@ public interface ModeNotiDao extends JpaRepository<ModeNoti, Long> {
 
 	@Query("SELECT c FROM ModeNoti c")
 	Page<ModeNoti> findByNameOrCode(Pageable pageable);
+	
+	List<ModeNoti> findAllByStatus(Integer status);
 
 }

@@ -27,9 +27,9 @@ public class Route {
 
 	@ManyToMany(mappedBy = "routeList")
 	private List<LocEmergency> locEmergencyList = new ArrayList<>();
-
-	@ManyToMany(mappedBy = "routeList")
-	private List<Notification> notificationList = new ArrayList<>();
+//
+//	@ManyToMany(mappedBy = "routeList")
+//	private List<Notification> notificationList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -77,14 +77,6 @@ public class Route {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
-	}
-
-	public List<Notification> getNotificationList() {
-		return notificationList;
-	}
-
-	public void setNotificationList(List<Notification> notificationList) {
-		this.notificationList = notificationList;
 	}
 
 	public List<LocEmergency> getLocEmergencyList() {

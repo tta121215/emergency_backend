@@ -11,16 +11,8 @@ public class NotificationDto {
 	private String createddate;
 	private String modifieddate;
 	private List<ModeNotiDto> modeNotiDto;
-	private List<EmergencyDto> emergencyDto;
-	private List<RouteDto> routeDto;
-
-	public List<RouteDto> getRouteDto() {
-		return routeDto;
-	}
-
-	public void setRouteDto(List<RouteDto> routeDto) {
-		this.routeDto = routeDto;
-	}
+	private long emergencySyskey;
+	private EmergencyDto emergencyDto;
 
 	public long getSyskey() {
 		return syskey;
@@ -86,11 +78,19 @@ public class NotificationDto {
 		this.modeNotiDto = modeNotiDto;
 	}
 
-	public List<EmergencyDto> getEmergencyDto() {
+	public long getEmergencySyskey() {
+		return emergencySyskey;
+	}
+
+	public void setEmergencySyskey(long emergencySyskey) {
+		this.emergencySyskey = emergencySyskey;
+	}
+
+	public EmergencyDto getEmergencyDto() {
 		return emergencyDto;
 	}
 
-	public void setEmergencyDto(List<EmergencyDto> emergencyDto) {
+	public void setEmergencyDto(EmergencyDto emergencyDto) {
 		this.emergencyDto = emergencyDto;
 	}
 

@@ -1,5 +1,7 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +18,7 @@ public interface RouteDao extends JpaRepository<Route, Long> {
 
 	@Query("SELECT c FROM Route c")
 	Page<Route> findByNameOrCode(Pageable pageable);
+	
+	List<Route> findAllByStatus(int status);
 
 }

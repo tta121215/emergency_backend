@@ -2,9 +2,6 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,11 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.Message;
-import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-
 import com.emergency.rollcall.service.RouteService;
 
 @RestController
@@ -141,18 +136,17 @@ public class RouteController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("")
 	public ResponseEntity<ResponseList<RouteDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
 			@RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<RouteDto> routeDtoList = new ArrayList<>();
-		Page<RouteDto> routePage = routeService.searchByParams(page,size,params,sortBy, direction);
+		Page<RouteDto> routePage = routeService.searchByParams(page, size, params, sortBy, direction);
 		routeDtoList = routePage.getContent();
 		if (!routeDtoList.isEmpty()) {
 			message.setState(true);
@@ -173,15 +167,15 @@ public class RouteController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("all-list")
 	public ResponseEntity<ResponseList<RouteDto>> getAllList() {
 
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<RouteDto> routeDtoList = new ArrayList<>();
-		routeDtoList= routeService.getAllList();
-		
+		routeDtoList = routeService.getAllList();
+
 		if (!routeDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
@@ -194,7 +188,7 @@ public class RouteController {
 		}
 
 		response.setMessage(message);
-		response.setData(routeDtoList);		
+		response.setData(routeDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
