@@ -16,14 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.emergency.rollcall.converter.ActivateEmergencyConverter;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.ConditionDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
 import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
-import com.emergency.rollcall.dao.ModeNotiDao;
-import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
@@ -31,7 +28,6 @@ import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.dto.ModeNotiDto;
-import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Assembly;
@@ -39,11 +35,8 @@ import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.entity.LocEmergency;
-import com.emergency.rollcall.entity.ModeNoti;
-import com.emergency.rollcall.entity.Notification;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.EmergencyActivateService;
-import com.emergency.rollcall.service.NotificationService;
 
 @Service
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
@@ -53,16 +46,16 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private AssemblyDao assemblyDao;
-	
+
 	@Autowired
 	private RouteDao routeDao;
 
 	@Autowired
 	private EmergencyDao emergencyDao;
-	
+
 	@Autowired
 	private ConditionDao conditionDao;
-	
+
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
 
@@ -72,7 +65,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	@Override
 	public ResponseDto saveEmergencyActivate(EmergencyActivateDto eActivateDto) {
 		ResponseDto res = new ResponseDto();
-		EmergencyActivate eActivate = new EmergencyActivate();		
+		EmergencyActivate eActivate = new EmergencyActivate();
 		Emergency emergency = new Emergency();
 		Condition condition = new Condition();
 		LocEmergency locEmergency = new LocEmergency();
@@ -97,7 +90,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						return res;
 					}
 				}
-				eActivate.setAssemblyList(assemblyList);				
+				eActivate.setAssemblyList(assemblyList);
 			}
 			if (eActivateDto.getRouteDtoList() != null) {
 				for (RouteDto routeDto : eActivateDto.getRouteDtoList()) {
@@ -110,7 +103,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						return res;
 					}
 				}
-				eActivate.setRouteList(routeList);				
+				eActivate.setRouteList(routeList);
 			}
 			if (eActivateDto.getEmergency_syskey() != 0) {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
@@ -135,7 +128,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 			}
 			if (eActivateDto.getLocemrgency_syskey() != 0) {
-				Optional<LocEmergency> locEmgerencyOptional = locEmergencyDao.findById(eActivateDto.getLocemrgency_syskey());
+				Optional<LocEmergency> locEmgerencyOptional = locEmergencyDao
+						.findById(eActivateDto.getLocemrgency_syskey());
 				if (locEmgerencyOptional.isPresent()) {
 					locEmergency = locEmgerencyOptional.get();
 					eActivate.setLocEmergency(locEmergency);
@@ -173,43 +167,41 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Override
 	public EmergencyActivateDto getById(long id) {
-		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();		
+		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
 				EmergencyActivate eActivate = eActivateOptional.get();
-				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);			
-				
+				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
+
 				if (eActivate.getEmergency() != null) {
-                    emergencyAcivateDto.setEmergency_syskey(eActivate.getEmergency().getSyskey());
-                    EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
-                    emergencyAcivateDto.setEmergencyDto(emergencyDto);
-                }
+					emergencyAcivateDto.setEmergency_syskey(eActivate.getEmergency().getSyskey());
+					EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
+					emergencyAcivateDto.setEmergencyDto(emergencyDto);
+				}
 				if (eActivate.getCondition() != null) {
-                    emergencyAcivateDto.setCondition_syskey(eActivate.getCondition().getSyskey());
-                    ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
-                    emergencyAcivateDto.setConditionDto(conditionDto);
-                }
+					emergencyAcivateDto.setCondition_syskey(eActivate.getCondition().getSyskey());
+					ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
+					emergencyAcivateDto.setConditionDto(conditionDto);
+				}
 
-                if (eActivate.getLocEmergency() != null) {
-                    emergencyAcivateDto.setLocemrgency_syskey(eActivate.getLocEmergency().getSyskey());
-                    LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(), LocEmergencyDto.class);
-                    emergencyAcivateDto.setLocEmergencyDto(locEmergencyDto);
-                }
-                
-                List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
-                List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
+				if (eActivate.getLocEmergency() != null) {
+					emergencyAcivateDto.setLocemrgency_syskey(eActivate.getLocEmergency().getSyskey());
+					LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(),
+							LocEmergencyDto.class);
+					emergencyAcivateDto.setLocEmergencyDto(locEmergencyDto);
+				}
 
-               
-                List<AssemblyDto> assemblyDtos = assemblies.stream()
-                        .map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
-                        .collect(Collectors.toList());
-                List<RouteDto> routeDtos = routes.stream()
-                        .map(route -> modelMapper.map(route, RouteDto.class))
-                        .collect(Collectors.toList());
+				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
+				List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
 
-                emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
-                emergencyAcivateDto.setRouteDtoList(routeDtos);
+				List<AssemblyDto> assemblyDtos = assemblies.stream()
+						.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
+				List<RouteDto> routeDtos = routes.stream().map(route -> modelMapper.map(route, RouteDto.class))
+						.collect(Collectors.toList());
+
+				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
+				emergencyAcivateDto.setRouteDtoList(routeDtos);
 			}
 			return emergencyAcivateDto;
 		} catch (DataAccessException dae) {
@@ -225,60 +217,97 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	@Override
 	public ResponseDto updateEmergencyActivate(EmergencyActivateDto eActivateDto) {
 		ResponseDto res = new ResponseDto();
-//		List<Assembly> assemblyList = new ArrayList<>();
-//		EmergencyActivate eActivate = new EmergencyActivate();
-//		String createdDate;
-//		ZonedDateTime dateTime = ZonedDateTime.now();
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-//		String strCreatedDate = dateTime.format(formatter);
-//		try {
-//			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(eActivateDto.getSyskey()));
-//			if (eActivateOptional.isPresent()) {
-//				eActivate = eActivateOptional.get();
-//				createdDate = eActivate.getCreateddate();
-//				eActivate = modelMapper.map(eActivateDto, EmergencyActivate.class);
-//				eActivate.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
-//				eActivate.setCreateddate(createdDate);
-//				if (eActivateDto.getAssemblyDtoList() != null) {
-//					for (AssemblyDto assemblyDto : eActivateDto.getAssemblyDtoList()) {
-//						Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyDto.getSyskey());
-//						if (assemblyOptional.isPresent() && assemblyOptional.get().getSyskey() != 0) {
-//							assemblyList.add(assemblyOptional.get());
-//						} else {
-//							res.setStatus_code(401);
-//							res.setMessage("Assembly data is invalid.");
-//							return res;
-//						}
-//					}
-//					eActivate.setAssemblyList(assemblyList);
-//				}
-//				if (eActivateDto.getEmergencySyskey() != 0) {
-//					Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
-//					if (emergencyOptional.isPresent()) {
-//						Emergency emergency = emergencyOptional.get();
-//						notification.setEmergency(emergency);
-//					} else {
-//						res.setStatus_code(401);
-//						res.setMessage("Emergency data is invalid.");
-//						return res;
-//					}
-//				}
-//
-//				emergency.save(notification);
-//				res.setStatus_code(200);
-//				res.setMessage("Successfully Updated");
-//			} else {
-//				res.setStatus_code(401);
-//				res.setMessage("Data does not found");
-//			}
-//
-//		} catch (DataAccessException e) {
-//			res.setStatus_code(500);
-//			res.setMessage("Database error occurred: " + e.getMessage());
-//		} catch (Exception e) {
-//			res.setStatus_code(500);
-//			res.setMessage("An unexpected error occurred: " + e.getMessage());
-//		}
+		List<Assembly> assemblyList = new ArrayList<>();
+		List<Route> routeList = new ArrayList<>();
+		EmergencyActivate eActivate = new EmergencyActivate();
+		String createdDate;
+		ZonedDateTime dateTime = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String strCreatedDate = dateTime.format(formatter);
+		try {
+			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(eActivateDto.getSyskey());
+			if (eActivateOptional.isPresent()) {
+				eActivate = eActivateOptional.get();
+				createdDate = eActivate.getCreateddate();
+				eActivate = modelMapper.map(eActivateDto, EmergencyActivate.class);
+				eActivate.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				eActivate.setCreateddate(createdDate);
+				if (eActivateDto.getAssemblyDtoList() != null) {
+					for (AssemblyDto assemblyDto : eActivateDto.getAssemblyDtoList()) {
+						Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyDto.getSyskey());
+						if (assemblyOptional.isPresent() && assemblyOptional.get().getSyskey() != 0) {
+							assemblyList.add(assemblyOptional.get());
+						} else {
+							res.setStatus_code(401);
+							res.setMessage("Assembly data is invalid.");
+							return res;
+						}
+					}
+					eActivate.setAssemblyList(assemblyList);
+				}
+				if (eActivateDto.getRouteDtoList() != null) {
+					for (RouteDto routeDto : eActivateDto.getRouteDtoList()) {
+						Optional<Route> routeOptional = routeDao.findById(routeDto.getSyskey());
+						if (routeOptional.isPresent() && routeOptional.get().getSyskey() != 0) {
+							routeList.add(routeOptional.get());
+						} else {
+							res.setStatus_code(401);
+							res.setMessage("Route data is invalid.");
+							return res;
+						}
+					}
+					eActivate.setAssemblyList(assemblyList);
+				}
+				if (eActivateDto.getEmergency_syskey() != 0) {
+					Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
+					if (emergencyOptional.isPresent()) {
+						Emergency emergency = emergencyOptional.get();
+						eActivate.setEmergency(emergency);
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Emergency data is invalid.");
+						return res;
+					}
+				}
+				if (eActivateDto.getCondition_syskey() != 0) {
+					Optional<Condition> conditionOptional = conditionDao.findById(eActivateDto.getCondition_syskey());
+					if (conditionOptional.isPresent()) {
+						Condition condition = conditionOptional.get();
+						eActivate.setCondition(condition);
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Condition data is invalid.");
+						return res;
+					}
+				}
+				if (eActivateDto.getLocemrgency_syskey() != 0) {
+					Optional<LocEmergency> locEmergencyOptional = locEmergencyDao
+							.findById(eActivateDto.getLocemrgency_syskey());
+					if (locEmergencyOptional.isPresent()) {
+						LocEmergency locEmergency = locEmergencyOptional.get();
+						eActivate.setLocEmergency(locEmergency);
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Location of emergency data is invalid.");
+						return res;
+					}
+				}
+
+				emergencyActivateDao.save(eActivate);
+				res.setStatus_code(200);
+				res.setMessage("Successfully Updated");
+			} else {
+				res.setStatus_code(401);
+				res.setMessage("Data does not found");
+			}
+
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
+		}
 
 		return res;
 	}
@@ -286,33 +315,35 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	@Override
 	public ResponseDto deleteEmergencyActivate(long id) {
 		ResponseDto res = new ResponseDto();
-		Notification notification = new Notification();
-		//try {
-//			Optional<Notification> notiOptional = notificationDao.findById(id);
-//			if (notiOptional.isPresent()) {
-//				notification = notiOptional.get();
-//				notification.setModeNotiList(new ArrayList<>());
-//				notificationDao.save(notification);
-//				notificationDao.delete(notification);
-//				res.setStatus_code(200);
-//				res.setMessage("Successfully Deleted");
-//			} else {
-//				res.setStatus_code(401);
-//				res.setMessage("No data found");
-//			}
-//
-//		} catch (DataAccessException e) {
-//			res.setStatus_code(500);
-//			res.setMessage("Database error occurred: " + e.getMessage());
-//		} catch (Exception e) {
-//			res.setStatus_code(500);
-//			res.setMessage("An unexpected error occurred: " + e.getMessage());
-//		}
+		EmergencyActivate eActivate = new EmergencyActivate();
+		try {
+			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
+			if (eActivateOptional.isPresent()) {
+				eActivate = eActivateOptional.get();
+				eActivate.setAssemblyList(new ArrayList<>());
+				eActivate.setRouteList(new ArrayList<>());
+				emergencyActivateDao.save(eActivate);
+				emergencyActivateDao.delete(eActivate);
+				res.setStatus_code(200);
+				res.setMessage("Successfully Deleted");
+			} else {
+				res.setStatus_code(401);
+				res.setMessage("No data found");
+			}
+
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
+		}
 		return res;
 	}
 
 	@Override
-	public Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+	public Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy,
+			String direction) {
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<EmergencyActivate> emergencyList;
@@ -374,7 +405,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 //		}
 		return null;
-		//return new PageImpl<>(notiDtoList, pageRequest, emergencyList.getTotalElements());
+		// return new PageImpl<>(notiDtoList, pageRequest,
+		// emergencyList.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {
