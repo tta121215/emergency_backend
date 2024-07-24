@@ -99,7 +99,7 @@ public class AssemblyController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		logger.info("Successfully retrive update data assembly " + data);
+		logger.info("Received request update data assembly " + data);
 		if (data != null) {
 			responseDto = assemblyService.updateAssembly(data);
 			if (responseDto.getMessage().equals("Data does not found")) {
@@ -128,7 +128,7 @@ public class AssemblyController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		logger.info("Successfully retrive delete data assembly " + id);
+		logger.info("Received request delete data assembly " + id);
 		if (id != 0) {
 			responseDto = assemblyService.deleteAssembly(id);
 			if (responseDto.getMessage().equals("No data found")) {
@@ -161,7 +161,7 @@ public class AssemblyController {
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		logger.info("Successfully retrive serarch data assembly " + page +" page " + size + " size " + params + " params " + sortBy + " sortBy" + direction + " direction");
+		logger.info("Received request serarch data assembly " + page +" page " + size + " size " + params + " params " + sortBy + " sortBy" + direction + " direction");
 		Page<AssemblyDto> assemblyPage = assemblyService.searchByParams(page,size,params,sortBy,direction);
 		assemblyDtoList = assemblyPage.getContent();
 		if (!assemblyDtoList.isEmpty()) {
@@ -174,7 +174,7 @@ public class AssemblyController {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
-			logger.info("Successfully retrive update data assembly " + assemblyDtoList);
+			logger.info("No data assembly list " + assemblyDtoList);
 		}
 
 		response.setMessage(message);
@@ -192,17 +192,20 @@ public class AssemblyController {
 		ResponseList<AssemblyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		logger.info("Received request data assembly ");
 		assemblyDtoList= assemblyService.getAllList();
 		
 		if (!assemblyDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully data assembly list " + assemblyDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("No data assembly list " + assemblyDtoList);
 		}
 
 		response.setMessage(message);

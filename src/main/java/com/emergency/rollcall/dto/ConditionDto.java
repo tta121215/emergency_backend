@@ -65,5 +65,17 @@ public class ConditionDto {
 
 		return l_Date;
 	}
+	
+	@Override
+    public String toString() {
+        return "ConditionDto{" +
+                "syskey=" + syskey +
+                ", name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", status='" + status + '\'' +
+                ", createddate=" + createddate +
+                ", modifieddate=" + modifieddate +
+                '}';
+    }
 
 }

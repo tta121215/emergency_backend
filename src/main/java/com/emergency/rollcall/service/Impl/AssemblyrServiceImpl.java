@@ -78,18 +78,23 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	public AssemblyDto getById(Long id) {
 		AssemblyDto assemblyDto = new AssemblyDto();
 		Assembly assembly = new Assembly();
+		logger.info("Retrieve assembly data: " + id);
 		try {
 			Optional<Assembly> assemblyOptional = assemblyDao.findById(id);
 			if (assemblyOptional.isPresent()) {
 				assembly = assemblyOptional.get();
 				assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
+				logger.info("Successfully retrieve assembly data: " + assemblyDto);
 			} else {
 
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieve assembly data : " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
+			
 		} catch (Exception e) {
+			logger.info("Error retrieve assembly data : " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -105,29 +110,34 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Received update assembly data : " + data);
 		try {
-			Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
+			Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());			
 			if (assemblyOptional.isPresent()) {
 				assembly = assemblyOptional.get();
 				createdDate = assembly.getCreateddate();
 				assembly = modelMapper.map(data, Assembly.class);
+				logger.info("Updating assembly data : " + data);
 				assembly.setCreateddate(assembly.getCreateddate());
 				assembly.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 				assembly.setCreateddate(createdDate);
 				assemblyDao.save(assembly);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successfully updated assembly data : " + res);
 			} else {
-				res.setStatus_code(401);
-				;
+				res.setStatus_code(401);				
 				res.setMessage("Data does not found");
+				logger.info("Does no found updated assembly data : " + res);
 			}
 		} catch (DataAccessException e) {
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
+			logger.info("Error updated assembly data : " + e.getMessage());
 		} catch (Exception e) {
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
+			logger.info("Error updated assembly data : " + e.getMessage());
 		}
 
 		return res;
@@ -137,6 +147,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 	public ResponseDto deleteAssembly(long id) {
 		ResponseDto res = new ResponseDto();
 		Assembly assembly = new Assembly();
+		logger.info("Received delete assembly data : " + id);
 		try {
 			Optional<Assembly> assemblyOptional = assemblyDao.findById(id);
 			if (assemblyOptional.isPresent()) {
@@ -144,17 +155,21 @@ public class AssemblyrServiceImpl implements AssemblyService {
 				assemblyDao.delete(assembly);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Successfuly deleted assembly data : " + res);
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("Does not found deleted assembly data : " + res);
 			}
 
 		} catch (DataAccessException e) {
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
+			logger.info("Error deleted assembly data : " + e.getMessage());
 		} catch (Exception e) {
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
+			logger.info("Error deleted assembly data : " + e.getMessage());
 		}
 
 		return res;
@@ -166,9 +181,10 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<Assembly> assemblyList;
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
+		logger.info("Received search assembly data : " + params);
 		try {
 			if (params == null && params.isEmpty()) {
-				assemblyList = assemblyDao.searchByParams(pageRequest);
+				assemblyList = assemblyDao.searchByParams(pageRequest);				
 				if (assemblyList != null) {
 					for (Assembly assembly : assemblyList) {
 						AssemblyDto assemblyDto = new AssemblyDto();
@@ -176,6 +192,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 						assemblyDtoList.add(assemblyDto);
 					}
 				}
+				logger.info("Searched assembly data : " + assemblyDtoList);
 
 			} else {
 				assemblyList = assemblyDao.searchByParams(pageRequest, params);
@@ -186,13 +203,15 @@ public class AssemblyrServiceImpl implements AssemblyService {
 						assemblyDtoList.add(assemblyDto);
 					}
 				}
-
+				logger.info("Searched assembly data with params : " + assemblyDtoList);
 			}
 
 		} catch (DataAccessException dae) {
+			logger.info("Database error occurred:  : " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("An unexpected error occurred: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -205,6 +224,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 
 		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
 		List<Assembly> assemblyList = new ArrayList<>();
+		logger.info("Received assembly data list ");
 		try {
 			assemblyList = assemblyDao.findAllByStatus(1);
 			if (assemblyList != null) {
@@ -213,12 +233,15 @@ public class AssemblyrServiceImpl implements AssemblyService {
 					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
 					assemblyDtoList.add(assemblyDto);
 				}
+				logger.info("Received assembly data list " + assemblyDtoList);
 			}
 
 		} catch (DataAccessException dae) {
+			logger.info("Database error occurred: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("An unexpected error occurred: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}

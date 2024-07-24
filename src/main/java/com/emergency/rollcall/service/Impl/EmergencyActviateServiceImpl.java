@@ -340,128 +340,81 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		return res;
 	}
 
+
 	@Override
 	public Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy,
 			String direction) {
-		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-		Page<EmergencyActivate> emergencyList;
-		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
-		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
-		List<RouteDto> routeDtoList = new ArrayList<>();
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;    
+	    
+	    Sort sort = Sort.by(sortDirection, sortBy);
+	    if (sortBy.equals("emergency.name")) {
+	        sort = Sort.by(sortDirection, "emergency.name");
+	    } else if (sortBy.equals("condition.name")) {
+	        sort = Sort.by(sortDirection, "condition.name");
+	    }  else if (sortBy.equals("locEmergency.name")) {
+	        sort = Sort.by(sortDirection, "locEmergency.name");
+	    } else {
+	        sort = Sort.by(sortDirection, "name");
+	    }
 
-		try {
-			if (params == null || params.isEmpty()) {
-				emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest);
-				if (emergencyList != null) {
-					for (EmergencyActivate eActivate : emergencyList) {
-						EmergencyActivateDto eActivateDto = new EmergencyActivateDto();
-						eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
-						if (eActivate.getAssemblyList() != null) {
-							for (Assembly assembly : eActivate.getAssemblyList()) {
-								AssemblyDto assemblyDto = new AssemblyDto();
-								assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
-								assemblyDtoList.add(assemblyDto);
-							}
-							eActivateDto.setAssemblyDtoList(assemblyDtoList);
-							assemblyDtoList = new ArrayList<>();
-						}
-						if (eActivate.getRouteList() != null) {
-							for (Route route : eActivate.getRouteList()) {
-								RouteDto routeDto = new RouteDto();
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-							eActivateDto.setRouteDtoList(routeDtoList);
-							routeDtoList = new ArrayList<>();
-						}
+	    PageRequest pageRequest = PageRequest.of(page, size, sort);
+	    Page<EmergencyActivate> emergencyList;
+	    List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 
-						if (eActivate.getEmergency() != null) {
-							if (eActivate.getEmergency().getSyskey() != 0) {
-								Emergency emergency = eActivate.getEmergency();
-								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								eActivateDto.setEmergencyDto(emergencyDto);
-							}
-						}
-						if (eActivate.getCondition() != null) {
-							if (eActivate.getCondition().getSyskey() != 0) {
-								Condition condition = eActivate.getCondition();
-								ConditionDto conditionDto = modelMapper.map(condition, ConditionDto.class);
-								eActivateDto.setConditionDto(conditionDto);
-							}
-						}
-						if (eActivate.getLocEmergency() != null) {
-							if (eActivate.getLocEmergency().getSyskey() != 0) {
-								LocEmergency locEmergency = eActivate.getLocEmergency();
-								LocEmergencyDto locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
-								eActivateDto.setLocEmergencyDto(locEmergencyDto);
-							}
-						}
+	    try {
+	        if (params == null || params.isEmpty()) {
+	            emergencyList = emergencyActivateDao.findAll(pageRequest); 
+	        } else {
+	            emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest, params);
+	        }
 
-						emergencyActivateDtoList.add(eActivateDto);
-					}
-				}
-			} else {
-				emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest, params);
-				if (emergencyList != null) {
-					for (EmergencyActivate eActivate : emergencyList) {
-						EmergencyActivateDto eActivateDto = new EmergencyActivateDto();
-						eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
-						if (eActivate.getAssemblyList() != null) {
-							for (Assembly assembly : eActivate.getAssemblyList()) {
-								AssemblyDto assemblyDto = new AssemblyDto();
-								assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
-								assemblyDtoList.add(assemblyDto);
-							}
-							eActivateDto.setAssemblyDtoList(assemblyDtoList);
-						}
-						if (eActivate.getRouteList() != null) {
-							for (Route route : eActivate.getRouteList()) {
-								RouteDto routeDto = new RouteDto();
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-							eActivateDto.setRouteDtoList(routeDtoList);
-							routeDtoList = new ArrayList<>();
-						}
+	        if (emergencyList != null) {
+	            for (EmergencyActivate eActivate : emergencyList) {
+	                EmergencyActivateDto eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
+	                
+	                if (eActivate.getAssemblyList() != null) {
+	                    List<AssemblyDto> assemblyDtoList = eActivate.getAssemblyList().stream()
+	                            .map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
+	                            .collect(Collectors.toList());
+	                    eActivateDto.setAssemblyDtoList(assemblyDtoList);
+	                }
+	               
+	                if (eActivate.getRouteList() != null) {
+	                    List<RouteDto> routeDtoList = eActivate.getRouteList().stream()
+	                            .map(route -> modelMapper.map(route, RouteDto.class))
+	                            .collect(Collectors.toList());
+	                    eActivateDto.setRouteDtoList(routeDtoList);
+	                }
+	               
+	                if (eActivate.getEmergency() != null && eActivate.getEmergency().getSyskey() != 0) {
+	                    EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
+	                    eActivateDto.setEmergencyDto(emergencyDto);
+	                }
+	                
+	                if (eActivate.getCondition() != null && eActivate.getCondition().getSyskey() != 0) {
+	                    ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
+	                    eActivateDto.setConditionDto(conditionDto);
+	                }
+	                
+	                if (eActivate.getLocEmergency() != null && eActivate.getLocEmergency().getSyskey() != 0) {
+	                    LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(), LocEmergencyDto.class);
+	                    eActivateDto.setLocEmergencyDto(locEmergencyDto);
+	                }
 
-						if (eActivate.getEmergency() != null) {
-							if (eActivate.getEmergency().getSyskey() != 0) {
-								Emergency emergency = eActivate.getEmergency();
-								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								eActivateDto.setEmergencyDto(emergencyDto);
-							}
-						}
-						if (eActivate.getCondition() != null) {
-							if (eActivate.getCondition().getSyskey() != 0) {
-								Condition condition = eActivate.getCondition();
-								ConditionDto conditionDto = modelMapper.map(condition, ConditionDto.class);
-								eActivateDto.setConditionDto(conditionDto);
-							}
-						}
-						if (eActivate.getLocEmergency() != null) {
-							if (eActivate.getLocEmergency().getSyskey() != 0) {
-								LocEmergency locEmergency = eActivate.getLocEmergency();
-								LocEmergencyDto locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
-								eActivateDto.setLocEmergencyDto(locEmergencyDto);
-							}
-						}
+	                emergencyActivateDtoList.add(eActivateDto);
+	            }
+	        }
+	    } catch (DataAccessException dae) {
+	        System.err.println("Database error occurred: " + dae.getMessage());
+	        throw new RuntimeException("Database error occurred, please try again later.", dae);
+	    } catch (Exception e) {
+	        System.err.println("An unexpected error occurred: " + e.getMessage());
+	        throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+	    }
 
-						emergencyActivateDtoList.add(eActivateDto);
-					}
-				}
-			}
-		} catch (DataAccessException dae) {
-			System.err.println("Database error occurred: " + dae.getMessage());
-			throw new RuntimeException("Database error occurred, please try again later.", dae);
-		} catch (Exception e) {
-			System.err.println("An unexpected error occurred: " + e.getMessage());
-			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
-		}
-
-		return new PageImpl<>(emergencyActivateDtoList, pageRequest, emergencyList.getTotalElements());
+	    return new PageImpl<>(emergencyActivateDtoList, pageRequest, emergencyList.getTotalElements());
 	}
-
+	
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)

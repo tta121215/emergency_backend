@@ -2,6 +2,9 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,6 +33,8 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 @CrossOrigin
 @RequestMapping("eactivate")
 public class EmergencyActivateController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AssemblyController.class);
 
 	@Autowired
 	private EmergencyActivateService emergencyActivateService;
@@ -39,22 +44,26 @@ public class EmergencyActivateController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to save emergency with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.saveEmergencyActivate(eActivateDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully request to save emergency activate with data: {}", eActivateDto);
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Error save emergency activate with data: {}", responseDto);
 			}
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save assembly");
+			logger.info("Error save emergency activate with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);

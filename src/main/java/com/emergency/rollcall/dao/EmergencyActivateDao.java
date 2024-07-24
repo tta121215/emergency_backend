@@ -12,10 +12,25 @@ import com.emergency.rollcall.entity.EmergencyActivate;
 @Repository
 public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, Long> {
 
-	@Query("SELECT c FROM EmergencyActivate c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(c.remark) LIKE LOWER(CONCAT('%', :params, '%'))")
-	Page<EmergencyActivate> findByNameandRemark(Pageable pageable, @Param("params") String params);
+//	@Query("SELECT c FROM EmergencyActivate c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(c.remark) LIKE LOWER(CONCAT('%', :params, '%'))")
+//	Page<EmergencyActivate> findByNameandRemark(Pageable pageable, @Param("params") String params);
+//	
+//	@Query("SELECT c FROM EmergencyActivate c ")
+//	Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
 	
-	@Query("SELECT c FROM EmergencyActivate c ")
-	Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
+	@Query("SELECT c FROM EmergencyActivate c " +
+		       "LEFT JOIN c.emergency e " +
+		       "LEFT JOIN c.locEmergency le " +
+		       "WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) " +
+		       "OR LOWER(c.remark) LIKE LOWER(CONCAT('%', :param, '%')) " +
+		       "OR LOWER(e.name) LIKE LOWER(CONCAT('%', :param, '%')) " +
+		       "OR LOWER(le.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+		Page<EmergencyActivate> findByNameandRemark(Pageable pageable, @Param("param") String param);
+	
+	@Query("SELECT c FROM EmergencyActivate c " +
+		       "LEFT JOIN c.emergency e " +
+		       "LEFT JOIN c.locEmergency le " )		      
+		Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
+
 
 }
