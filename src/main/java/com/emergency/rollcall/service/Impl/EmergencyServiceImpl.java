@@ -20,7 +20,6 @@ import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Emergency;
-import com.emergency.rollcall.service.AssemblyService;
 import com.emergency.rollcall.service.EmergencyService;
 
 @Service

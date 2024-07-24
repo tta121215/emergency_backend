@@ -73,7 +73,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		LocEmergency locEmergency = new LocEmergency();
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
-		logger.info("Saving Emergency activate entity: " + eActivateDto);
+		logger.info("Saving Emergency entity: " + eActivateDto);
 
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -124,6 +124,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				if (conditionOptional.isPresent()) {
 					condition = conditionOptional.get();
 					eActivate.setCondition(condition);
+					
 				} else {
 					res.setStatus_code(401);
 					res.setMessage("Condition data is invalid.");

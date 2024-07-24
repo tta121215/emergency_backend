@@ -21,7 +21,6 @@ import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.Route;
-import com.emergency.rollcall.service.EmergencyService;
 import com.emergency.rollcall.service.LocEmergencyService;
 
 @Service

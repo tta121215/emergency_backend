@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import com.emergency.rollcall.service.NotificationService;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+	
+	private final Logger logger = Logger.getLogger(NotificationService.class.getName());
 
 	@Autowired
 	private NotificationDao notificationDao;
@@ -52,6 +55,7 @@ public class NotificationServiceImpl implements NotificationService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Saving notification entity: " + notiDto);
 		try {
 			notification = modelMapper.map(notiDto, Notification.class);
 
@@ -73,7 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
 				if (emergencyOptional.isPresent()) {
 					emergency = emergencyOptional.get();
-					notification.setEmergency(emergency);
+					notification.setEmergency(emergency);					
 				} else {
 					res.setStatus_code(401);
 					res.setMessage("Emergency data is invalid.");
@@ -86,19 +90,23 @@ public class NotificationServiceImpl implements NotificationService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					logger.info("Successsfully saving notification entity: " + entityres);
 				}
 			} else {
 				Notification entityres = notificationDao.save(notification);
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Updated");
+					logger.info("Successsfully updating notification entity: " + entityres);
 				}
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error saving notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Successsfully saving notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -141,6 +149,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public NotificationDto getById(long id) {
 		NotificationDto notificationDto = new NotificationDto();
 		EmergencyDto emergencyDto = new EmergencyDto();
+		logger.info("Successsfully retrieving notification entity: " + id);
 		try {
 			Optional<Notification> notificationOptional = notificationDao.findById(id);
 			if (notificationOptional.isPresent()) {
@@ -152,19 +161,21 @@ public class NotificationServiceImpl implements NotificationService {
 						Emergency emergency = emergencyOptional.get();
 						emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
 						notificationDto.setEmergencyDto(emergencyDto);
-
+						logger.info("Successsfully retrieving notification entity: " + notificationDto);
 					}
 				}
 			}
-			return notificationDto;
+			
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving notification entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieving notification entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
-
+		return notificationDto;
 	}
 
 	@Override
@@ -176,6 +187,7 @@ public class NotificationServiceImpl implements NotificationService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Updaitng notification entity: " + notiDto);
 		try {
 			Optional<Notification> notiOptional = notificationDao.findById(notiDto.getSyskey());
 			if (notiOptional.isPresent()) {
@@ -212,15 +224,19 @@ public class NotificationServiceImpl implements NotificationService {
 				notificationDao.save(notification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successsfully updating notification entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("Data does not found");
+				logger.info("Data does not found retrieving notification entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error retrieving notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error retrieving notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -268,6 +284,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public ResponseDto deleteNotification(long id) {
 		ResponseDto res = new ResponseDto();
 		Notification notification = new Notification();
+		logger.info("Deleting notification entity: " + id);
 		try {
 			Optional<Notification> notiOptional = notificationDao.findById(id);
 			if (notiOptional.isPresent()) {
@@ -277,15 +294,19 @@ public class NotificationServiceImpl implements NotificationService {
 				notificationDao.delete(notification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Successsfully deleted notification entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("No data found deleting notification entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error deleting notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error deleting notification entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -300,6 +321,7 @@ public class NotificationServiceImpl implements NotificationService {
 		List<NotificationDto> notiDtoList = new ArrayList<>();
 		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
 		ModeNotiDto modeNotiDto = new ModeNotiDto();
+		logger.info("Searching notification entity: ");
 
 		try {
 			if (params == null || params.isEmpty()) {
@@ -327,12 +349,15 @@ public class NotificationServiceImpl implements NotificationService {
 						}
 					}						
 					notiDtoList.add(notiDto);
+					logger.info("Successsfully retrieving notification entity: " + notiDto);
 				}
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving notification entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieving notification entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
