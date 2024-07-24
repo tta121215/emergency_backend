@@ -25,7 +25,6 @@ import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.ModeNoti;
 import com.emergency.rollcall.entity.Notification;
-import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.NotificationService;
 
 @Service
@@ -317,11 +316,13 @@ public class NotificationServiceImpl implements NotificationService {
 							notiDto.setModeNotiDto(modeNotiDtoList);
 						}
 						modeNotiDtoList = new ArrayList<>();
-						if (notification.getEmergency().getSyskey() != 0) {
-							Emergency emergency = notification.getEmergency();
-							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-							notiDto.setEmergencyDto(emergencyDto);
-						}
+						if(notification.getEmergency() != null) {
+							if (notification.getEmergency().getSyskey() != 0) {
+								Emergency emergency = notification.getEmergency();
+								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+								notiDto.setEmergencyDto(emergencyDto);
+							}
+						}						
 						notiDtoList.add(notiDto);
 					}
 				}
@@ -339,11 +340,13 @@ public class NotificationServiceImpl implements NotificationService {
 							notiDto.setModeNotiDto(modeNotiDtoList);
 						}
 						modeNotiDtoList = new ArrayList<>();
-						if (notification.getEmergency().getSyskey() != 0) {
-							Emergency emergency = notification.getEmergency();
-							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-							notiDto.setEmergencyDto(emergencyDto);
-						}
+						if(notification.getEmergency() != null) {
+							if (notification.getEmergency().getSyskey() != 0) {
+								Emergency emergency = notification.getEmergency();
+								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+								notiDto.setEmergencyDto(emergencyDto);
+							}
+						}						
 						notiDtoList.add(notiDto);
 					}
 				}
