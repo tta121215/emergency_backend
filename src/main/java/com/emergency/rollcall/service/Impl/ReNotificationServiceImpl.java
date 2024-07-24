@@ -155,22 +155,15 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 		List<ReNotificationDto> notiDtoList = new ArrayList<>();
 		try {
 			if (params == null || params.isEmpty()) {
-				notiList = renotificationDao.findByNameOrCode(pageRequest);
-				if (notiList != null) {
-					for (Renotification renotification : notiList) {
-						ReNotificationDto notiDto = new ReNotificationDto();
-						notiDto = modelMapper.map(renotification, ReNotificationDto.class);
-						notiDtoList.add(notiDto);
-					}
-				}
+				notiList = renotificationDao.findByNameOrCode(pageRequest);	
 			} else {
-				notiList = renotificationDao.findByNameOrCode(pageRequest, params);
-				if (notiList != null) {
-					for (Renotification notification : notiList) {
-						ReNotificationDto notiDto = new ReNotificationDto();
-						notiDto = modelMapper.map(notification, ReNotificationDto.class);
-						notiDtoList.add(notiDto);
-					}
+				notiList = renotificationDao.findByNameOrCode(pageRequest, params);	
+			}
+			if (notiList != null) {
+				for (Renotification renotification : notiList) {
+					ReNotificationDto notiDto = new ReNotificationDto();
+					notiDto = modelMapper.map(renotification, ReNotificationDto.class);
+					notiDtoList.add(notiDto);
 				}
 			}
 

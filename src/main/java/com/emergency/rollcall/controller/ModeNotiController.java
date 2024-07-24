@@ -2,6 +2,9 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,27 +32,32 @@ import com.emergency.rollcall.service.ModeNotiService;
 @CrossOrigin
 @RequestMapping("modenoti")
 public class ModeNotiController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ModeNotiController.class);
 
 	@Autowired
 	private ModeNotiService modeNotiService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveModeNoti(@RequestBody ModeNotiDto ModeNotiDto) {
+	public ResponseEntity<Response<ResponseDto>> saveModeNoti(@RequestBody ModeNotiDto modeNotiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (ModeNotiDto != null) {
-			responseDto = modeNotiService.saveModeNoti(ModeNotiDto);
+		logger.info("Received request to save mode noti with data: {}", modeNotiDto);
+		if (modeNotiDto != null) {
+			responseDto = modeNotiService.saveModeNoti(modeNotiDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to save mode noti with data: {}", responseDto);
 			}
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("Error Save");
+			logger.info("Error to save mode noti with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -59,52 +67,60 @@ public class ModeNotiController {
 
 	@GetMapping("{id}")
 	public ResponseEntity<Response<ModeNotiDto>> getById(@PathVariable Long id) {
-		ModeNotiDto ModeNotiDto = new ModeNotiDto();
+		ModeNotiDto modeNotiDto = new ModeNotiDto();
 		Response<ModeNotiDto> response = new Response<>();
 		Message message = new Message();
+		logger.info("Received request to retrieve mode noti with data: {}", id);
 
 		if (id != null) {
-			ModeNotiDto = modeNotiService.getById(id);
-			if (ModeNotiDto.getSyskey() != 0) {
+			modeNotiDto = modeNotiService.getById(id);
+			if (modeNotiDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
+				logger.info("Received request to retrieve mode noti with data: {}", modeNotiDto);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve mode noti with data: {}", modeNotiDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to retrieve mode noti with data: {}", modeNotiDto);
 		}
 		response.setMessage(message);
-		response.setData(ModeNotiDto);
+		response.setData(modeNotiDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody ModeNotiDto ModeNotiDto) {
+	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody ModeNotiDto modeNotiDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (ModeNotiDto != null) {
-			responseDto = modeNotiService.updateModeNoti(ModeNotiDto);
+		logger.info("Received request to update mode noti with data: {}", modeNotiDto);
+		if (modeNotiDto != null) {
+			responseDto = modeNotiService.updateModeNoti(modeNotiDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found to update mode noti with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to update mode noti with data: {}", responseDto);
 			}
 		} else {
 			message.setCode("404");
 			message.setMessage("Data does not dound");
+			logger.info("Data does not found to update mode noti with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -116,21 +132,25 @@ public class ModeNotiController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to delete mode noti with data: {}", id);
 		if (id != 0) {
 			responseDto = modeNotiService.deleteModeNoti(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Received request to delete mode noti with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Received request to delete mode noti with data: {}", responseDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
+			logger.info("Received request to delete mode noti with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -145,22 +165,25 @@ public class ModeNotiController {
 
 		ResponseList<ModeNotiDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<ModeNotiDto> ModeNotiDtoList = new ArrayList<>();
+		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+		logger.info("Received request to search mode noti with data: {}", page,size,params,sortBy,direction);
 		Page<ModeNotiDto> modeNotiPage = modeNotiService.searchByParams(page, size, params, sortBy, direction);
-		ModeNotiDtoList = modeNotiPage.getContent();
-		if (!ModeNotiDtoList.isEmpty()) {
+		modeNotiDtoList = modeNotiPage.getContent();
+		if (!modeNotiDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to search mode noti with data: {}", modeNotiDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to search mode noti with data: {}", modeNotiDtoList);
 		}
 
 		response.setMessage(message);
-		response.setData(ModeNotiDtoList);
+		response.setData(modeNotiDtoList);
 		response.setTotalItems(modeNotiPage.getTotalElements());
 		response.setTotalPages(modeNotiPage.getTotalPages());
 		response.setCurrentPage(page);
@@ -174,17 +197,20 @@ public class ModeNotiController {
 		ResponseList<ModeNotiDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+		logger.info("Received request to search mode noti : ");
 		modeNotiDtoList= modeNotiService.getAllList();
 		
 		if (!modeNotiDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to search mode noti with data: {}", modeNotiDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found mode noti with data: {}", modeNotiDtoList);
 		}
 
 		response.setMessage(message);

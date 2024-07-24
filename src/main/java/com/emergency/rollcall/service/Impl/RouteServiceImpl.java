@@ -155,22 +155,14 @@ public class RouteServiceImpl implements RouteService {
 		try {
 			if (params == null || params.isEmpty()) {
 				routeList = routeDao.findByNameOrCode(pageRequest);
-				if (routeList != null) {
-					for (Route route : routeList) {
-						RouteDto routeDto = new RouteDto();
-						routeDto = modelMapper.map(route, RouteDto.class);
-						routeDtoList.add(routeDto);
-					}
-				}
-
 			} else {
 				routeList = routeDao.findByNameOrCode(pageRequest, params);
-				if (routeList != null) {
-					for (Route route : routeList) {
-						RouteDto routeDto = new RouteDto();
-						routeDto = modelMapper.map(route, RouteDto.class);
-						routeDtoList.add(routeDto);
-					}
+			}
+			if (routeList != null) {
+				for (Route route : routeList) {
+					RouteDto routeDto = new RouteDto();
+					routeDto = modelMapper.map(route, RouteDto.class);
+					routeDtoList.add(routeDto);
 				}
 			}
 		} catch (DataAccessException dae) {
@@ -182,7 +174,7 @@ public class RouteServiceImpl implements RouteService {
 		}
 		return new PageImpl<>(routeDtoList, pageRequest, routeList.getTotalElements());
 	}
-	
+
 	@Override
 	public List<RouteDto> getAllList() {
 

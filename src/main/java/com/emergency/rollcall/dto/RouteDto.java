@@ -66,4 +66,10 @@ public class RouteDto {
 		return l_Date;
 	}
 
+	@Override
+	public String toString() {
+		return "RouteDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", description='" + description + '\''
+				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ '}';
+	}
 }

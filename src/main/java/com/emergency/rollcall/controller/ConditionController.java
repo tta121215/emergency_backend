@@ -33,7 +33,7 @@ import com.emergency.rollcall.service.ConditionService;
 @RequestMapping("condition")
 public class ConditionController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AssemblyController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConditionController.class);
 
 	@Autowired
 	private ConditionService conditionService;

@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,13 @@ import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Emergency;
+import com.emergency.rollcall.service.AssemblyService;
 import com.emergency.rollcall.service.EmergencyService;
 
 @Service
 public class EmergencyServiceImpl implements EmergencyService {
+	
+	private final Logger logger = Logger.getLogger(EmergencyService.class.getName());
 
 	@Autowired
 	private EmergencyDao emergencyDao;
@@ -47,18 +51,22 @@ public class EmergencyServiceImpl implements EmergencyService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					logger.info("Successfully saving Emergency entity: " + entityres);
 				}
 			} else {
 				Emergency entityres = emergencyDao.save(emergency);
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Updated");
+					logger.info("Successfully updating Emergency entity: " + entityres);
 				}
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error saving Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error saving Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -70,16 +78,20 @@ public class EmergencyServiceImpl implements EmergencyService {
 	public EmergencyDto getById(long id) {
 		EmergencyDto emergencyDto = new EmergencyDto();
 		Emergency emergency = new Emergency();
+		logger.info("Searching Emergency entity: " + id);
 		try {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
 			if (emergencyOptional.isPresent()) {
 				emergency = emergencyOptional.get();
 				emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+				logger.info("Successfully retrieving Emergency entity: " + emergencyDto);
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving Emergency entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieving Emergency entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -95,6 +107,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Updaing Emergency entity: " + emergencyDto);
 		try {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
 			if (emergencyOptional.isPresent()) {
@@ -106,15 +119,19 @@ public class EmergencyServiceImpl implements EmergencyService {
 				emergencyDao.save(emergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successfully updating Emergency entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("Data does not found");
+				logger.info("Data does not found updating Emergency entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error updating Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error updating Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -126,6 +143,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 	public ResponseDto deleteEmergency(long id) {
 		ResponseDto res = new ResponseDto();
 		Emergency emergency = new Emergency();
+		logger.info("Deleteing Emergency entity: " + id);
 		try {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
 			if (emergencyOptional.isPresent()) {
@@ -133,14 +151,18 @@ public class EmergencyServiceImpl implements EmergencyService {
 				emergencyDao.delete(emergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Succesfully deleting Emergency entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("No data found Emergency entity: " + res.getMessage());
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error deleteing Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error deleting Emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -154,32 +176,28 @@ public class EmergencyServiceImpl implements EmergencyService {
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<Emergency> emergencyList;
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
+		logger.info("Searcing Emergency entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
 				emergencyList = emergencyDao.findByNameOrCode(pageRequest);
-				if (emergencyList != null) {
-					for (Emergency emergency : emergencyList) {
-						EmergencyDto emergencyDto = new EmergencyDto();
-						emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-						emergencyDtoList.add(emergencyDto);
-					}
-				}
-
 			} else {
 				emergencyList = emergencyDao.findByNameOrCode(pageRequest, params);
-				if (emergencyList != null) {
-					for (Emergency emergency : emergencyList) {
-						EmergencyDto emergencyDto = new EmergencyDto();
-						emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-						emergencyDtoList.add(emergencyDto);
-					}
+			}
+			if (emergencyList != null) {
+				for (Emergency emergency : emergencyList) {
+					EmergencyDto emergencyDto = new EmergencyDto();
+					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+					emergencyDtoList.add(emergencyDto);
 				}
+				logger.info("Successfully searching Emergency entity: " + emergencyDtoList);
 			}
 
 		} catch (DataAccessException dae) {
+			logger.info("Error searching Emergency entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error searching Emergency entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -191,6 +209,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 
 		List<EmergencyDto> emergencyDtoList = new ArrayList<>();
 		List<Emergency> emergencyList = new ArrayList<>();
+		logger.info("Retrieving Emergency entity: " );
 		try {
 			emergencyList = emergencyDao.findAllByStatus(1);
 			if (emergencyList != null) {
@@ -199,12 +218,15 @@ public class EmergencyServiceImpl implements EmergencyService {
 					emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
 					emergencyDtoList.add(emergencyDto);
 				}
+				logger.info("Successfully retrieving all Emergency entity: " + emergencyDtoList);
 			}
 
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving Emergency entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieving Emergency entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}

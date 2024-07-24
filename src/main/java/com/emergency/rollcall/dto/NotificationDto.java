@@ -94,4 +94,12 @@ public class NotificationDto {
 		this.emergencyDto = emergencyDto;
 	}
 
+	@Override
+	public String toString() {
+		return "NotificationDto{" + "syskey=" + syskey + ", notimode='" + notimode + '\'' + ", notisubject='"
+				+ notisubject + '\'' + ", notimessage='" + notimessage + '\'' + ", modeNotiDto='" + modeNotiDto + '\''
+				+ ", emergencySyskey='" + emergencySyskey + '\'' + ", emergencyDto='" + emergencyDto + '\''
+				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ '}';
+	}
 }

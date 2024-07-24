@@ -66,4 +66,10 @@ public class EmergencyDto {
 		return l_Date;
 	}
 
+	@Override
+	public String toString() {
+		return "EmergencyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", code='" + code + '\'' + ", status='"
+				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + '}';
+	}
+
 }

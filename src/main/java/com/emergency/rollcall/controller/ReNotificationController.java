@@ -2,6 +2,9 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,27 +32,32 @@ import com.emergency.rollcall.service.ReNotificationService;
 @CrossOrigin
 @RequestMapping("renoti")
 public class ReNotificationController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ReNotificationController.class);
 
 	@Autowired
 	private ReNotificationService reNotificationService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveLocEmergency(@RequestBody ReNotificationDto ReNotificationDto) {
+	public ResponseEntity<Response<ResponseDto>> saveLocEmergency(@RequestBody ReNotificationDto reNotificationDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
-		ResponseDto responseDto = new ResponseDto();
-		if (ReNotificationDto != null) {
-			responseDto = reNotificationService.saveReNotification(ReNotificationDto);
+		ResponseDto responseDto = new ResponseDto();		
+		logger.info("Received request to save re-notification with data: {}", reNotificationDto);
+		if (reNotificationDto != null) {
+			responseDto = reNotificationService.saveReNotification(reNotificationDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Received request to save re-notification with data: {}", responseDto);
 			}
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
-			message.setMessage("Error Save");
+			message.setMessage("Error to save re-notification ");
+			logger.info("Error to save re-notification with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -59,52 +67,60 @@ public class ReNotificationController {
 
 	@GetMapping("{id}")
 	public ResponseEntity<Response<ReNotificationDto>> getById(@PathVariable Long id) {
-		ReNotificationDto ReNotificationDto = new ReNotificationDto();
+		ReNotificationDto reNotificationDto = new ReNotificationDto();
 		Response<ReNotificationDto> response = new Response<>();
 		Message message = new Message();
-
+		logger.info("Received request to retrieve notification with data: {}", id);
 		if (id != null) {
-			ReNotificationDto = reNotificationService.getById(id);
-			if (ReNotificationDto.getSyskey() != 0) {
+			reNotificationDto = reNotificationService.getById(id);
+			if (reNotificationDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
+				logger.info("Successfully to retrieve re-notification with data: {}", reNotificationDto);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve notification with data: {}", reNotificationDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to retriece notification with data: {}", reNotificationDto);
 		}
 		response.setMessage(message);
-		response.setData(ReNotificationDto);
+		response.setData(reNotificationDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody ReNotificationDto ReNotificationDto) {
+	public ResponseEntity<Response<ResponseDto>> updateRenotification(@RequestBody ReNotificationDto reNotificationDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		if (ReNotificationDto != null) {
-			responseDto = reNotificationService.updateReNotification(ReNotificationDto);
+		logger.info("Received request to update re-notification with data: {}", reNotificationDto);
+		if (reNotificationDto != null) {
+			responseDto = reNotificationService.updateReNotification(reNotificationDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found to update re-notification with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to save re-notification with data: {}", responseDto);
 			}
 		} else {
+			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
+			logger.info("Data does not found to update re-notification with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -116,21 +132,25 @@ public class ReNotificationController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to delete re-notification with data: {}", id);
 		if (id != 0) {
 			responseDto = reNotificationService.deleteReNotification(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Received request to delete re-notification with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to delete re-notification with data: {}", responseDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
+			logger.info("Data does not found to delete notification with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -145,23 +165,26 @@ public class ReNotificationController {
 
 		ResponseList<ReNotificationDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<ReNotificationDto> ReNotificationDtoList = new ArrayList<>();
+		List<ReNotificationDto> reNotificationDtoList = new ArrayList<>();
+		logger.info("Received request to search re-notification with data: {}", page,size,params,sortBy,direction);
 		Page<ReNotificationDto> reNotiPage = reNotificationService.searchByParams(page, size, params, sortBy,
 				direction);
-		ReNotificationDtoList = reNotiPage.getContent();
-		if (!ReNotificationDtoList.isEmpty()) {
+		reNotificationDtoList = reNotiPage.getContent();
+		if (!reNotificationDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to search re-notification with data: {}", reNotificationDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to search re-notification with data: {}", reNotificationDtoList);
 		}
 
 		response.setMessage(message);
-		response.setData(ReNotificationDtoList);
+		response.setData(reNotificationDtoList);
 		response.setTotalItems(reNotiPage.getTotalElements());
 		response.setTotalPages(reNotiPage.getTotalPages());
 		response.setCurrentPage(page);

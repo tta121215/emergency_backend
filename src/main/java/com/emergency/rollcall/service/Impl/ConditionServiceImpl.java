@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,13 @@ import com.emergency.rollcall.dto.ConditionDto;
 
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Condition;
-
 import com.emergency.rollcall.service.ConditionService;
 import java.time.ZonedDateTime;
 
-
 @Service
 public class ConditionServiceImpl implements ConditionService {
+	
+	private final Logger logger = Logger.getLogger(ConditionService.class.getName());
 
 	@Autowired
 	private ConditionDao conditionDao;
@@ -43,7 +44,7 @@ public class ConditionServiceImpl implements ConditionService {
 		String strCreatedDate = dateTime.format(formatter);
 
 		condition = modelMapper.map(conditionDto, Condition.class);
-
+		logger.info("Saving condition entity: " + conditionDto);
 		condition.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 		try {
 			if (condition.getSyskey() == 0) {
@@ -51,18 +52,22 @@ public class ConditionServiceImpl implements ConditionService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					logger.info("Successfully save condition : " + entityres);
 				}
 			} else {
 				Condition entityres = conditionDao.save(condition);
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Updated");
+					logger.info("Successfully update condition entity: " + entityres);
 				}
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error saving condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error saving condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -74,16 +79,20 @@ public class ConditionServiceImpl implements ConditionService {
 	public ConditionDto getById(long id) {
 		ConditionDto conditionDto = new ConditionDto();
 		Condition condition = new Condition();
+		logger.info("Finding condition by data " + id);
 		try {
 			Optional<Condition> condtionOptional = conditionDao.findById(id);
 			if (condtionOptional.isPresent()) {
 				condition = condtionOptional.get();
 				conditionDto = modelMapper.map(condition, ConditionDto.class);
+				logger.info("Successfully retrive condition data : " + condition);
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieved condition by data: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieved conditon by data: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -99,6 +108,7 @@ public class ConditionServiceImpl implements ConditionService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Updating condition entity: " + conditionDto);
 		try {
 			Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
 			if (conditionOptional.isPresent()) {
@@ -111,15 +121,19 @@ public class ConditionServiceImpl implements ConditionService {
 				conditionDao.save(condition);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successfully updated condition entity " + condition);
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("Data does not found");
+				logger.info("Data not found condition entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error updating condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error updating condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -131,6 +145,7 @@ public class ConditionServiceImpl implements ConditionService {
 	public ResponseDto deleteCondition(long id) {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
+		logger.info("Deleting condition entity: " + id);
 		try {
 			Optional<Condition> conditionOptional = conditionDao.findById(id);
 			if (conditionOptional.isPresent()) {
@@ -138,14 +153,18 @@ public class ConditionServiceImpl implements ConditionService {
 				conditionDao.delete(condition);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Successfully deleting entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("No data found for delete condition entity: " + res.getMessage());
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error deleting condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error deleting condition entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -159,38 +178,34 @@ public class ConditionServiceImpl implements ConditionService {
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<Condition> conditionList;
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
+		logger.info("Searching condition entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
 				conditionList = conditionDao.findByNameOrCode(pageRequest);
-				if (conditionList != null) {
-					for (Condition condition : conditionList) {
-						ConditionDto conditionDto = new ConditionDto();
-						conditionDto = modelMapper.map(condition, ConditionDto.class);
-						conditionDtoList.add(conditionDto);
-					}
-				}
-
 			} else {
 				conditionList = conditionDao.findByNameOrCode(pageRequest, params);
-				if (conditionList != null) {
-					for (Condition condition : conditionList) {
-						ConditionDto conditionDto = new ConditionDto();
-						conditionDto = modelMapper.map(condition, ConditionDto.class);
-						conditionDtoList.add(conditionDto);
-					}
+			}
+			if (conditionList != null) {
+				for (Condition condition : conditionList) {
+					ConditionDto conditionDto = new ConditionDto();
+					conditionDto = modelMapper.map(condition, ConditionDto.class);
+					conditionDtoList.add(conditionDto);
 				}
+				logger.info("Successfully searching entity: " + conditionList);
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error searching condition entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error searching condition entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
 		return new PageImpl<>(conditionDtoList, pageRequest, conditionList.getTotalElements());
 	}
-	
+
 	@Override
 	public List<ConditionDto> getAllList() {
 

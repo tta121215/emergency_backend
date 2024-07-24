@@ -155,22 +155,14 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		try {
 			if (params == null || params.isEmpty()) {
 				modeNotiList = modeNotiDao.findByNameOrCode(pageRequest);
-				if (modeNotiList != null) {
-					for (ModeNoti modeNoti : modeNotiList) {
-						ModeNotiDto modeNotiDto = new ModeNotiDto();
-						modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-						modeNotiDtoList.add(modeNotiDto);
-					}
-				}
-
 			} else {
 				modeNotiList = modeNotiDao.findByNameOrCode(pageRequest, params);
-				if (modeNotiList != null) {
-					for (ModeNoti modeNoti : modeNotiList) {
-						ModeNotiDto modeNotiDto = new ModeNotiDto();
-						modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-						modeNotiDtoList.add(modeNotiDto);
-					}
+			}
+			if (modeNotiList != null) {
+				for (ModeNoti modeNoti : modeNotiList) {
+					ModeNotiDto modeNotiDto = new ModeNotiDto();
+					modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+					modeNotiDtoList.add(modeNotiDto);
 				}
 			}
 		} catch (DataAccessException dae) {

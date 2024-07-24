@@ -17,7 +17,7 @@ public interface LocEmergencyService {
 
 	ResponseDto deleteLocEmergency(long id);
 
-	Page<LocEmergencyDto> searchByParams(int page, int size, String params);
+	Page<LocEmergencyDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
 	List<LocEmergencyDto> getAllList();
 

@@ -2,7 +2,6 @@ package com.emergency.rollcall.dto;
 
 import java.util.List;
 
-
 public class LocEmergencyDto {
 	private long syskey;
 	private String code;
@@ -87,4 +86,10 @@ public class LocEmergencyDto {
 		return l_Date;
 	}
 
+	@Override
+	public String toString() {
+		return "LocEmergencyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", code='" + code + '\''
+				+ ", description='" + description + '\'' + ", status='" + status + '\'' + ", createddate=" + createddate
+				+ ", modifieddate=" + modifieddate + '}';
+	}
 }

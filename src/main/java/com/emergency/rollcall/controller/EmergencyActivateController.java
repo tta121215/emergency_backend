@@ -34,7 +34,7 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 @RequestMapping("eactivate")
 public class EmergencyActivateController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AssemblyController.class);
+	private static final Logger logger = LoggerFactory.getLogger(EmergencyActivateController.class);
 
 	@Autowired
 	private EmergencyActivateService emergencyActivateService;
@@ -44,7 +44,7 @@ public class EmergencyActivateController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		logger.info("Received request to save emergency with data: {}", eActivateDto);
+		logger.info("Received request to save emergency activate with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.saveEmergencyActivate(eActivateDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
@@ -76,23 +76,26 @@ public class EmergencyActivateController {
 		EmergencyActivateDto eActivateDto = new EmergencyActivateDto();
 		Response<EmergencyActivateDto> response = new Response<>();
 		Message message = new Message();
-
+		logger.info("Received request to retrieve emergency with data: {}", id);
 		if (id != 0) {
 			eActivateDto = emergencyActivateService.getById(id);
 			if (eActivateDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
+				logger.info("Successfully retrieve emergency activate with data: {}", eActivateDto);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
+				logger.info("Data does not found emergency activate with data: {}", eActivateDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", eActivateDto);
 		}
 		response.setMessage(message);
 		response.setData(eActivateDto);
@@ -105,16 +108,19 @@ public class EmergencyActivateController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to update emergency with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.updateEmergencyActivate(eActivateDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found update emergency activate with data: {}", eActivateDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully update emergency activate with data: {}", eActivateDto);
 			}
 		} else {
 			message.setState(false);
@@ -131,21 +137,25 @@ public class EmergencyActivateController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to delete emergency activate with data: {}", id);
 		if (id != 0) {
 			responseDto = emergencyActivateService.deleteEmergencyActivate(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found to delete emergency activate with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to delete emergency activate with data: {}", id);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
+			logger.info("Data does not found to delete emergency activate with data: {}", id);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -160,6 +170,7 @@ public class EmergencyActivateController {
 
 		ResponseList<EmergencyActivateDto> response = new ResponseList<>();
 		Message message = new Message();
+		logger.info("Received request to search emergency activate with data: {}", page,size,params,sortBy,direction);
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 		Page<EmergencyActivateDto> emergencyActivatePage = emergencyActivateService.searchByParams(page, size, params, sortBy, direction);
 		emergencyActivateDtoList = emergencyActivatePage.getContent();
@@ -167,11 +178,13 @@ public class EmergencyActivateController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to search emergency activate with data: {}", emergencyActivateDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", emergencyActivateDtoList);
 		}
 
 		response.setMessage(message);

@@ -92,7 +92,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 			logger.info("Error retrieve assembly data : " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
-			
+
 		} catch (Exception e) {
 			logger.info("Error retrieve assembly data : " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
@@ -112,7 +112,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		String strCreatedDate = dateTime.format(formatter);
 		logger.info("Received update assembly data : " + data);
 		try {
-			Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());			
+			Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
 			if (assemblyOptional.isPresent()) {
 				assembly = assemblyOptional.get();
 				createdDate = assembly.getCreateddate();
@@ -126,7 +126,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 				res.setMessage("Successfully Updated");
 				logger.info("Successfully updated assembly data : " + res);
 			} else {
-				res.setStatus_code(401);				
+				res.setStatus_code(401);
 				res.setMessage("Data does not found");
 				logger.info("Does no found updated assembly data : " + res);
 			}
@@ -184,27 +184,18 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		logger.info("Received search assembly data : " + params);
 		try {
 			if (params == null && params.isEmpty()) {
-				assemblyList = assemblyDao.searchByParams(pageRequest);				
-				if (assemblyList != null) {
-					for (Assembly assembly : assemblyList) {
-						AssemblyDto assemblyDto = new AssemblyDto();
-						assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
-						assemblyDtoList.add(assemblyDto);
-					}
-				}
-				logger.info("Searched assembly data : " + assemblyDtoList);
-
+				assemblyList = assemblyDao.searchByParams(pageRequest);
 			} else {
 				assemblyList = assemblyDao.searchByParams(pageRequest, params);
-				if (assemblyList != null) {
-					for (Assembly assembly : assemblyList) {
-						AssemblyDto assemblyDto = new AssemblyDto();
-						assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
-						assemblyDtoList.add(assemblyDto);
-					}
-				}
-				logger.info("Searched assembly data with params : " + assemblyDtoList);
 			}
+			if (assemblyList != null) {
+				for (Assembly assembly : assemblyList) {
+					AssemblyDto assemblyDto = new AssemblyDto();
+					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
+					assemblyDtoList.add(assemblyDto);
+				}
+			}
+			logger.info("Searched assembly data : " + assemblyDtoList);
 
 		} catch (DataAccessException dae) {
 			logger.info("Database error occurred:  : " + dae.getMessage());

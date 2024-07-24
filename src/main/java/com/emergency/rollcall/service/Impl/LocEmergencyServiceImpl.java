@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,14 @@ import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.Route;
+import com.emergency.rollcall.service.EmergencyService;
 import com.emergency.rollcall.service.LocEmergencyService;
 
 @Service
 public class LocEmergencyServiceImpl implements LocEmergencyService {
+	
+	private final Logger logger = Logger.getLogger(LocEmergencyService.class.getName());
+
 
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
@@ -46,6 +51,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		locEmergency = modelMapper.map(locEmergencyDto, LocEmergency.class);
 
 		locEmergency.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		logger.info("Saving location emergency entity: " + locEmergencyDto);
 		try {
 			if (locEmergencyDto.getRouteList() != null) {
 				for (RouteDto routeData : locEmergencyDto.getRouteList()) {
@@ -66,6 +72,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					logger.info("Successfully saving location emergency entity: " + entityres);					
 				}
 			} else {
 				LocEmergency entityres = locEmergencyDao.save(locEmergency);
@@ -75,9 +82,11 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				}
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error saving location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error saving location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -89,17 +98,21 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 	public LocEmergencyDto getById(long id) {
 		LocEmergencyDto locEmergencyDto = new LocEmergencyDto();
 		LocEmergency locEmergency = new LocEmergency();
+		logger.info("Retrieving location emergency entity: " + id);
 		try {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(id);
 			if (LocEmergencyOptional.isPresent()) {
 				locEmergency = LocEmergencyOptional.get();
 				locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
+				logger.info("Successfully retrived location emergency entity: " + locEmergencyDto);
 			}
 
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving location emergency entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error location emergency entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -116,6 +129,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Updaing location emergency entity: " + locEmergencyDto);
 		try {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(locEmergencyDto.getSyskey());
 			if (LocEmergencyOptional.isPresent()) {
@@ -141,15 +155,19 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				locEmergencyDao.save(locEmergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successfully updating location emergency entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("Data does not found");
+				logger.info("Data does not found location emergency entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error updating location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error updating location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -161,6 +179,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 	public ResponseDto deleteLocEmergency(long id) {
 		ResponseDto res = new ResponseDto();
 		LocEmergency locEmergency = new LocEmergency();
+		logger.info("Deleting location emergency entity: " + id);
 		try {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(id);
 			if (LocEmergencyOptional.isPresent()) {
@@ -170,14 +189,18 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				locEmergencyDao.delete(locEmergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Successfully deleted location emergency entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("No data found location emergency entity: " + res.getMessage());
 			}
 		} catch (DataAccessException e) {
+			logger.info("Error deleting location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error deleting location emergency entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -186,64 +209,48 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 	}
 
 	@Override
-	public Page<LocEmergencyDto> searchByParams(int page, int size, String params) {
+	public Page<LocEmergencyDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<LocEmergency> locEmergencyList;
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		RouteDto routeDto = new RouteDto();
+		logger.info("Searching location emergency entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
 				locEmergencyList = locEmergencyDao.findByNameOrCode(pageRequest);
-				if (locEmergencyList != null) {
-					for (LocEmergency locEmergency : locEmergencyList) {
-						LocEmergencyDto locEmergencyDto = new LocEmergencyDto();
-						locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
-						if (locEmergency.getRouteList() != null) {
-							for (Route route : locEmergency.getRouteList()) {
-								routeDto = new RouteDto();
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-
-							locEmergencyDto.setRouteList(routeDtoList);
-							routeDtoList = new ArrayList<>();
-
-						}
-						locEmergencyDtoList.add(locEmergencyDto);
-
-					}
-				}
-
 			} else {
 				locEmergencyList = locEmergencyDao.findByNameOrCode(pageRequest, params);
-				if (locEmergencyList != null) {
-					for (LocEmergency locEmergency : locEmergencyList) {
-						LocEmergencyDto locEmergencyDto = new LocEmergencyDto();
-						locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
-						if (locEmergency.getRouteList() != null) {
-							for (Route route : locEmergency.getRouteList()) {
-								routeDto = new RouteDto();
-								routeDto = modelMapper.map(route, RouteDto.class);
-								routeDtoList.add(routeDto);
-							}
-							locEmergencyDto.setRouteList(routeDtoList);
-							routeDtoList = new ArrayList<>();
+			}
+			if (locEmergencyList != null) {
+				for (LocEmergency locEmergency : locEmergencyList) {
+					LocEmergencyDto locEmergencyDto = new LocEmergencyDto();
+					locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
+					if (locEmergency.getRouteList() != null) {
+						for (Route route : locEmergency.getRouteList()) {
+							routeDto = new RouteDto();
+							routeDto = modelMapper.map(route, RouteDto.class);
+							routeDtoList.add(routeDto);
 						}
-						locEmergencyDtoList.add(locEmergencyDto);
+						locEmergencyDto.setRouteList(routeDtoList);
+						routeDtoList = new ArrayList<>();
 					}
+					locEmergencyDtoList.add(locEmergencyDto);
+					logger.info("Successfully searching location emergency entity: " + locEmergencyDtoList);
 				}
 			}
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving location emergency entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error retrieving location emergency entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 		return new PageImpl<>(locEmergencyDtoList, pageRequest, locEmergencyList.getTotalElements());
 	}
-	
+
 	@Override
 	public List<LocEmergencyDto> getAllList() {
 

@@ -304,51 +304,29 @@ public class NotificationServiceImpl implements NotificationService {
 		try {
 			if (params == null || params.isEmpty()) {
 				notiList = notificationDao.findByNotisubject(pageRequest);
-				if (notiList != null) {
-					for (Notification notification : notiList) {
-						NotificationDto notiDto = new NotificationDto();
-						notiDto = modelMapper.map(notification, NotificationDto.class);
-						if (notification.getModeNotiList() != null) {
-							for (ModeNoti modeNoti : notification.getModeNotiList()) {
-								modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-								modeNotiDtoList.add(modeNotiDto);
-							}
-							notiDto.setModeNotiDto(modeNotiDtoList);
-						}
-						modeNotiDtoList = new ArrayList<>();
-						if(notification.getEmergency() != null) {
-							if (notification.getEmergency().getSyskey() != 0) {
-								Emergency emergency = notification.getEmergency();
-								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								notiDto.setEmergencyDto(emergencyDto);
-							}
-						}						
-						notiDtoList.add(notiDto);
-					}
-				}
 			} else {
 				notiList = notificationDao.findByNotisubject(pageRequest, params);
-				if (notiList != null) {
-					for (Notification notification : notiList) {
-						NotificationDto notiDto = new NotificationDto();
-						notiDto = modelMapper.map(notification, NotificationDto.class);
-						if (notification.getModeNotiList() != null) {
-							for (ModeNoti modeNoti : notification.getModeNotiList()) {
-								modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-								modeNotiDtoList.add(modeNotiDto);
-							}
-							notiDto.setModeNotiDto(modeNotiDtoList);
+			}
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					if (notification.getModeNotiList() != null) {
+						for (ModeNoti modeNoti : notification.getModeNotiList()) {
+							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+							modeNotiDtoList.add(modeNotiDto);
 						}
-						modeNotiDtoList = new ArrayList<>();
-						if(notification.getEmergency() != null) {
-							if (notification.getEmergency().getSyskey() != 0) {
-								Emergency emergency = notification.getEmergency();
-								EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
-								notiDto.setEmergencyDto(emergencyDto);
-							}
-						}						
-						notiDtoList.add(notiDto);
+						notiDto.setModeNotiDto(modeNotiDtoList);
 					}
+					modeNotiDtoList = new ArrayList<>();
+					if(notification.getEmergency() != null) {
+						if (notification.getEmergency().getSyskey() != 0) {
+							Emergency emergency = notification.getEmergency();
+							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+							notiDto.setEmergencyDto(emergencyDto);
+						}
+					}						
+					notiDtoList.add(notiDto);
 				}
 			}
 		} catch (DataAccessException dae) {

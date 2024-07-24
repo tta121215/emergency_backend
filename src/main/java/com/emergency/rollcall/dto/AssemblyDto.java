@@ -1,6 +1,5 @@
 package com.emergency.rollcall.dto;
 
-
 public class AssemblyDto {
 	private long syskey;
 	private String name;
@@ -93,20 +92,13 @@ public class AssemblyDto {
 
 		return l_Date;
 	}
-	
+
 	@Override
-    public String toString() {
-        return "AssemblyDto{" +
-                "syskey=" + syskey +
-                ", name='" + name + '\'' +
-                ", latitude='" + latitude + '\'' + 
-                ", longtiude='" + longtiude + '\'' +
-                ", ipaddress='" + ipaddress + '\'' +
-                ", accesstype='" + accesstype + '\''+
-                ", status='" + status + '\'' +
-                ", createddate=" + createddate +
-                ", modifieddate=" + modifieddate +
-                '}';
-    }
+	public String toString() {
+		return "AssemblyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", latitude='" + latitude + '\''
+				+ ", longtiude='" + longtiude + '\'' + ", ipaddress='" + ipaddress + '\'' + ", accesstype='"
+				+ accesstype + '\'' + ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate="
+				+ modifieddate + '}';
+	}
 
 }

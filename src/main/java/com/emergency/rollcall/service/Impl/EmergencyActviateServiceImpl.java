@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -39,6 +40,8 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 
 @Service
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
+	
+	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
@@ -70,6 +73,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		LocEmergency locEmergency = new LocEmergency();
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
+		logger.info("Saving Emergency activate entity: " + eActivateDto);
 
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -85,7 +89,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						assemblyList.add(assemblyOptional.get());
 					} else {
 						res.setStatus_code(401);
-						res.setMessage("Assembly data is invalid.");
+						res.setMessage("Assembly data is invalid.");						
 						return res;
 					}
 				}
@@ -144,19 +148,23 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					logger.info("Saving emergency activate entity: " + entityres);
 				}
 			} else {
 				EmergencyActivate entityres = emergencyActivateDao.save(eActivate);
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Updated");
+					logger.info("Saving emergency activate entity: " + entityres);
 				}
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error saving emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error saving emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -167,6 +175,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	@Override
 	public EmergencyActivateDto getById(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
+		logger.info("Searching emergency activate entity: " + id);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
@@ -202,11 +211,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 			}
+			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return emergencyAcivateDto;
 		} catch (DataAccessException dae) {
+			logger.info("Error retrieving emergency activate entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
 			throw new RuntimeException("Database error occurred, please try again later.", dae);
 		} catch (Exception e) {
+			logger.info("Error saving emergency activate entity: " + e.getMessage());
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
@@ -223,6 +235,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
+		logger.info("Updating emergency activate entity: " + eActivateDto);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(eActivateDto.getSyskey());
 			if (eActivateOptional.isPresent()) {
@@ -295,15 +308,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				emergencyActivateDao.save(eActivate);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
+				logger.info("Successfully updating emergency activate entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("Data does not found");
+				logger.info("Data not found updating emergency activate entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error updating emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error updating emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -315,6 +332,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	public ResponseDto deleteEmergencyActivate(long id) {
 		ResponseDto res = new ResponseDto();
 		EmergencyActivate eActivate = new EmergencyActivate();
+		logger.info("Deleting emergency activate entity: " + id);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
@@ -325,15 +343,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				emergencyActivateDao.delete(eActivate);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
+				logger.info("Successfully deleting emergency activate entity: " + res.getMessage());
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
+				logger.info("Data does not found emergency activate entity: " + res.getMessage());
 			}
 
 		} catch (DataAccessException e) {
+			logger.info("Error deleting emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("Database error occurred: " + e.getMessage());
 		} catch (Exception e) {
+			logger.info("Error deleting emergency activate entity: " + e.getMessage());
 			res.setStatus_code(500);
 			res.setMessage("An unexpected error occurred: " + e.getMessage());
 		}
@@ -356,7 +378,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	    } else {
 	        sort = Sort.by(sortDirection, "name");
 	    }
-
+	    logger.info("Searching emergency activate entity: ");
 	    PageRequest pageRequest = PageRequest.of(page, size, sort);
 	    Page<EmergencyActivate> emergencyList;
 	    List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
@@ -402,12 +424,15 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	                }
 
 	                emergencyActivateDtoList.add(eActivateDto);
+	                logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 	            }
 	        }
 	    } catch (DataAccessException dae) {
+	    	logger.info("Error searching emergency activate entity: " + dae.getMessage());
 	        System.err.println("Database error occurred: " + dae.getMessage());
 	        throw new RuntimeException("Database error occurred, please try again later.", dae);
 	    } catch (Exception e) {
+	    	logger.info("Error searching emergency activate entity: " + e.getMessage());
 	        System.err.println("An unexpected error occurred: " + e.getMessage());
 	        throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 	    }

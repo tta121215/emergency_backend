@@ -15,7 +15,7 @@ public class EmergencyActivateDto {
 	private long condition_syskey;
 	private long locemrgency_syskey;
 	private List<AssemblyDto> assemblyDtoList;
-	private List<RouteDto> routeDtoList;	
+	private List<RouteDto> routeDtoList;
 	private EmergencyDto emergencyDto;
 	private ConditionDto conditionDto;
 	private LocEmergencyDto locEmergencyDto;
@@ -146,6 +146,17 @@ public class EmergencyActivateDto {
 
 	public void setRouteDtoList(List<RouteDto> routeDtoList) {
 		this.routeDtoList = routeDtoList;
+	}
+
+	@Override
+	public String toString() {
+		return "EmergencyActivateDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", remark='" + remark + '\''
+				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ ", activateDate='" + activateDate + '\'' + ", activateTime='" + activateTime + '\''
+				+ ", emergency_syskey='" + emergency_syskey + '\'' + ", condition_syskey='" + condition_syskey + '\''
+				+ ", locemrgency_syskey='" + locemrgency_syskey + '\'' + ", assemblyDtoList='" + assemblyDtoList + '\''
+				+ ", routeDtoList='" + routeDtoList + '\'' + ", emergencyDto='" + emergencyDto + '\''
+				+ ", conditionDto='" + conditionDto + '\'' + ", locEmergencyDto='" + locEmergencyDto + '\'' + '}';
 	}
 
 }

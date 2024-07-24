@@ -15,7 +15,6 @@ public class ReNotificationDto {
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
 	}
-	
 
 	public String getTime() {
 		return time;
@@ -55,6 +54,13 @@ public class ReNotificationDto {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	@Override
+	public String toString() {
+		return "ReNotificationDto{" + "syskey=" + syskey + ", time='" + time + '\'' + ", frequency='" + frequency + '\''
+				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ '}';
 	}
 
 }

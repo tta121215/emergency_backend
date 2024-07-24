@@ -2,6 +2,9 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,6 +33,8 @@ import com.emergency.rollcall.service.NotificationService;
 @CrossOrigin
 @RequestMapping("noti")
 public class NotificationController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
 	@Autowired
 	private NotificationService notificationService;
@@ -39,22 +44,25 @@ public class NotificationController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to save notification with data: {}", notiDto);
 		if (notiDto != null) {
 			responseDto = notificationService.saveNotification(notiDto);
 			if (responseDto.getMessage().equals("Successfully Saved")) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to save notification with data: {}", notiDto);
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Error to save notification with data: {}", notiDto);
 			}
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
-			message.setMessage("Error Save assembly");
+			message.setMessage("Error save notification");
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -67,6 +75,7 @@ public class NotificationController {
 		NotificationDto notiDto = new NotificationDto();
 		Response<NotificationDto> response = new Response<>();
 		Message message = new Message();
+		logger.info("Received request to retrieve notification with data: {}", id);
 
 		if (id != 0) {
 			notiDto = notificationService.getById(id);
@@ -74,16 +83,19 @@ public class NotificationController {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
+				logger.info("Successfully to save notification with data: {}", notiDto);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve notification with data: {}", notiDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to retrieve notification with data: {}", notiDto);
 		}
 		response.setMessage(message);
 		response.setData(notiDto);
@@ -96,21 +108,25 @@ public class NotificationController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to update notification with data: {}", notiDto);
 		if (notiDto != null) {
 			responseDto = notificationService.updateNotification(notiDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found to update notification with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to update notification with data: {}", responseDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("404");
 			message.setMessage("Data does not dound");
+			logger.info("Data does not found to update notification with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -122,21 +138,26 @@ public class NotificationController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to delete notification with data: {}", id);
+		
 		if (id != 0) {
 			responseDto = notificationService.deleteNotification(id);
 			if (responseDto.getMessage().equals("No data found")) {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Data does not found to update notification with data: {}", responseDto);
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
+				logger.info("Successfully to update notification with data: {}", responseDto);
 			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No data found");
+			logger.info("Received request to update notification with data: {}", responseDto);
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -152,17 +173,20 @@ public class NotificationController {
 		ResponseList<NotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotificationDto> notificationDtoList = new ArrayList<>();
+		logger.info("Received request to update notification with data: {}", page,size,params,sortBy,direction);
 		Page<NotificationDto> notiDtoPage = notificationService.searchByParams(page, size, params, sortBy, direction);
 		notificationDtoList = notiDtoPage.getContent();
 		if (!notificationDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to search notification with data: {}", notificationDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("Data does not found to search notification with data: {}", notificationDtoList);
 		}
 
 		response.setMessage(message);
