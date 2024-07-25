@@ -43,7 +43,7 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 
 @Service
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
-	
+
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
 
 	@Autowired
@@ -63,9 +63,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
-	
-	@Autowired
-	private NotificationDao notificationDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -77,7 +74,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		Emergency emergency = new Emergency();
 		Condition condition = new Condition();
 		LocEmergency locEmergency = new LocEmergency();
-		Notification notification = new Notification();
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
@@ -96,7 +92,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						assemblyList.add(assemblyOptional.get());
 					} else {
 						res.setStatus_code(401);
-						res.setMessage("Assembly data is invalid.");						
+						res.setMessage("Assembly data is invalid.");
 						return res;
 					}
 				}
@@ -131,7 +127,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				if (conditionOptional.isPresent()) {
 					condition = conditionOptional.get();
 					eActivate.setCondition(condition);
-					
+
 				} else {
 					res.setStatus_code(401);
 					res.setMessage("Condition data is invalid.");
@@ -150,19 +146,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					return res;
 				}
 			}
-			
-			if (eActivateDto.getNotification_syskey() != 0) {
-				Optional<Notification> notificationOptional = notificationDao.findById(eActivateDto.getNotification_syskey());
-				if (notificationOptional.isPresent()) {
-					notification = notificationOptional.get();
-					eActivate.setNotification(notification);
-				} else {
-					res.setStatus_code(401);
-					res.setMessage("Notification data is invalid.");
-					return res;
-				}
-			}
-
 
 			if (eActivate.getSyskey() == 0) {
 				EmergencyActivate entityres = emergencyActivateDao.save(eActivate);
@@ -219,13 +202,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(),
 							LocEmergencyDto.class);
 					emergencyAcivateDto.setLocEmergencyDto(locEmergencyDto);
-				}
-				
-				if (eActivate.getNotification() != null) {
-					emergencyAcivateDto.setNotification_syskey(eActivate.getNotification().getSyskey());
-					NotificationDto notificationDto = modelMapper.map(eActivate.getNotification(),
-							NotificationDto.class);
-					emergencyAcivateDto.setNotificationDto(notificationDto);
 				}
 
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
@@ -332,19 +308,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						return res;
 					}
 				}
-				
-				if (eActivateDto.getNotification_syskey() != 0) {
-					Optional<Notification> notificatioOptional = notificationDao
-							.findById(eActivateDto.getNotification_syskey());
-					if (notificatioOptional.isPresent()) {
-						Notification notification = notificatioOptional.get();
-						eActivate.setNotification(notification);
-					} else {
-						res.setStatus_code(401);
-						res.setMessage("Notification data is invalid.");
-						return res;
-					}
-				}
 
 				emergencyActivateDao.save(eActivate);
 				res.setStatus_code(200);
@@ -403,89 +366,83 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		return res;
 	}
 
-
 	@Override
 	public Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy,
 			String direction) {
-		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;    
-	    
-	    Sort sort = Sort.by(sortDirection, sortBy);
-	    if (sortBy.equals("emergency.name")) {
-	        sort = Sort.by(sortDirection, "emergency.name");
-	    } else if (sortBy.equals("condition.name")) {
-	        sort = Sort.by(sortDirection, "condition.name");
-	    }  else if (sortBy.equals("locEmergency.name")) {
-	        sort = Sort.by(sortDirection, "locEmergency.name");
-	    } else {
-	        sort = Sort.by(sortDirection, "name");
-	    }
-	    logger.info("Searching emergency activate entity: ");
-	    PageRequest pageRequest = PageRequest.of(page, size, sort);
-	    Page<EmergencyActivate> emergencyList;
-	    List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-	    try {
-	        if (params == null || params.isEmpty()) {
-	            emergencyList = emergencyActivateDao.findAll(pageRequest); 
-	        } else {
-	            emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest, params);
-	        }
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("emergency.name")) {
+			sort = Sort.by(sortDirection, "emergency.name");
+		} else if (sortBy.equals("condition.name")) {
+			sort = Sort.by(sortDirection, "condition.name");
+		} else if (sortBy.equals("locEmergency.name")) {
+			sort = Sort.by(sortDirection, "locEmergency.name");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+		logger.info("Searching emergency activate entity: ");
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
+		Page<EmergencyActivate> emergencyList;
+		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 
-	        if (emergencyList != null) {
-	            for (EmergencyActivate eActivate : emergencyList) {
-	                EmergencyActivateDto eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
-	                
-	                if (eActivate.getAssemblyList() != null) {
-	                    List<AssemblyDto> assemblyDtoList = eActivate.getAssemblyList().stream()
-	                            .map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
-	                            .collect(Collectors.toList());
-	                    eActivateDto.setAssemblyDtoList(assemblyDtoList);
-	                }
-	               
-	                if (eActivate.getRouteList() != null) {
-	                    List<RouteDto> routeDtoList = eActivate.getRouteList().stream()
-	                            .map(route -> modelMapper.map(route, RouteDto.class))
-	                            .collect(Collectors.toList());
-	                    eActivateDto.setRouteDtoList(routeDtoList);
-	                }
-	               
-	                if (eActivate.getEmergency() != null && eActivate.getEmergency().getSyskey() != 0) {
-	                    EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
-	                    eActivateDto.setEmergencyDto(emergencyDto);
-	                }
-	                
-	                if (eActivate.getCondition() != null && eActivate.getCondition().getSyskey() != 0) {
-	                    ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
-	                    eActivateDto.setConditionDto(conditionDto);
-	                }
-	                
-	                if (eActivate.getLocEmergency() != null && eActivate.getLocEmergency().getSyskey() != 0) {
-	                    LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(), LocEmergencyDto.class);
-	                    eActivateDto.setLocEmergencyDto(locEmergencyDto);
-	                }
-	                
-	                if (eActivate.getNotification() != null && eActivate.getNotification().getSyskey() != 0) {
-	                    NotificationDto notificationDto = modelMapper.map(eActivate.getNotification(), NotificationDto.class);
-	                    eActivateDto.setNotificationDto(notificationDto);
-	                }
+		try {
+			if (params == null || params.isEmpty()) {
+				emergencyList = emergencyActivateDao.findAll(pageRequest);
+			} else {
+				emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest, params);
+			}
 
-	                emergencyActivateDtoList.add(eActivateDto);
-	                logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
-	            }
-	        }
-	    } catch (DataAccessException dae) {
-	    	logger.info("Error searching emergency activate entity: " + dae.getMessage());
-	        System.err.println("Database error occurred: " + dae.getMessage());
-	        throw new RuntimeException("Database error occurred, please try again later.", dae);
-	    } catch (Exception e) {
-	    	logger.info("Error searching emergency activate entity: " + e.getMessage());
-	        System.err.println("An unexpected error occurred: " + e.getMessage());
-	        throw new RuntimeException("An unexpected error occurred, please try again later.", e);
-	    }
+			if (emergencyList != null) {
+				for (EmergencyActivate eActivate : emergencyList) {
+					EmergencyActivateDto eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
 
-	    return new PageImpl<>(emergencyActivateDtoList, pageRequest, emergencyList.getTotalElements());
+					if (eActivate.getAssemblyList() != null) {
+						List<AssemblyDto> assemblyDtoList = eActivate.getAssemblyList().stream()
+								.map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
+								.collect(Collectors.toList());
+						eActivateDto.setAssemblyDtoList(assemblyDtoList);
+					}
+
+					if (eActivate.getRouteList() != null) {
+						List<RouteDto> routeDtoList = eActivate.getRouteList().stream()
+								.map(route -> modelMapper.map(route, RouteDto.class)).collect(Collectors.toList());
+						eActivateDto.setRouteDtoList(routeDtoList);
+					}
+
+					if (eActivate.getEmergency() != null && eActivate.getEmergency().getSyskey() != 0) {
+						EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
+						eActivateDto.setEmergencyDto(emergencyDto);
+					}
+
+					if (eActivate.getCondition() != null && eActivate.getCondition().getSyskey() != 0) {
+						ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
+						eActivateDto.setConditionDto(conditionDto);
+					}
+
+					if (eActivate.getLocEmergency() != null && eActivate.getLocEmergency().getSyskey() != 0) {
+						LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(),
+								LocEmergencyDto.class);
+						eActivateDto.setLocEmergencyDto(locEmergencyDto);
+					}
+
+					emergencyActivateDtoList.add(eActivateDto);
+					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
+				}
+			}
+		} catch (DataAccessException dae) {
+			logger.info("Error searching emergency activate entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error searching emergency activate entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return new PageImpl<>(emergencyActivateDtoList, pageRequest, emergencyList.getTotalElements());
 	}
-	
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)

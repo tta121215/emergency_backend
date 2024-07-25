@@ -31,27 +31,23 @@ public class EmergencyActivate {
 	private String activateTime;
 	private String createddate;
 	private String modifieddate;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")	
+	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
 	private Emergency emergency;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "condition_syskey", referencedColumnName = "syskey")	
+	@JoinColumn(name = "condition_syskey", referencedColumnName = "syskey")
 	private Condition condition;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")	
+	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")
 	private LocEmergency locEmergency;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "notification_syskey", referencedColumnName = "syskey")	
-	private Notification notification;
-	
+
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "activate_assembly", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
 	private List<Assembly> assemblyList = new ArrayList<>();
-	
+
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "activate_route", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
@@ -158,14 +154,6 @@ public class EmergencyActivate {
 
 	public void setRouteList(List<Route> routeList) {
 		this.routeList = routeList;
-	}
-
-	public Notification getNotification() {
-		return notification;
-	}
-
-	public void setNotification(Notification notification) {
-		this.notification = notification;
 	}
 
 }
