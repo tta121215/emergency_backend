@@ -333,11 +333,15 @@ public class NotificationServiceImpl implements NotificationService {
 				for (Notification notification : notiList) {
 					NotificationDto notiDto = new NotificationDto();
 					notiDto = modelMapper.map(notification, NotificationDto.class);
-					if (notification.getModeNotiList() != null) {
+					String notimode="";
+					String notisub="";
+					if (notification.getModeNotiList() != null && notification.getModeNotiList().size()>0) {
 						for (ModeNoti modeNoti : notification.getModeNotiList()) {
 							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
 							modeNotiDtoList.add(modeNotiDto);
+							notimode+=modeNotiDto.getName()+",";
 						}
+						notiDto.setNotimode(notimode.substring(0, notimode.length()-1));
 						notiDto.setModeNotiDto(modeNotiDtoList);
 					}
 					modeNotiDtoList = new ArrayList<>();
@@ -346,8 +350,10 @@ public class NotificationServiceImpl implements NotificationService {
 							Emergency emergency = notification.getEmergency();
 							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
 							notiDto.setEmergencyDto(emergencyDto);
+							notisub=emergencyDto.getName();
+							notiDto.setNotisubject(notisub);
 						}
-					}						
+					}	
 					notiDtoList.add(notiDto);
 					logger.info("Successsfully retrieving notification entity: " + notiDto);
 				}
