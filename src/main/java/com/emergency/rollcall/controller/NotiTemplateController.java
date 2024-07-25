@@ -20,7 +20,6 @@ import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.service.NotiTemplateService;
 
-
 @RestController
 @CrossOrigin
 @RequestMapping("notitemplate")
@@ -62,33 +61,27 @@ public class NotiTemplateController {
 
 	}
 
-	@GetMapping("{id}")
-	public ResponseEntity<Response<NotiTemplateDto>> getById(@PathVariable long id) {
+	@GetMapping("")
+	public ResponseEntity<Response<NotiTemplateDto>> getById() {
 		NotiTemplateDto notiTemplateDto = new NotiTemplateDto();
 		Response<NotiTemplateDto> response = new Response<>();
 		Message message = new Message();
-		logger.info("Received request to retrieve notification with data: {}", id);
+		logger.info("Received request to retrieve notification with data: {}");
 
-		if (id != 0) {
-			notiTemplateDto = notiTemplateService.getById(id);
-			if (notiTemplateDto.getSyskey() != 0) {
-				message.setState(true);
-				message.setCode("200");
-				message.setMessage("Data is successfully");
-				logger.info("Successfully to save notification with data: {}", notiTemplateDto);
+		notiTemplateDto = notiTemplateService.getById();
+		if (notiTemplateDto.getSyskey() != 0) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully to save notification with data: {}", notiTemplateDto);
 
-			} else {
-				message.setState(false);
-				message.setCode("401");
-				message.setMessage("No Data found");
-				logger.info("Data does not found to retrieve notification with data: {}", notiTemplateDto);
-			}
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 			logger.info("Data does not found to retrieve notification with data: {}", notiTemplateDto);
 		}
+
 		response.setMessage(message);
 		response.setData(notiTemplateDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);

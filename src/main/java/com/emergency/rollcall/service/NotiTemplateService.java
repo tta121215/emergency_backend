@@ -8,7 +8,7 @@ public interface NotiTemplateService {
 
 	ResponseDto saveNotiTemplate(NotiTemplateDto notiTemplateDto);
 
-	NotiTemplateDto getById(long id);
+	NotiTemplateDto getById();
 
 	ResponseDto updateNotiTemplate(NotiTemplateDto notiTemplateDto);
 

@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -69,14 +70,14 @@ public class NotiTemplateServiceImpl implements NotiTemplateService {
 	}
 
 	@Override
-	public NotiTemplateDto getById(long id) {
+	public NotiTemplateDto getById() {
 		NotiTemplateDto notificationDto = new NotiTemplateDto();
-		logger.info("Successsfully retrieving notification entity: " + id);
+		logger.info("Successsfully retrieving notification entity: ");
 		try {
-			Optional<NotiTemplate> notificationOptional = notiTemplateDao.findById(id);
-			if (notificationOptional.isPresent()) {
-				NotiTemplate notification = notificationOptional.get();
-				notificationDto = modelMapper.map(notification, NotiTemplateDto.class);
+			List<NotiTemplate> notificationList = notiTemplateDao.findAll();
+			if (notificationList != null) {
+				NotiTemplate notiTemplate = notificationList.get(0);
+				notificationDto = modelMapper.map(notiTemplate, NotiTemplateDto.class);
 				logger.info("Successsfully retrieving notification entity: " + notificationDto);
 			}
 
