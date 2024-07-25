@@ -33,7 +33,7 @@ import com.emergency.rollcall.service.NotificationService;
 @CrossOrigin
 @RequestMapping("noti")
 public class NotificationController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
 	@Autowired
@@ -139,7 +139,7 @@ public class NotificationController {
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
 		logger.info("Received request to delete notification with data: {}", id);
-		
+
 		if (id != 0) {
 			responseDto = notificationService.deleteNotification(id);
 			if (responseDto.getMessage().equals("No data found")) {
@@ -173,7 +173,7 @@ public class NotificationController {
 		ResponseList<NotificationDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotificationDto> notificationDtoList = new ArrayList<>();
-		logger.info("Received request to update notification with data: {}", page,size,params,sortBy,direction);
+		logger.info("Received request to search notification with data: {}", page, size, params, sortBy, direction);
 		Page<NotificationDto> notiDtoPage = notificationService.searchByParams(page, size, params, sortBy, direction);
 		notificationDtoList = notiDtoPage.getContent();
 		if (!notificationDtoList.isEmpty()) {
@@ -194,6 +194,34 @@ public class NotificationController {
 		response.setTotalItems(notiDtoPage.getTotalElements());
 		response.setTotalPages(notiDtoPage.getTotalPages());
 		response.setCurrentPage(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/listbyemergency")
+	public ResponseEntity<ResponseList<NotificationDto>> searchByParams(@RequestParam("id") Long id) {
+
+		ResponseList<NotificationDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<NotificationDto> notificationDtoList = new ArrayList<>();
+		logger.info("Received request to search notification with data: {}", id);
+		notificationDtoList = notificationService.searchByEmergency(id);
+		
+		if (!notificationDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully to search notification with data: {}", notificationDtoList);
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found to search notification with data: {}", notificationDtoList);
+		}
+
+		response.setMessage(message);
+		response.setData(notificationDtoList);		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

@@ -14,11 +14,13 @@ public class EmergencyActivateDto {
 	private long emergency_syskey;
 	private long condition_syskey;
 	private long locemrgency_syskey;
+	private long notification_syskey;
 	private List<AssemblyDto> assemblyDtoList;
 	private List<RouteDto> routeDtoList;
 	private EmergencyDto emergencyDto;
 	private ConditionDto conditionDto;
 	private LocEmergencyDto locEmergencyDto;
+	private NotificationDto notificationDto;
 
 	public long getSyskey() {
 		return syskey;
@@ -146,6 +148,22 @@ public class EmergencyActivateDto {
 
 	public void setRouteDtoList(List<RouteDto> routeDtoList) {
 		this.routeDtoList = routeDtoList;
+	}
+
+	public long getNotification_syskey() {
+		return notification_syskey;
+	}
+
+	public void setNotification_syskey(long notification_syskey) {
+		this.notification_syskey = notification_syskey;
+	}
+
+	public NotificationDto getNotificationDto() {
+		return notificationDto;
+	}
+
+	public void setNotificationDto(NotificationDto notificationDto) {
+		this.notificationDto = notificationDto;
 	}
 
 	@Override

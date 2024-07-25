@@ -44,6 +44,10 @@ public class EmergencyActivate {
 	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")	
 	private LocEmergency locEmergency;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "notification_syskey", referencedColumnName = "syskey")	
+	private Notification notification;
+	
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "activate_assembly", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
 	private List<Assembly> assemblyList = new ArrayList<>();
@@ -154,6 +158,14 @@ public class EmergencyActivate {
 
 	public void setRouteList(List<Route> routeList) {
 		this.routeList = routeList;
+	}
+
+	public Notification getNotification() {
+		return notification;
+	}
+
+	public void setNotification(Notification notification) {
+		this.notification = notification;
 	}
 
 }

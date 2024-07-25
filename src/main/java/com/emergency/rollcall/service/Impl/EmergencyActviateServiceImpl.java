@@ -22,12 +22,14 @@ import com.emergency.rollcall.dao.ConditionDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
 import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
+import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Assembly;
@@ -35,6 +37,7 @@ import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.entity.LocEmergency;
+import com.emergency.rollcall.entity.Notification;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.EmergencyActivateService;
 
@@ -60,6 +63,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
+	
+	@Autowired
+	private NotificationDao notificationDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -71,6 +77,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		Emergency emergency = new Emergency();
 		Condition condition = new Condition();
 		LocEmergency locEmergency = new LocEmergency();
+		Notification notification = new Notification();
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
@@ -143,6 +150,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					return res;
 				}
 			}
+			
+			if (eActivateDto.getNotification_syskey() != 0) {
+				Optional<Notification> notificationOptional = notificationDao.findById(eActivateDto.getNotification_syskey());
+				if (notificationOptional.isPresent()) {
+					notification = notificationOptional.get();
+					eActivate.setNotification(notification);
+				} else {
+					res.setStatus_code(401);
+					res.setMessage("Notification data is invalid.");
+					return res;
+				}
+			}
+
 
 			if (eActivate.getSyskey() == 0) {
 				EmergencyActivate entityres = emergencyActivateDao.save(eActivate);
@@ -199,6 +219,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(),
 							LocEmergencyDto.class);
 					emergencyAcivateDto.setLocEmergencyDto(locEmergencyDto);
+				}
+				
+				if (eActivate.getNotification() != null) {
+					emergencyAcivateDto.setNotification_syskey(eActivate.getNotification().getSyskey());
+					NotificationDto notificationDto = modelMapper.map(eActivate.getNotification(),
+							NotificationDto.class);
+					emergencyAcivateDto.setNotificationDto(notificationDto);
 				}
 
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
@@ -302,6 +329,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					} else {
 						res.setStatus_code(401);
 						res.setMessage("Location of emergency data is invalid.");
+						return res;
+					}
+				}
+				
+				if (eActivateDto.getNotification_syskey() != 0) {
+					Optional<Notification> notificatioOptional = notificationDao
+							.findById(eActivateDto.getNotification_syskey());
+					if (notificatioOptional.isPresent()) {
+						Notification notification = notificatioOptional.get();
+						eActivate.setNotification(notification);
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Notification data is invalid.");
 						return res;
 					}
 				}
@@ -422,6 +462,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	                if (eActivate.getLocEmergency() != null && eActivate.getLocEmergency().getSyskey() != 0) {
 	                    LocEmergencyDto locEmergencyDto = modelMapper.map(eActivate.getLocEmergency(), LocEmergencyDto.class);
 	                    eActivateDto.setLocEmergencyDto(locEmergencyDto);
+	                }
+	                
+	                if (eActivate.getNotification() != null && eActivate.getNotification().getSyskey() != 0) {
+	                    NotificationDto notificationDto = modelMapper.map(eActivate.getNotification(), NotificationDto.class);
+	                    eActivateDto.setNotificationDto(notificationDto);
 	                }
 
 	                emergencyActivateDtoList.add(eActivateDto);
