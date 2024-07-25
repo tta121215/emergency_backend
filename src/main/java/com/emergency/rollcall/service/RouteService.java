@@ -20,5 +20,7 @@ public interface RouteService {
 	Page<RouteDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
 	List<RouteDto> getAllList();
+	
+	List<RouteDto> getByLocationofEmergency(long id);
 
 }

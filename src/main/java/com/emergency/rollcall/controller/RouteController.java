@@ -218,5 +218,38 @@ public class RouteController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/locEmergencyId")
+	public ResponseEntity<ResponseList<RouteDto>> getByLocationofEmergency(@RequestParam("id") Long id) {
+		RouteDto routeDto = new RouteDto();
+		ResponseList<RouteDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<RouteDto> routeDtoList = new ArrayList<>();
+		logger.info("Received request to retrieve route by location of emergency with data: {}", id);
+		if (id != null) {
+			routeDtoList = routeService.getByLocationofEmergency(id);
+			if (routeDtoList != null) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully to retrieve route by location of emergency with data: {}", routeDto);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve route with data: {}", routeDto);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found to retrieve route with data: {}", routeDto);
+		}
+		response.setMessage(message);
+		response.setData(routeDtoList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 }
