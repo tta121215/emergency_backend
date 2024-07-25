@@ -370,6 +370,55 @@ public class NotificationServiceImpl implements NotificationService {
 
 		return new PageImpl<>(notiDtoList, pageRequest, notiList.getTotalElements());
 	}
+	
+	@Override
+	public List<NotificationDto> searchByEmergency(long id) {
+		
+		List<NotificationDto> notiDtoList = new ArrayList<>();
+		List<Notification> notiList = new ArrayList<>();
+		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+		ModeNotiDto modeNotiDto = new ModeNotiDto();
+		logger.info("Searching notification entity: ");
+
+		try {
+			if (id != 0) {
+				notiList = notificationDao.findByEmergencySyskey(id);
+			} 
+			if (notiList != null) {
+				for (Notification notification : notiList) {
+					NotificationDto notiDto = new NotificationDto();
+					notiDto = modelMapper.map(notification, NotificationDto.class);
+					if (notification.getModeNotiList() != null) {
+						for (ModeNoti modeNoti : notification.getModeNotiList()) {
+							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+							modeNotiDtoList.add(modeNotiDto);
+						}
+						notiDto.setModeNotiDto(modeNotiDtoList);
+					}
+					modeNotiDtoList = new ArrayList<>();
+					if(notification.getEmergency() != null) {
+						if (notification.getEmergency().getSyskey() != 0) {
+							Emergency emergency = notification.getEmergency();
+							EmergencyDto emergencyDto = modelMapper.map(emergency, EmergencyDto.class);
+							notiDto.setEmergencyDto(emergencyDto);
+						}
+					}						
+					notiDtoList.add(notiDto);
+					logger.info("Successsfully retrieving notification entity: " + notiDto);
+				}
+			}
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving notification entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error retrieving notification entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+		return notiDtoList;
+	}
+
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";

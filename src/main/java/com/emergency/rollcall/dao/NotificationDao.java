@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -23,5 +24,11 @@ public interface NotificationDao extends JpaRepository<Notification, Long> {
 	
 	@EntityGraph(attributePaths = {"modeNotiList"})
     Optional<Notification> findById(Long id);
+	
+	List<Notification> findByEmergency(Long id);
+	
+	@Query("SELECT n FROM Notification n WHERE n.emergency.syskey = :emergencySyskey")
+    List<Notification> findByEmergencySyskey(@Param("emergencySyskey") long emergencySyskey);
+	
 
 }

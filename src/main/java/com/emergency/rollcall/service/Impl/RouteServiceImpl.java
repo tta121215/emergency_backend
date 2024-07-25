@@ -228,6 +228,37 @@ public class RouteServiceImpl implements RouteService {
 
 		return routeDtoList;
 	}
+	
+	@Override
+	public List<RouteDto> getByLocationofEmergency(long id) {
+		List<RouteDto> routeDtoList = new ArrayList<>();
+		List<Route> routeList = new ArrayList<>();
+		logger.info("Retrieving list route entity: ");
+		try {
+			//routeList = routeDao.findByEmergencyLocaction(id);
+			routeList = routeDao.findAllExcludingLocEmergency(id);
+			if (routeList != null) {
+				for (Route route : routeList) {
+					RouteDto routeDto = new RouteDto();
+					routeDto = modelMapper.map(route, RouteDto.class);
+					routeDtoList.add(routeDto);
+				}
+				logger.info("Successfully route entity: " + routeDtoList);
+			}
+
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving list route entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error retrieving list route entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return routeDtoList;
+	}	
+	
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
