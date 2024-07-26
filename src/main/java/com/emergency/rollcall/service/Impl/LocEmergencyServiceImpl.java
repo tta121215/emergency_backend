@@ -13,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dao.RouteDao;
@@ -209,7 +210,8 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 
 	@Override
 	public Page<LocEmergencyDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
-		PageRequest pageRequest = PageRequest.of(page, size);
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<LocEmergency> locEmergencyList;
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
 		List<RouteDto> routeDtoList = new ArrayList<>();
