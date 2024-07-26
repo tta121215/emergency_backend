@@ -75,7 +75,7 @@ public class NotiTemplateServiceImpl implements NotiTemplateService {
 		logger.info("Successsfully retrieving notification entity: ");
 		try {
 			List<NotiTemplate> notificationList = notiTemplateDao.findAll();
-			if (notificationList != null) {
+			if (notificationList.size() > 0) {
 				NotiTemplate notiTemplate = notificationList.get(0);
 				notificationDto = modelMapper.map(notiTemplate, NotiTemplateDto.class);
 				logger.info("Successsfully retrieving notification entity: " + notificationDto);
