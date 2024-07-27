@@ -15,7 +15,9 @@ public interface RouteService {
 
 	RouteDto getById(long id);
 
-	ResponseDto updateRoute(RouteDto routeDto);
+	//ResponseDto updateRoute(RouteDto routeDto);
+	
+	ResponseDto updateRoute(long id, String name, String description, Integer status, MultipartFile attachFiles);
 
 	ResponseDto deleteRoute(long id);
 

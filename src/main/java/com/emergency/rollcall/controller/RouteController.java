@@ -40,32 +40,32 @@ public class RouteController {
 	@Autowired
 	private RouteService routeService;
 
-	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveRoute(@RequestBody RouteDto routeDto) {
-		Response<ResponseDto> response = new Response<>();
-		Message message = new Message();
-		ResponseDto responseDto = new ResponseDto();
-		logger.info("Received request to save route with data: {}", routeDto);
-		if (routeDto != null) {
-			responseDto = routeService.saveRoute(routeDto);
-			if (responseDto.getMessage().equals("Successfully Saved")) {
-				message.setState(true);
-				message.setCode("200");
-				message.setMessage(responseDto.getMessage());
-				logger.info("Successfully to save route with data: {}", routeDto);
-			}
-
-		} else {
-			message.setState(false);
-			message.setCode("401");
-			message.setMessage("Error Save route ");
-			logger.info("Error to save route with data: {}", responseDto);
-		}
-		response.setMessage(message);
-		response.setData(responseDto);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
-	}
+//	@PostMapping("")
+//	public ResponseEntity<Response<ResponseDto>> saveRoute(@RequestBody RouteDto routeDto) {
+//		Response<ResponseDto> response = new Response<>();
+//		Message message = new Message();
+//		ResponseDto responseDto = new ResponseDto();
+//		logger.info("Received request to save route with data: {}", routeDto);
+//		if (routeDto != null) {
+//			responseDto = routeService.saveRoute(routeDto);
+//			if (responseDto.getMessage().equals("Successfully Saved")) {
+//				message.setState(true);
+//				message.setCode("200");
+//				message.setMessage(responseDto.getMessage());
+//				logger.info("Successfully to save route with data: {}", routeDto);
+//			}
+//
+//		} else {
+//			message.setState(false);
+//			message.setCode("401");
+//			message.setMessage("Error Save route ");
+//			logger.info("Error to save route with data: {}", responseDto);
+//		}
+//		response.setMessage(message);
+//		response.setData(responseDto);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+//
+//	}
 
 	@GetMapping("{id}")
 	public ResponseEntity<Response<RouteDto>> getById(@PathVariable Long id) {
@@ -99,14 +99,47 @@ public class RouteController {
 
 	}
 
+//	@PutMapping("")
+//	public ResponseEntity<Response<ResponseDto>> updateRoute(@RequestBody RouteDto routeDto) {
+//		Response<ResponseDto> response = new Response<>();
+//		Message message = new Message();
+//		ResponseDto responseDto = new ResponseDto();
+//		logger.info("Received request to update rouete with data: {}", routeDto);
+//		if (routeDto != null) {
+//			responseDto = routeService.updateRoute(routeDto);
+//			if (responseDto.getMessage().equals("Data does not found")) {
+//				message.setState(false);
+//				message.setCode("401");
+//				message.setMessage(responseDto.getMessage());
+//				logger.info("Data does not found to update route with data: {}", responseDto);
+//			} else {
+//				message.setState(true);
+//				message.setCode("200");
+//				message.setMessage(responseDto.getMessage());
+//				logger.info("Successfully to update update with data: {}", responseDto);
+//			}
+//		} else {
+//			message.setState(false);
+//			message.setCode("404");
+//			message.setMessage("Data does not dound");
+//			logger.info("Data does not found to update route with data: {}", responseDto);
+//		}
+//		response.setMessage(message);
+//		response.setData(responseDto);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+//	}
+	
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateRoute(@RequestBody RouteDto routeDto) {
+	public ResponseEntity<Response<ResponseDto>> updateRoute(@RequestParam("id") Long id,
+			@RequestParam("name") String name,
+			@RequestParam("description") String description, @RequestParam("status") Integer status,
+			@RequestParam("attachFiles") MultipartFile attachFiles) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		logger.info("Received request to update rouete with data: {}", routeDto);
-		if (routeDto != null) {
-			responseDto = routeService.updateRoute(routeDto);
+		logger.info("Received request to update rouete with data: {}", id);
+		if (id != 0) {
+			responseDto = routeService.updateRoute(id,name,description,status,attachFiles);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
@@ -254,7 +287,7 @@ public class RouteController {
 
 	}
 
-	@PostMapping(value = "/save", consumes = "multipart/form-data")
+	@PostMapping(consumes = "multipart/form-data")
 	public ResponseEntity<Response<ResponseDto>> saveRouteWithAttach(@RequestParam("name") String name,
 			@RequestParam("description") String description, @RequestParam("status") Integer status,
 			@RequestParam("attachFiles") MultipartFile attachFiles) throws IOException {

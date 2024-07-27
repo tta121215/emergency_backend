@@ -100,23 +100,66 @@ public class RouteServiceImpl implements RouteService {
 		return routeDto;
 	}
 
+//	@Override
+//	public ResponseDto updateRoute(RouteDto routeDto) {
+//		ResponseDto res = new ResponseDto();
+//		Route route = new Route();
+//		String createdDate;
+//		ZonedDateTime dateTime = ZonedDateTime.now();
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+//		String strCreatedDate = dateTime.format(formatter);
+//		logger.info("Updaing route entity: " + routeDto);
+//		try {
+//			Optional<Route> routeOptional = routeDao.findById(routeDto.getSyskey());
+//			if (routeOptional.isPresent()) {
+//				route = routeOptional.get();
+//				createdDate = route.getCreateddate();
+//				route = modelMapper.map(routeDto, Route.class);
+//				route.setCreateddate(createdDate);
+//				route.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+//				routeDao.save(route);
+//				res.setStatus_code(200);
+//				res.setMessage("Successfully Updated");
+//				logger.info("Successfully updating route entity: " + res.getMessage());
+//			} else {
+//				res.setStatus_code(401);
+//				res.setMessage("Data does not found");
+//				logger.info("Data does not found route entity: " + res.getMessage());
+//			}
+//
+//		} catch (DataAccessException e) {
+//			logger.info("Error updating route entity: " + e.getMessage());
+//			res.setStatus_code(500);
+//			res.setMessage("Database error occurred: " + e.getMessage());
+//		} catch (Exception e) {
+//			logger.info("Error updating route entity: " + e.getMessage());
+//			res.setStatus_code(500);
+//			res.setMessage("An unexpected error occurred: " + e.getMessage());
+//		}
+//		return res;
+//	}
+
 	@Override
-	public ResponseDto updateRoute(RouteDto routeDto) {
+	public ResponseDto updateRoute(long id, String name ,String description, Integer status, MultipartFile attachFiles) {
 		ResponseDto res = new ResponseDto();
 		Route route = new Route();
 		String createdDate;
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
-		logger.info("Updaing route entity: " + routeDto);
+		logger.info("Updaing route entity: " + id);
 		try {
-			Optional<Route> routeOptional = routeDao.findById(routeDto.getSyskey());
+			Optional<Route> routeOptional = routeDao.findById(id);
 			if (routeOptional.isPresent()) {
 				route = routeOptional.get();
-				createdDate = route.getCreateddate();
-				route = modelMapper.map(routeDto, Route.class);
+				createdDate = route.getCreateddate();				
 				route.setCreateddate(createdDate);
 				route.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				route.setName(name);
+				route.setDescription(description);
+				route.setStatus(status);
+				route.setAttachName(attachFiles.getOriginalFilename());
+				route.setData(attachFiles.getBytes());
 				routeDao.save(route);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -139,6 +182,7 @@ public class RouteServiceImpl implements RouteService {
 		return res;
 	}
 
+	
 	@Override
 	public ResponseDto deleteRoute(long id) {
 		ResponseDto res = new ResponseDto();
