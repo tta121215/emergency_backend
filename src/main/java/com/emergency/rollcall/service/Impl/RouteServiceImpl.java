@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
@@ -258,6 +261,51 @@ public class RouteServiceImpl implements RouteService {
 
 		return routeDtoList;
 	}	
+	
+	@Override
+	public ResponseDto saveRouteAttach(String name, String description, Integer status, MultipartFile attachFiles) throws IOException {
+		ResponseDto res = new ResponseDto();
+		Route route = new Route();
+
+		ZonedDateTime dateTime = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String strCreatedDate = dateTime.format(formatter);
+		route.setSyskey(0);
+		route.setName(name);
+		route.setDescription(description);
+		route.setStatus(status);
+		route.setData(attachFiles.getBytes());
+		route.setAttachName(attachFiles.getOriginalFilename());
+		route.setCreateddate(strCreatedDate);
+		logger.info("Saving route entity: " );
+		route.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		try {
+			if (route.getSyskey() == 0) {
+				Route entityres = routeDao.save(route);
+				if (entityres.getSyskey() > 0) {
+					res.setStatus_code(200);
+					res.setMessage("Successfully Saved");
+					logger.info("Successfully saving route entity: " + entityres);
+				}
+			} else {
+				Route entityres = routeDao.save(route);
+				if (entityres.getSyskey() > 0) {
+					res.setStatus_code(200);
+					res.setMessage("Successfully Updated");
+					logger.info("Successfully updating route entity: " + entityres);
+
+				}
+			}
+		} catch (DataAccessException e) {
+			res.setStatus_code(500);
+			res.setMessage("Database error occurred: " + e.getMessage());
+		} catch (Exception e) {
+			res.setStatus_code(500);
+			res.setMessage("An unexpected error occurred: " + e.getMessage());
+		}
+
+		return res;
+	}
 	
 
 	public String ddMMyyyFormat(String aDate) {

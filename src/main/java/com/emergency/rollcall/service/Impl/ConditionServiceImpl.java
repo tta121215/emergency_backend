@@ -185,7 +185,7 @@ public class ConditionServiceImpl implements ConditionService {
 			} else {
 				conditionList = conditionDao.findByNameOrCode(pageRequest, params);
 			}
-			if (conditionList != null) {
+			if (!conditionList.isEmpty()) {
 				for (Condition condition : conditionList) {
 					ConditionDto conditionDto = new ConditionDto();
 					conditionDto = modelMapper.map(condition, ConditionDto.class);
@@ -213,7 +213,7 @@ public class ConditionServiceImpl implements ConditionService {
 		List<Condition> conditionList = new ArrayList<>();
 		try {
 			conditionList = conditionDao.findAllByStatus(1);
-			if (conditionList != null) {
+			if (!conditionList.isEmpty()) {
 				for (Condition condition : conditionList) {
 					ConditionDto conditionDto = new ConditionDto();
 					conditionDto = modelMapper.map(condition, ConditionDto.class);

@@ -188,7 +188,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 			} else {
 				assemblyList = assemblyDao.searchByParams(pageRequest, params);
 			}
-			if (assemblyList != null) {
+			if (!assemblyList.isEmpty()) {
 				for (Assembly assembly : assemblyList) {
 					AssemblyDto assemblyDto = new AssemblyDto();
 					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
@@ -218,7 +218,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		logger.info("Received assembly data list ");
 		try {
 			assemblyList = assemblyDao.findAllByStatus(1);
-			if (assemblyList != null) {
+			if (!assemblyList.isEmpty()) {
 				for (Assembly assembly : assemblyList) {
 					AssemblyDto assemblyDto = new AssemblyDto();
 					assemblyDto = modelMapper.map(assembly, AssemblyDto.class);

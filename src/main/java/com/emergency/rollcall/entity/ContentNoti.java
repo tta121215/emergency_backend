@@ -1,21 +1,15 @@
 package com.emergency.rollcall.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Route")
-public class Route {
+@Table(name = "Content_Noti")
+public class ContentNoti {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
@@ -26,30 +20,9 @@ public class Route {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	
-	@Lob
-    @Column(name = "data", columnDefinition = "BLOB")
-    private byte[] data;
-	
-	@Column(name = "attach_name")
-	private String attachName;
-
-	@ManyToMany(mappedBy = "routeList")
-	private List<LocEmergency> locEmergencyList = new ArrayList<>();
-
-	@ManyToMany(mappedBy = "routeList")
-	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
-	}
-
-	public List<EmergencyActivate> getEmergencyActivatesList() {
-		return emergencyActivatesList;
-	}
-
-	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
-		this.emergencyActivatesList = emergencyActivatesList;
 	}
 
 	public void setSyskey(long syskey) {
@@ -94,30 +67,6 @@ public class Route {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
-	}
-
-	public List<LocEmergency> getLocEmergencyList() {
-		return locEmergencyList;
-	}
-
-	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
-		this.locEmergencyList = locEmergencyList;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-
-	public String getAttachName() {
-		return attachName;
-	}
-
-	public void setAttachName(String attachName) {
-		this.attachName = attachName;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.Message;
@@ -32,14 +34,14 @@ import com.emergency.rollcall.service.RouteService;
 @CrossOrigin
 @RequestMapping("route")
 public class RouteController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RouteController.class);
 
 	@Autowired
 	private RouteService routeService;
 
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveCondition(@RequestBody RouteDto routeDto) {
+	public ResponseEntity<Response<ResponseDto>> saveRoute(@RequestBody RouteDto routeDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
@@ -98,7 +100,7 @@ public class RouteController {
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateCondition(@RequestBody RouteDto routeDto) {
+	public ResponseEntity<Response<ResponseDto>> updateRoute(@RequestBody RouteDto routeDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
@@ -128,7 +130,7 @@ public class RouteController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteCondition(@PathVariable("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteRoute(@PathVariable("id") long id) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
@@ -164,7 +166,7 @@ public class RouteController {
 			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<RouteDto> response = new ResponseList<>();
-		logger.info("Received request to search route with data: {}", page,size,sortBy,direction);
+		logger.info("Received request to search route with data: {}", page, size, sortBy, direction);
 		Message message = new Message();
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		Page<RouteDto> routePage = routeService.searchByParams(page, size, params, sortBy, direction);
@@ -218,9 +220,9 @@ public class RouteController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("/locEmergencyId")
-	public ResponseEntity<ResponseList<RouteDto>> getByLocationofEmergency(@RequestParam("id") Long id) {
+	public ResponseEntity<ResponseList<RouteDto>> getByLocationOfEmergency(@RequestParam("id") Long id) {
 		RouteDto routeDto = new RouteDto();
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();
@@ -250,6 +252,29 @@ public class RouteController {
 		response.setData(routeDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
+	}
+
+	@PostMapping(value = "/save", consumes = "multipart/form-data")
+	public ResponseEntity<Response<ResponseDto>> saveRouteWithAttach(@RequestParam("name") String name,
+			@RequestParam("description") String description, @RequestParam("status") Integer status,
+			@RequestParam("attachFiles") MultipartFile attachFiles) throws IOException {
+		Response<ResponseDto> response = new Response<>();
+		Message message = new Message();
+		ResponseDto responseDto = new ResponseDto();
+		logger.info("Received request to save route with data: {}", name);
+
+		responseDto = routeService.saveRouteAttach(name, description, status, attachFiles);
+		if (responseDto.getMessage().equals("Successfully Saved")) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage(responseDto.getMessage());
+			logger.info("Successfully to save route with data: {}", name);
+
+			response.setMessage(message);
+			response.setData(responseDto);			
+		}
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		
 	}
 
 }

@@ -1,8 +1,10 @@
 package com.emergency.rollcall.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
@@ -22,5 +24,7 @@ public interface RouteService {
 	List<RouteDto> getAllList();
 	
 	List<RouteDto> getByLocationofEmergency(long id);
+	
+	ResponseDto saveRouteAttach(String name, String description, Integer status, MultipartFile attachFiles) throws IOException;
 
 }

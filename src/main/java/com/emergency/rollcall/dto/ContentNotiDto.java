@@ -1,14 +1,12 @@
 package com.emergency.rollcall.dto;
 
-public class RouteDto {
+public class ContentNotiDto {
 	private long syskey;
 	private String name;
 	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	private byte[] data;
-	private String attachName;
 
 	public long getSyskey() {
 		return syskey;
@@ -58,22 +56,6 @@ public class RouteDto {
 		this.modifieddate = modifieddate;
 	}
 
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-
-	public String getAttachName() {
-		return attachName;
-	}
-
-	public void setAttachName(String attachName) {
-		this.attachName = attachName;
-	}
-
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -86,8 +68,9 @@ public class RouteDto {
 
 	@Override
 	public String toString() {
-		return "RouteDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", description='" + description + '\''
+		return "ModeNotiDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", description='" + description + '\''
 				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
 				+ '}';
 	}
+
 }

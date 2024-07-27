@@ -79,7 +79,7 @@ public class AssemblyCheckInServiceImpl implements AssemblyCheckInService {
 		List<AssemblyCheckIn> assemblyCheckInList = new ArrayList<>();
 		try {
 			assemblyCheckInList = assemblyCheckInDao.getAllListByActivationId(id);
-			if (assemblyCheckInList != null) {
+			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
 					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);

@@ -393,18 +393,18 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				emergencyList = emergencyActivateDao.findByNameandRemark(pageRequest, params);
 			}
 
-			if (emergencyList != null) {
+			if (!emergencyList.isEmpty()) {
 				for (EmergencyActivate eActivate : emergencyList) {
 					EmergencyActivateDto eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
 
-					if (eActivate.getAssemblyList() != null) {
+					if (!eActivate.getAssemblyList().isEmpty()) {
 						List<AssemblyDto> assemblyDtoList = eActivate.getAssemblyList().stream()
 								.map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
 								.collect(Collectors.toList());
 						eActivateDto.setAssemblyDtoList(assemblyDtoList);
 					}
 
-					if (eActivate.getRouteList() != null) {
+					if (!eActivate.getRouteList().isEmpty()) {
 						List<RouteDto> routeDtoList = eActivate.getRouteList().stream()
 								.map(route -> modelMapper.map(route, RouteDto.class)).collect(Collectors.toList());
 						eActivateDto.setRouteDtoList(routeDtoList);
