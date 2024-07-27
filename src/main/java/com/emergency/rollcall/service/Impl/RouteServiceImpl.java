@@ -147,7 +147,7 @@ public class RouteServiceImpl implements RouteService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
-		logger.info("Updaing route entity: " + id);
+		logger.info("Updating route entity: " + id);
 		try {
 			Optional<Route> routeOptional = routeDao.findById(id);
 			if (routeOptional.isPresent()) {
@@ -157,8 +157,11 @@ public class RouteServiceImpl implements RouteService {
 				route.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 				route.setName(name);
 				route.setDescription(description);
-				route.setStatus(status);
-				route.setAttachName(attachFiles.getOriginalFilename());
+				route.setStatus(status);				
+				if(attachFiles != null && !attachFiles.isEmpty()) {					
+					route.setData(attachFiles.getBytes());
+					route.setAttachName(attachFiles.getOriginalFilename());
+				}		
 				route.setData(attachFiles.getBytes());
 				routeDao.save(route);
 				res.setStatus_code(200);
