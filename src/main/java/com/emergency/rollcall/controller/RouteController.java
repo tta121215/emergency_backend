@@ -133,7 +133,7 @@ public class RouteController {
 	public ResponseEntity<Response<ResponseDto>> updateRoute(@RequestParam("id") Long id,
 			@RequestParam("name") String name,
 			@RequestParam("description") String description, @RequestParam("status") Integer status,
-			@RequestParam("attachFiles") MultipartFile attachFiles) {
+			@RequestParam(required = false) MultipartFile attachFiles) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
@@ -287,10 +287,10 @@ public class RouteController {
 
 	}
 
-	@PostMapping(consumes = "multipart/form-data")
+	@PostMapping("")
 	public ResponseEntity<Response<ResponseDto>> saveRouteWithAttach(@RequestParam("name") String name,
 			@RequestParam("description") String description, @RequestParam("status") Integer status,
-			@RequestParam("attachFiles") MultipartFile attachFiles) throws IOException {
+			@RequestParam(required = false) MultipartFile attachFiles) throws IOException {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();

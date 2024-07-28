@@ -161,8 +161,10 @@ public class RouteServiceImpl implements RouteService {
 				if(attachFiles != null && !attachFiles.isEmpty()) {					
 					route.setData(attachFiles.getBytes());
 					route.setAttachName(attachFiles.getOriginalFilename());
-				}		
-				route.setData(attachFiles.getBytes());
+				}else{
+					route.setData(null);
+					route.setAttachName("");
+				}
 				routeDao.save(route);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -321,8 +323,10 @@ public class RouteServiceImpl implements RouteService {
 		route.setName(name);
 		route.setDescription(description);
 		route.setStatus(status);
-		route.setData(attachFiles.getBytes());
-		route.setAttachName(attachFiles.getOriginalFilename());
+		if(attachFiles != null && !attachFiles.isEmpty()) {					
+			route.setData(attachFiles.getBytes());
+			route.setAttachName(attachFiles.getOriginalFilename());
+		}
 		route.setCreateddate(strCreatedDate);
 		logger.info("Saving route entity: " );
 		route.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
