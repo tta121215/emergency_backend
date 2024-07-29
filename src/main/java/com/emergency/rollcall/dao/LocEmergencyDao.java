@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.emergency.rollcall.entity.LocEmergency;
+import com.emergency.rollcall.entity.Route;
 
 @Repository
 public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
@@ -25,5 +26,8 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
     Optional<LocEmergency> findById(Long id);
 	
 	List<LocEmergency> findAllByStatus(int status);
+	
+	@Query("SELECT a FROM LocEmergency a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
+    List<LocEmergency> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 
 }

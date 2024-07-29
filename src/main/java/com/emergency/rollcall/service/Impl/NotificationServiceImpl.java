@@ -37,9 +37,6 @@ public class NotificationServiceImpl implements NotificationService {
 	private NotificationDao notificationDao;
 
 	@Autowired
-	private ModeNotiDao modeNotiDao;
-
-	@Autowired
 	private EmergencyDao emergencyDao;
 
 	@Autowired
@@ -49,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public ResponseDto saveNotification(NotificationDto notiDto) {
 		ResponseDto res = new ResponseDto();
 		Notification notification = new Notification();
-		List<ModeNoti> modeNoti = new ArrayList<>();
+		//List<ModeNoti> modeNoti = new ArrayList<>();
 		Emergency emergency = new Emergency();
 
 		ZonedDateTime dateTime = ZonedDateTime.now();
@@ -60,19 +57,19 @@ public class NotificationServiceImpl implements NotificationService {
 			notification = modelMapper.map(notiDto, Notification.class);
 
 			notification.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
-			if (notiDto.getModeNotiDto() != null) {
-				for (ModeNotiDto modeNotiData : notiDto.getModeNotiDto()) {
-					Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(modeNotiData.getSyskey());
-					if (modeNotiOptional.isPresent() && modeNotiOptional.get().getSyskey() != 0) {
-						modeNoti.add(modeNotiOptional.get());
-					} else {
-						res.setStatus_code(401);
-						res.setMessage("Mode Noti data is invalid.");
-						return res;
-					}
-				}
-				notification.setModeNotiList(modeNoti);
-			}
+//			if (notiDto.getModeNotiDto() != null) {
+//				for (ModeNotiDto modeNotiData : notiDto.getModeNotiDto()) {
+//					Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(modeNotiData.getSyskey());
+//					if (modeNotiOptional.isPresent() && modeNotiOptional.get().getSyskey() != 0) {
+//						modeNoti.add(modeNotiOptional.get());
+//					} else {
+//						res.setStatus_code(401);
+//						res.setMessage("Mode Noti data is invalid.");
+//						return res;
+//					}
+//				}
+//				notification.setModeNotiList(modeNoti);
+//			}
 			if (notiDto.getEmergencySyskey() != 0) {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
 				if (emergencyOptional.isPresent()) {
@@ -196,19 +193,19 @@ public class NotificationServiceImpl implements NotificationService {
 				notification = modelMapper.map(notiDto, Notification.class);
 				notification.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
 				notification.setCreateddate(createdDate);
-				if (notiDto.getModeNotiDto() != null) {
-					for (ModeNotiDto modeNotiDto : notiDto.getModeNotiDto()) {
-						Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(modeNotiDto.getSyskey());
-						if (modeNotiOptional.isPresent() && modeNotiOptional.get().getSyskey() != 0) {
-							modeNotiList.add(modeNotiOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Mode Noti data is invalid.");
-							return res;
-						}
-					}
-					notification.setModeNotiList(modeNotiList);
-				}
+//				if (notiDto.getModeNotiDto() != null) {
+//					for (ModeNotiDto modeNotiDto : notiDto.getModeNotiDto()) {
+//						Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(modeNotiDto.getSyskey());
+//						if (modeNotiOptional.isPresent() && modeNotiOptional.get().getSyskey() != 0) {
+//							modeNotiList.add(modeNotiOptional.get());
+//						} else {
+//							res.setStatus_code(401);
+//							res.setMessage("Mode Noti data is invalid.");
+//							return res;
+//						}
+//					}
+//					notification.setModeNotiList(modeNotiList);
+//				}
 				if (notiDto.getEmergencySyskey() != 0) {
 					Optional<Emergency> emergencyOptional = emergencyDao.findById(notiDto.getEmergencySyskey());
 					if (emergencyOptional.isPresent()) {
@@ -289,8 +286,8 @@ public class NotificationServiceImpl implements NotificationService {
 			Optional<Notification> notiOptional = notificationDao.findById(id);
 			if (notiOptional.isPresent()) {
 				notification = notiOptional.get();
-				notification.setModeNotiList(new ArrayList<>());
-				notificationDao.save(notification);
+				//notification.setModeNotiList(new ArrayList<>());
+				//notificationDao.save(notification);
 				notificationDao.delete(notification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
@@ -335,15 +332,15 @@ public class NotificationServiceImpl implements NotificationService {
 					notiDto = modelMapper.map(notification, NotificationDto.class);
 					String notimode="";
 					String notisub="";
-					if (notification.getModeNotiList() != null && notification.getModeNotiList().size()>0) {
-						for (ModeNoti modeNoti : notification.getModeNotiList()) {
-							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-							modeNotiDtoList.add(modeNotiDto);
-							notimode+=modeNotiDto.getName()+",";
-						}
-						notiDto.setNotimode(notimode.substring(0, notimode.length()-1));
-						notiDto.setModeNotiDto(modeNotiDtoList);
-					}
+//					if (notification.getModeNotiList() != null && notification.getModeNotiList().size()>0) {
+//						for (ModeNoti modeNoti : notification.getModeNotiList()) {
+//							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+//							modeNotiDtoList.add(modeNotiDto);
+//							notimode+=modeNotiDto.getName()+",";
+//						}
+//						notiDto.setNotimode(notimode.substring(0, notimode.length()-1));
+//						notiDto.setModeNotiDto(modeNotiDtoList);
+//					}
 					modeNotiDtoList = new ArrayList<>();
 					if(notification.getEmergency() != null) {
 						if (notification.getEmergency().getSyskey() != 0) {
@@ -375,9 +372,7 @@ public class NotificationServiceImpl implements NotificationService {
 	public List<NotificationDto> searchByEmergency(long id) {
 		
 		List<NotificationDto> notiDtoList = new ArrayList<>();
-		List<Notification> notiList = new ArrayList<>();
-		List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
-		ModeNotiDto modeNotiDto = new ModeNotiDto();
+		List<Notification> notiList = new ArrayList<>();	
 		logger.info("Searching notification entity: ");
 
 		try {
@@ -388,14 +383,14 @@ public class NotificationServiceImpl implements NotificationService {
 				for (Notification notification : notiList) {
 					NotificationDto notiDto = new NotificationDto();
 					notiDto = modelMapper.map(notification, NotificationDto.class);
-					if (notification.getModeNotiList() != null) {
-						for (ModeNoti modeNoti : notification.getModeNotiList()) {
-							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-							modeNotiDtoList.add(modeNotiDto);
-						}
-						notiDto.setModeNotiDto(modeNotiDtoList);
-					}
-					modeNotiDtoList = new ArrayList<>();
+//					if (notification.getModeNotiList() != null) {
+//						for (ModeNoti modeNoti : notification.getModeNotiList()) {
+//							modeNotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+//							modeNotiDtoList.add(modeNotiDto);
+//						}
+//						notiDto.setModeNotiDto(modeNotiDtoList);
+//					}
+					//modeNotiDtoList = new ArrayList<>();
 					if(notification.getEmergency() != null) {
 						if (notification.getEmergency().getSyskey() != 0) {
 							Emergency emergency = notification.getEmergency();

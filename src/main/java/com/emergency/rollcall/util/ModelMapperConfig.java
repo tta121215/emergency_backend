@@ -17,8 +17,8 @@ public class ModelMapperConfig {
                    .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
         
      // Custom mapping for modeNotiList
-        modelMapper.createTypeMap(Notification.class, NotificationDto.class)
-                   .addMappings(mapper -> mapper.map(Notification::getModeNotiList, NotificationDto::setModeNotiDto));
+//        modelMapper.createTypeMap(Notification.class, NotificationDto.class)
+//                   .addMappings(mapper -> mapper.map(Notification::getModeNotiList, NotificationDto::setModeNotiDto));
 
         return modelMapper;
     }

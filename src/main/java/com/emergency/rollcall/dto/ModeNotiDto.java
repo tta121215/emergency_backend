@@ -7,6 +7,9 @@ public class ModeNotiDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private String senderMail;
+	private String passcode;
+	private String hostServer;
 
 	public long getSyskey() {
 		return syskey;
@@ -54,6 +57,30 @@ public class ModeNotiDto {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public String getSenderMail() {
+		return senderMail;
+	}
+
+	public void setSenderMail(String senderMail) {
+		this.senderMail = senderMail;
+	}
+
+	public String getPasscode() {
+		return passcode;
+	}
+
+	public void setPasscode(String passcode) {
+		this.passcode = passcode;
+	}
+
+	public String getHostServer() {
+		return hostServer;
+	}
+
+	public void setHostServer(String hostServer) {
+		this.hostServer = hostServer;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

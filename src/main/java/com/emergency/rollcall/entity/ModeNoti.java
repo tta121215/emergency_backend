@@ -1,13 +1,9 @@
 package com.emergency.rollcall.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,9 +20,9 @@ public class ModeNoti {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	
-	@ManyToMany(mappedBy = "modeNotiList")
-	private List<Notification> notificationList = new ArrayList<>();
+	private String senderMail;
+	private String passcode;
+	private String hostServer;
 
 	public long getSyskey() {
 		return syskey;
@@ -76,13 +72,28 @@ public class ModeNoti {
 		this.modifieddate = modifieddate;
 	}
 
-	public List<Notification> getNotifactionList() {
-		return notificationList;
+	public String getSenderMail() {
+		return senderMail;
 	}
 
-	public void setNotifactionList(List<Notification> notificationList) {
-		this.notificationList = notificationList;
+	public void setSenderMail(String senderMail) {
+		this.senderMail = senderMail;
 	}
 
-	
+	public String getPasscode() {
+		return passcode;
+	}
+
+	public void setPasscode(String passcode) {
+		this.passcode = passcode;
+	}
+
+	public String getHostServer() {
+		return hostServer;
+	}
+
+	public void setHostServer(String hostServer) {
+		this.hostServer = hostServer;
+	}
+
 }

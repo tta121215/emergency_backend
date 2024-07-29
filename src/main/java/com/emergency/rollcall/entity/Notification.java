@@ -1,21 +1,15 @@
 package com.emergency.rollcall.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
 
 @Entity
 @Table(name = "Noti")
@@ -32,19 +26,19 @@ public class Notification {
 	private String createddate;
 	private String modifieddate;
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "noti_modenoti", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "mode_noti_syskey"))
-	private List<ModeNoti> modeNotiList = new ArrayList<>();
-	
+//	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+//	@JoinTable(name = "noti_modenoti", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "mode_noti_syskey"))
+//	private List<ModeNoti> modeNotiList = new ArrayList<>();
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")	
+	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
 	private Emergency emergency;
-		
+
 //
 //	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 //	@JoinTable(name = "noti_emergency", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "emergency_syskey"))
 //	private List<Emergency> emergencyList = new ArrayList<>();
-	
+
 //	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 //	@JoinTable(name = "noti_route", joinColumns = @JoinColumn(name = "noti_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 //	private List<Route> routeList = new ArrayList<>();
@@ -105,14 +99,6 @@ public class Notification {
 		this.modifieddate = modifieddate;
 	}
 
-	public List<ModeNoti> getModeNotiList() {
-		return modeNotiList;
-	}
-
-	public void setModeNotiList(List<ModeNoti> modeNotiList) {
-		this.modeNotiList = modeNotiList;
-	}
-
 	public Emergency getEmergency() {
 		return emergency;
 	}
@@ -120,6 +106,5 @@ public class Notification {
 	public void setEmergency(Emergency emergency) {
 		this.emergency = emergency;
 	}
-	
 
 }

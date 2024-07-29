@@ -15,7 +15,7 @@ public class Renotification {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
-	private int time;
+	private float time;
 	private int frequency;
 	private int status;
 	private String createddate;
@@ -28,12 +28,13 @@ public class Renotification {
 	public void setSyskey(long syskey) {
 		this.syskey = syskey;
 	}
+	
 
-	public int getTime() {
+	public float getTime() {
 		return time;
 	}
 
-	public void setTime(int time) {
+	public void setTime(float time) {
 		this.time = time;
 	}
 

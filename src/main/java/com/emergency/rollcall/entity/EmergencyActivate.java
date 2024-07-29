@@ -40,9 +40,9 @@ public class EmergencyActivate {
 	@JoinColumn(name = "condition_syskey", referencedColumnName = "syskey")
 	private Condition condition;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")
-	private LocEmergency locEmergency;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "loc_emergency_syskey", referencedColumnName = "syskey")
+//	private LocEmergency locEmergency;
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "activate_assembly", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
@@ -51,6 +51,10 @@ public class EmergencyActivate {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "activate_route", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "activate_locemergency", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
+	private List<LocEmergency> locEmergencyList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -132,14 +136,6 @@ public class EmergencyActivate {
 		this.condition = condition;
 	}
 
-	public LocEmergency getLocEmergency() {
-		return locEmergency;
-	}
-
-	public void setLocEmergency(LocEmergency locEmergency) {
-		this.locEmergency = locEmergency;
-	}
-
 	public List<Assembly> getAssemblyList() {
 		return assemblyList;
 	}
@@ -154,6 +150,14 @@ public class EmergencyActivate {
 
 	public void setRouteList(List<Route> routeList) {
 		this.routeList = routeList;
+	}
+
+	public List<LocEmergency> getLocEmergencyList() {
+		return locEmergencyList;
+	}
+
+	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
+		this.locEmergencyList = locEmergencyList;
 	}
 
 }

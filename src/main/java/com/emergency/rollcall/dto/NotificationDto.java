@@ -10,7 +10,7 @@ public class NotificationDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	private List<ModeNotiDto> modeNotiDto;
+	// private List<ModeNotiDto> modeNotiDto;
 	private long emergencySyskey;
 	private EmergencyDto emergencyDto;
 
@@ -70,14 +70,6 @@ public class NotificationDto {
 		this.modifieddate = modifieddate;
 	}
 
-	public List<ModeNotiDto> getModeNotiDto() {
-		return modeNotiDto;
-	}
-
-	public void setModeNotiDto(List<ModeNotiDto> modeNotiDto) {
-		this.modeNotiDto = modeNotiDto;
-	}
-
 	public long getEmergencySyskey() {
 		return emergencySyskey;
 	}
@@ -97,9 +89,8 @@ public class NotificationDto {
 	@Override
 	public String toString() {
 		return "NotificationDto{" + "syskey=" + syskey + ", notimode='" + notimode + '\'' + ", notisubject='"
-				+ notisubject + '\'' + ", notimessage='" + notimessage + '\'' + ", modeNotiDto='" + modeNotiDto + '\''
-				+ ", emergencySyskey='" + emergencySyskey + '\'' + ", emergencyDto='" + emergencyDto + '\''
-				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+				+ notisubject + '\'' + ", notimessage='" + notimessage + '\'' + ", emergencySyskey='" + emergencySyskey
+				+ '\'' + ", emergencyDto='" + emergencyDto + '\'' + ", status='" + status + '\'' + ", createddate="
+				+ createddate + ", modifieddate=" + modifieddate + '}';
 	}
 }

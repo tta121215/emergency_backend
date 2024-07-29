@@ -13,12 +13,11 @@ public class EmergencyActivateDto {
 	private String modifieddate;
 	private long emergency_syskey;
 	private long condition_syskey;
-	private long locemrgency_syskey;
 	private List<AssemblyDto> assemblyDtoList;
 	private List<RouteDto> routeDtoList;
+	private List<LocEmergencyDto> locEmergencyDtoList;
 	private EmergencyDto emergencyDto;
 	private ConditionDto conditionDto;
-	private LocEmergencyDto locEmergencyDto;
 
 	public long getSyskey() {
 		return syskey;
@@ -100,12 +99,12 @@ public class EmergencyActivateDto {
 		this.condition_syskey = condition_syskey;
 	}
 
-	public long getLocemrgency_syskey() {
-		return locemrgency_syskey;
+	public List<LocEmergencyDto> getLocEmergencyDtoList() {
+		return locEmergencyDtoList;
 	}
 
-	public void setLocemrgency_syskey(long locemrgency_syskey) {
-		this.locemrgency_syskey = locemrgency_syskey;
+	public void setLocEmergencyDtoList(List<LocEmergencyDto> locEmergencyDtoList) {
+		this.locEmergencyDtoList = locEmergencyDtoList;
 	}
 
 	public List<AssemblyDto> getAssemblyDtoList() {
@@ -132,14 +131,6 @@ public class EmergencyActivateDto {
 		this.conditionDto = conditionDto;
 	}
 
-	public LocEmergencyDto getLocEmergencyDto() {
-		return locEmergencyDto;
-	}
-
-	public void setLocEmergencyDto(LocEmergencyDto locEmergencyDto) {
-		this.locEmergencyDto = locEmergencyDto;
-	}
-
 	public List<RouteDto> getRouteDtoList() {
 		return routeDtoList;
 	}
@@ -154,9 +145,9 @@ public class EmergencyActivateDto {
 				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
 				+ ", activateDate='" + activateDate + '\'' + ", activateTime='" + activateTime + '\''
 				+ ", emergency_syskey='" + emergency_syskey + '\'' + ", condition_syskey='" + condition_syskey + '\''
-				+ ", locemrgency_syskey='" + locemrgency_syskey + '\'' + ", assemblyDtoList='" + assemblyDtoList + '\''
-				+ ", routeDtoList='" + routeDtoList + '\'' + ", emergencyDto='" + emergencyDto + '\''
-				+ ", conditionDto='" + conditionDto + '\'' + ", locEmergencyDto='" + locEmergencyDto + '\'' + '}';
+				+ ", locEmergencyDtoList='" + locEmergencyDtoList + '\'' + ", assemblyDtoList='" + assemblyDtoList
+				+ '\'' + ", routeDtoList='" + routeDtoList + '\'' + ", emergencyDto='" + emergencyDto + '\''
+				+ ", conditionDto='" + conditionDto + '\'' + '}';
 	}
 
 }

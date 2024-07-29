@@ -20,16 +20,16 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 	
 	@Query("SELECT c FROM EmergencyActivate c " +
 		       "LEFT JOIN c.emergency e " +
-		       "LEFT JOIN c.locEmergency le " +
+		       "LEFT JOIN c.condition con " +
 		       "WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) " +
 		       "OR LOWER(c.remark) LIKE LOWER(CONCAT('%', :param, '%')) " +
 		       "OR LOWER(e.name) LIKE LOWER(CONCAT('%', :param, '%')) " +
-		       "OR LOWER(le.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+		       "OR LOWER(con.name) LIKE LOWER(CONCAT('%', :param, '%'))")
 		Page<EmergencyActivate> findByNameandRemark(Pageable pageable, @Param("param") String param);
 	
 	@Query("SELECT c FROM EmergencyActivate c " +
 		       "LEFT JOIN c.emergency e " +
-		       "LEFT JOIN c.locEmergency le " )		      
+		       "LEFT JOIN c.condition con " )		      
 		Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
 
 

@@ -32,6 +32,9 @@ public class LocEmergency {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "loc_route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
+	
+	@ManyToMany(mappedBy = "locEmergencyList")
+	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
