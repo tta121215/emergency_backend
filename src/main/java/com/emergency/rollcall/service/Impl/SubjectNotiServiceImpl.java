@@ -47,23 +47,15 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 
 		subjectNoti.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 		try {
-			if (subjectNoti.getSyskey() == 0) {
-				SubjectNoti entityres = subjectNotiDao.save(subjectNoti);
-				if (entityres.getSyskey() > 0) {
-					res.setStatus_code(200);
-					res.setMessage("Successfully Saved");
-					logger.info("Successfully Saving subject noti entity: " + entityres);
 
-				}
-			} else {
-				SubjectNoti entityres = subjectNotiDao.save(subjectNoti);
-				if (entityres.getSyskey() > 0) {
-					res.setStatus_code(200);
-					res.setMessage("Successfully Updated");
-					logger.info("Successfully updating subject noti entity: " + entityres);
+			SubjectNoti entityres = subjectNotiDao.save(subjectNoti);
+			if (entityres.getId() > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Successfully Saved");
+				logger.info("Successfully Saving subject noti entity: " + entityres);
 
-				}
 			}
+
 		} catch (DataAccessException e) {
 			logger.info("Error saving subject noti entity: " + e.getMessage());
 			res.setStatus_code(500);
@@ -110,7 +102,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		String strCreatedDate = dateTime.format(formatter);
 		logger.info("Updating subject noti entity: " + subjectNotiDto);
 		try {
-			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(subjectNotiDto.getSyskey());
+			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(subjectNotiDto.getId());
 			if (subjectNotiOptional.isPresent()) {
 				subjectNoti = subjectNotiOptional.get();
 				createdDate = subjectNoti.getCreateddate();

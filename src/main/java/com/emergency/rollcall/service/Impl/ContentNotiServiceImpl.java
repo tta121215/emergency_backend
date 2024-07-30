@@ -46,23 +46,15 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 
 		contentNoti.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 		try {
-			if (contentNoti.getSyskey() == 0) {
-				ContentNoti entityres = contentNotiDao.save(contentNoti);
-				if (entityres.getSyskey() > 0) {
-					res.setStatus_code(200);
-					res.setMessage("Successfully Saved");
-					logger.info("Successfully Saving content noti entity: " + entityres);
 
-				}
-			} else {
-				ContentNoti entityres = contentNotiDao.save(contentNoti);
-				if (entityres.getSyskey() > 0) {
-					res.setStatus_code(200);
-					res.setMessage("Successfully Updated");
-					logger.info("Successfully updating content noti entity: " + entityres);
+			ContentNoti entityres = contentNotiDao.save(contentNoti);
+			if (entityres.getId() > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Successfully Saved");
+				logger.info("Successfully Saving content noti entity: " + entityres);
 
-				}
 			}
+
 		} catch (DataAccessException e) {
 			logger.info("Error saving content noti entity: " + e.getMessage());
 			res.setStatus_code(500);
@@ -111,7 +103,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		String strCreatedDate = dateTime.format(formatter);
 		logger.info("Updating content noti entity: " + contentNotiDto);
 		try {
-			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(contentNotiDto.getSyskey());
+			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(contentNotiDto.getId());
 			if (contentNotiOptional.isPresent()) {
 				contentNoti = contentNotiOptional.get();
 				createdDate = contentNoti.getCreateddate();

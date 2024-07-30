@@ -74,7 +74,7 @@ public class SubjectNotiController {
 
 		if (id != null) {
 			modeNotiDto = subjectNotiService.getById(id);
-			if (modeNotiDto.getSyskey() != 0) {
+			if (modeNotiDto.getId() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");

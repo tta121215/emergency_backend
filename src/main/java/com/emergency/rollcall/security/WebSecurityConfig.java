@@ -49,6 +49,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/eactivate").permitAll().antMatchers("/eactivate/**").permitAll()
 				.antMatchers("/asscheckin").permitAll().antMatchers("/asscheckin/**").permitAll()
 				.antMatchers("/notitemplate").permitAll().antMatchers("/notitemplate/**").permitAll()
+				.antMatchers("/subjectnoti").permitAll().antMatchers("/subjectnoti/**").permitAll()
+				.antMatchers("/contentnoti").permitAll().antMatchers("/contentnoti/**").permitAll()
+
+
 				// Disallow everything else..
 				.anyRequest().authenticated();
 
