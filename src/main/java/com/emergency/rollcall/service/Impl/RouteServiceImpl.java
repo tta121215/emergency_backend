@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,13 +284,18 @@ public class RouteServiceImpl implements RouteService {
 	}
 	
 	@Override
-	public List<RouteDto> getByLocationofEmergency(long id) {
+	public List<RouteDto> getByLocationofEmergency(String id) {
 		List<RouteDto> routeDtoList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		logger.info("Retrieving list route entity: ");
 		try {
 			//routeList = routeDao.findByEmergencyLocaction(id);
-			routeList = routeDao.findAllExcludingLocEmergency(id);
+			//routeList = routeDao.findAllExcludingLocEmergency(id);
+			List<Long> locEmergencyIds = Arrays.stream(id.split(","))
+                    .map(String::trim)
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+			routeList = routeDao.findAllExcludingLocEmergency(locEmergencyIds);
 			if (routeList != null) {
 				for (Route route : routeList) {
 					RouteDto routeDto = new RouteDto();

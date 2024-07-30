@@ -255,7 +255,7 @@ public class RouteController {
 	}
 
 	@GetMapping("/locEmergencyId")
-	public ResponseEntity<ResponseList<RouteDto>> getByLocationOfEmergency(@RequestParam("id") Long id) {
+	public ResponseEntity<ResponseList<RouteDto>> getByLocationOfEmergency(@RequestParam("id") String id) {
 		RouteDto routeDto = new RouteDto();
 		ResponseList<RouteDto> response = new ResponseList<>();
 		Message message = new Message();

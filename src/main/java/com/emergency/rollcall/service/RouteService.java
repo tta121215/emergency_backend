@@ -25,7 +25,7 @@ public interface RouteService {
 	
 	List<RouteDto> getAllList();
 	
-	List<RouteDto> getByLocationofEmergency(long id);
+	List<RouteDto> getByLocationofEmergency(String id);
 	
 	ResponseDto saveRouteAttach(String name, String description, Integer status, MultipartFile attachFiles) throws IOException;
 
