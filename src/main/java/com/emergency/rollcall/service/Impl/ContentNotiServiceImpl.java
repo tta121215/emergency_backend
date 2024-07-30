@@ -48,7 +48,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		try {
 
 			ContentNoti entityres = contentNotiDao.save(contentNoti);
-			if (entityres.getId() > 0) {
+			if (entityres.getSyskey() > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Successfully Saved");
 				logger.info("Successfully Saving content noti entity: " + entityres);
@@ -103,7 +103,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		String strCreatedDate = dateTime.format(formatter);
 		logger.info("Updating content noti entity: " + contentNotiDto);
 		try {
-			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(contentNotiDto.getId());
+			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(contentNotiDto.getSyskey());
 			if (contentNotiOptional.isPresent()) {
 				contentNoti = contentNotiOptional.get();
 				createdDate = contentNoti.getCreateddate();

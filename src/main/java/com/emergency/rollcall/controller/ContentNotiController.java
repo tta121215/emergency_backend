@@ -74,7 +74,7 @@ public class ContentNotiController {
 
 		if (id != null) {
 			contentNotiDto = contentNotiService.getById(id);
-			if (contentNotiDto.getId() != 0) {
+			if (contentNotiDto.getSyskey() != 0) {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");

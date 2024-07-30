@@ -1,11 +1,9 @@
 package com.emergency.rollcall.dto;
 
-public class ContentNotiDto {
+public class MenuDto {
 	private long syskey;
-	private int id;
 	private String name;
-	private String tableName;
-	private String description;
+	private String buttons;
 	private int status;
 	private String createddate;
 	private String modifieddate;
@@ -18,14 +16,6 @@ public class ContentNotiDto {
 		this.syskey = syskey;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -34,20 +24,12 @@ public class ContentNotiDto {
 		this.name = name;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public String getButtons() {
+		return buttons;
 	}
 
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setButtons(String buttons) {
+		this.buttons = buttons;
 	}
 
 	public int getStatus() {
@@ -86,9 +68,8 @@ public class ContentNotiDto {
 
 	@Override
 	public String toString() {
-		return "ModeNotiDto{" + "id=" + id + ", name='" + name + '\'' + ", tableName='" + tableName + '\''
-				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+		return "MenuDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", buttons='" + buttons + '\'' + ", status='"
+				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + '}';
 	}
 
 }

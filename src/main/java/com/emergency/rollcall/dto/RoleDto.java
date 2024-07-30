@@ -1,15 +1,12 @@
 package com.emergency.rollcall.dto;
 
-public class ContentNotiDto {
-	private long syskey;
-	private int id;
-	private String name;
-	private String tableName;
-	private String description;
-	private int status;
-	private String createddate;
-	private String modifieddate;
+import java.util.List;
 
+public class RoleDto {
+	private long syskey;
+	private String role;
+	private List<MenuDto> menu;
+	private int status;
 	public long getSyskey() {
 		return syskey;
 	}
@@ -18,36 +15,20 @@ public class ContentNotiDto {
 		this.syskey = syskey;
 	}
 
-	public int getId() {
-		return id;
+	public String getRole() {
+		return role;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
-	public String getName() {
-		return name;
+	public List<MenuDto> getMenu() {
+		return menu;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getTableName() {
-		return tableName;
-	}
-
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setMenu(List<MenuDto> menu) {
+		this.menu = menu;
 	}
 
 	public int getStatus() {
@@ -74,6 +55,11 @@ public class ContentNotiDto {
 		this.modifieddate = modifieddate;
 	}
 
+	private String createddate;
+	private String modifieddate;
+
+	
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -86,9 +72,8 @@ public class ContentNotiDto {
 
 	@Override
 	public String toString() {
-		return "ModeNotiDto{" + "id=" + id + ", name='" + name + '\'' + ", tableName='" + tableName + '\''
-				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+		return "RoleDto{" + "syskey=" + syskey + ", role='" + role + '\'' + ", menu='" + menu + '\'' + ", status='"
+				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + '}';
 	}
 
 }

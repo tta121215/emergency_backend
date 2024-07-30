@@ -49,7 +49,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		try {
 
 			SubjectNoti entityres = subjectNotiDao.save(subjectNoti);
-			if (entityres.getId() > 0) {
+			if (entityres.getSyskey() > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Successfully Saved");
 				logger.info("Successfully Saving subject noti entity: " + entityres);
@@ -102,7 +102,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		String strCreatedDate = dateTime.format(formatter);
 		logger.info("Updating subject noti entity: " + subjectNotiDto);
 		try {
-			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(subjectNotiDto.getId());
+			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(subjectNotiDto.getSyskey());
 			if (subjectNotiOptional.isPresent()) {
 				subjectNoti = subjectNotiOptional.get();
 				createdDate = subjectNoti.getCreateddate();

@@ -12,17 +12,27 @@ import javax.persistence.Table;
 public class SubjectNoti {
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")	
-	private long id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
+	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
+	private long syskey;	
+	private int id;
 	private String name;
 	private String tableName;
+	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	public long getId() {
+	
+	public long getSyskey() {
+		return syskey;
+	}
+	public void setSyskey(long syskey) {
+		this.syskey = syskey;
+	}
+	public int getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -36,6 +46,12 @@ public class SubjectNoti {
 	}
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public int getStatus() {
 		return status;
