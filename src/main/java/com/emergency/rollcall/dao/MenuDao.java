@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 
 import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.Menu;
+import com.emergency.rollcall.entity.Role;
 
 @Repository
 public interface MenuDao extends JpaRepository<Menu, Long> {
 
 	
-
 }
