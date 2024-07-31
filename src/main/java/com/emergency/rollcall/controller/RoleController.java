@@ -99,13 +99,13 @@ public class RoleController {
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody RoleDto modeNotiDto) {
+	public ResponseEntity<Response<ResponseDto>> updateLocEmergency(@RequestBody RoleDto roleDto) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		logger.info("Received request to update role with data: {}", modeNotiDto);
-		if (modeNotiDto != null) {
-			responseDto = roleService.updateRole(modeNotiDto);
+		logger.info("Received request to update role with data: {}", roleDto);
+		if (roleDto != null) {
+			responseDto = roleService.updateRole(roleDto);
 			if (responseDto.getMessage().equals("Data does not found")) {
 				message.setState(false);
 				message.setCode("401");
@@ -156,40 +156,40 @@ public class RoleController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-//
-//	@GetMapping("")
-//	public ResponseEntity<ResponseList<RoleDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-//			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
-//			@RequestParam(defaultValue = "syskey") String sortBy,
-//			@RequestParam(defaultValue = "asc") String direction) {
-//
-//		ResponseList<RoleDto> response = new ResponseList<>();
-//		Message message = new Message();
-//		List<RoleDto> modeNotiDtoList = new ArrayList<>();
-//		logger.info("Received request to search role with data: {}", page,size,params,sortBy,direction);
-//		Page<RoleDto> modeNotiPage = roleService.searchByParams(page, size, params, sortBy, direction);
-//		modeNotiDtoList = modeNotiPage.getContent();
-//		if (!modeNotiDtoList.isEmpty()) {
-//			message.setState(true);
-//			message.setCode("200");
-//			message.setMessage("Data is successfully");
-//			logger.info("Successfully to search role with data: {}", modeNotiDtoList);
-//
-//		} else {
-//			message.setState(false);
-//			message.setCode("401");
-//			message.setMessage("No Data found");
-//			logger.info("Data does not found to search role with data: {}", modeNotiDtoList);
-//		}
-//
-//		response.setMessage(message);
-//		response.setData(modeNotiDtoList);
-//		response.setTotalItems(modeNotiPage.getTotalElements());
-//		response.setTotalPages(modeNotiPage.getTotalPages());
-//		response.setCurrentPage(page);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//
-//	}
+
+	@GetMapping("")
+	public ResponseEntity<ResponseList<RoleDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
+
+		ResponseList<RoleDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<RoleDto> roleDtoList = new ArrayList<>();
+		logger.info("Received request to search role with data: {}", page,size,params,sortBy,direction);
+		Page<RoleDto> roleDtoPage = roleService.searchByParams(page, size, params, sortBy, direction);
+		roleDtoList = roleDtoPage.getContent();
+		if (!roleDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully to search role with data: {}", roleDtoList);
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found to search role with data: {}", roleDtoList);
+		}
+
+		response.setMessage(message);
+		response.setData(roleDtoList);
+		response.setTotalItems(roleDtoPage.getTotalElements());
+		response.setTotalPages(roleDtoPage.getTotalPages());
+		response.setCurrentPage(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 	
 //	@GetMapping("all-list")
 //	public ResponseEntity<ResponseList<RoleDto>> getAllList() {

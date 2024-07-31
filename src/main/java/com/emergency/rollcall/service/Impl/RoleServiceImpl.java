@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.MenuDao;
 import com.emergency.rollcall.dao.RoleDao;
 import com.emergency.rollcall.dao.RoleDao;
+import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.MenuDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RoleDto;
+import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.Menu;
 import com.emergency.rollcall.entity.Role;
 import com.emergency.rollcall.service.RoleService;
@@ -136,23 +138,40 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public ResponseDto updateRole(RoleDto modeNotiDto) {
+	public ResponseDto updateRole(RoleDto roleDto) {
 		ResponseDto res = new ResponseDto();
-		Role modeNoti = new Role();
+		List<Menu> menuList = new ArrayList<>();
+		Role role = new Role();
 		String createdDate;
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
-		logger.info("Updating role entity: " + modeNotiDto);
+		logger.info("Updating role entity: " + roleDto);
 		try {
-			Optional<Role> RoleOptional = roleDao.findById(modeNotiDto.getSyskey());
+			Optional<Role> RoleOptional = roleDao.findById(roleDto.getSyskey());
 			if (RoleOptional.isPresent()) {
-				modeNoti = RoleOptional.get();
-				createdDate = modeNoti.getCreateddate();
-				modeNoti = modelMapper.map(modeNotiDto, Role.class);
-				modeNoti.setCreateddate(createdDate);
-				modeNoti.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
-				roleDao.save(modeNoti);
+				role = RoleOptional.get();
+				createdDate = role.getCreateddate();
+				role = modelMapper.map(roleDto, Role.class);
+				role.setCreateddate(createdDate);
+				role.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				if(!roleDto.getMenu().isEmpty()) {
+					role.getMenus().clear();
+					roleDao.save(role);
+					for (MenuDto menuDto : roleDto.getMenu()) {						
+						Menu menu = new Menu();
+		                menu.setName(menuDto.getName());
+		                menu.setButtons(String.join(",", menuDto.getButtons()));
+		                menu.setStatus(menuDto.getStatus());
+		                menu.setCreateddate(strCreatedDate);
+		                menu.setModifieddate(strCreatedDate);
+		                menuList.add(menu);
+		                
+					}
+					role.setMenus(menuList);
+					
+				}
+				roleDao.save(role);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
 				logger.info("Successfully updating role entity: " + res.getMessage());
@@ -176,13 +195,13 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public ResponseDto deleteRole(long id) {
 		ResponseDto res = new ResponseDto();
-		Role modeNoti = new Role();
+		Role role = new Role();
 		logger.info("Deleting role entity: " + id);
 		try {
-			Optional<Role> modeNotiOptional = roleDao.findById(id);
-			if (modeNotiOptional.isPresent()) {
-				modeNoti = modeNotiOptional.get();
-				roleDao.delete(modeNoti);
+			Optional<Role> roleOptional = roleDao.findById(id);
+			if (roleOptional.isPresent()) {
+				role = roleOptional.get();
+				roleDao.delete(role);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully delete role entity: " + res.getMessage());
@@ -205,69 +224,88 @@ public class RoleServiceImpl implements RoleService {
 		return res;
 	}
 
-//	@Override
-//	public Page<RoleDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
-//		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-//		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-//		Page<Role> modeNotiList;
-//		List<RoleDto> modeNotiDtoList = new ArrayList<>();
-//		logger.info("Searching role entity: ");
-//		try {
-//			if (params == null || params.isEmpty()) {
-//				modeNotiList = roleDao.findByNameOrCode(pageRequest);
-//			} else {
-//				modeNotiList = roleDao.findByNameOrCode(pageRequest, params);
-//			}
-//			if (modeNotiList != null) {
-//				for (Role modeNoti : modeNotiList) {
-//					RoleDto modeNotiDto = new RoleDto();
-//					modeNotiDto = modelMapper.map(modeNoti, RoleDto.class);
-//					modeNotiDtoList.add(modeNotiDto);
-//				}
-//				logger.info("Successfully searching role entity: " + modeNotiDtoList);
-//			}
-//		} catch (DataAccessException dae) {
-//			logger.info("Error searching role entity: " + dae.getMessage());
-//			System.err.println("Database error occurred: " + dae.getMessage());
-//			throw new RuntimeException("Database error occurred, please try again later.", dae);
-//		} catch (Exception e) {
-//			logger.info("Error searching role entity: " + e.getMessage());
-//			System.err.println("An unexpected error occurred: " + e.getMessage());
-//			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
-//		}
-//
-//		return new PageImpl<>(modeNotiDtoList, pageRequest, modeNotiList.getTotalElements());
-//	}
-//
-//	@Override
-//	public List<RoleDto> getAllList() {
-//
-//		List<RoleDto> modeNotiDtoList = new ArrayList<>();
-//		List<Role> modeNotiList = new ArrayList<>();
-//		logger.info("Retrieving role entity: " );
-//		try {
-//			modeNotiList = roleDao.findAllByStatus(1);
-//			if (modeNotiList != null) {
-//				for (Role modeNoti : modeNotiList) {
-//					RoleDto modeNotiDto = new RoleDto();
-//					modeNotiDto = modelMapper.map(modeNoti, RoleDto.class);
-//					modeNotiDtoList.add(modeNotiDto);
-//				}
-//				logger.info("Successfully role entity: " + modeNotiDtoList);
-//			}
-//
-//		} catch (DataAccessException dae) {
-//			logger.info("Error retrieving role entity: " + dae.getMessage());
-//			System.err.println("Database error occurred: " + dae.getMessage());
-//			throw new RuntimeException("Database error occurred, please try again later.", dae);
-//		} catch (Exception e) {
-//			logger.info("Error retrieving role entity: " + e.getMessage());
-//			System.err.println("An unexpected error occurred: " + e.getMessage());
-//			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
-//		}
-//
-//		return modeNotiDtoList;
-//	}
+	@Override
+	public Page<RoleDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+		Page<Role> roleList;
+		List<RoleDto> roleDtoList = new ArrayList<>();
+		List<MenuDto> menuDtoList = new ArrayList<>();
+		logger.info("Searching role entity: ");
+		try {
+			if (params == null || params.isEmpty()) {
+				roleList = roleDao.findByName(pageRequest);
+			} else {
+				roleList = roleDao.findByName(pageRequest, params);
+			}
+			if (roleList != null) {
+				for (Role role : roleList) {
+					RoleDto roleDto = new RoleDto();
+					roleDto = modelMapper.map(role, RoleDto.class);
+					if(!role.getMenus().isEmpty()) {
+						for(Menu menu : role.getMenus()) {
+							MenuDto menuDto = modelMapper.map(menu, MenuDto.class);
+							menuDtoList.add(menuDto);
+						}
+						roleDto.setMenu(menuDtoList);
+						menuDtoList = new ArrayList<>();
+					}
+					roleDtoList.add(roleDto);
+				}
+				logger.info("Successfully searching role entity: " + roleDtoList);
+			}
+		} catch (DataAccessException dae) {
+			logger.info("Error searching role entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error searching role entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return new PageImpl<>(roleDtoList, pageRequest, roleList.getTotalElements());
+	}
+
+	@Override
+	public List<RoleDto> getAllList() {
+
+		List<RoleDto> roleDtoList = new ArrayList<>();
+		List<Role> roleList = new ArrayList<>();
+		List<MenuDto> menuDtoList = new ArrayList<>();
+
+		logger.info("Retrieving role entity: " );
+		try {
+			roleList = roleDao.findAllByStatus(1);
+			if (roleList != null) {
+				for (Role role : roleList) {
+					RoleDto roleDto = new RoleDto();
+					roleDto = modelMapper.map(role, RoleDto.class);
+					if(!role.getMenus().isEmpty()) {
+						for(Menu menu : role.getMenus()) {
+							MenuDto menuDto = modelMapper.map(menu, MenuDto.class);
+							menuDtoList.add(menuDto);
+						}
+						roleDto.setMenu(menuDtoList);
+						menuDtoList = new ArrayList<>();
+					}
+					roleDtoList.add(roleDto);
+				}
+				logger.info("Successfully role entity: " + roleDtoList);
+			}
+
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving role entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error retrieving role entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return roleDtoList;
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
