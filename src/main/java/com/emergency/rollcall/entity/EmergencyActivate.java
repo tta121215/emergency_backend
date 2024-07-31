@@ -31,6 +31,8 @@ public class EmergencyActivate {
 	private String activateTime;
 	private String createddate;
 	private String modifieddate;
+	private String startTime;
+	private String startDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
@@ -158,6 +160,22 @@ public class EmergencyActivate {
 
 	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
 		this.locEmergencyList = locEmergencyList;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
 
 }

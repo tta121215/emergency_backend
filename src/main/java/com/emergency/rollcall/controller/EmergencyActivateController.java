@@ -3,6 +3,8 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
@@ -195,5 +198,38 @@ public class EmergencyActivateController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("emergencyActivate")
+	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam ("id") long id) {
+		EActivationDto eActivationDto = new EActivationDto();
+		Response<EActivationDto> response = new Response<>();
+		Message message = new Message();
+		logger.info("Received request to retrieve emergency with data: {}", id);
+		if (id != 0) {
+			eActivationDto = emergencyActivateService.emergencyActivate(id);
+			if (eActivationDto != null) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+		}
+		response.setMessage(message);
+		response.setData(eActivationDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 }

@@ -1,44 +1,65 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.ConditionDao;
+import com.emergency.rollcall.dao.ContentNotiDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
 import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
+import com.emergency.rollcall.dao.ModeNotiDao;
+import com.emergency.rollcall.dao.NotiTemplateDao;
 import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dao.RouteDao;
+import com.emergency.rollcall.dao.SubjectNotiDao;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
+import com.emergency.rollcall.dto.EActivateSubjectDto;
+import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.Condition;
+import com.emergency.rollcall.entity.ContentNoti;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.entity.LocEmergency;
+import com.emergency.rollcall.entity.ModeNoti;
+import com.emergency.rollcall.entity.NotiTemplate;
 import com.emergency.rollcall.entity.Notification;
 import com.emergency.rollcall.entity.Route;
+import com.emergency.rollcall.entity.SubjectNoti;
 import com.emergency.rollcall.service.EmergencyActivateService;
 
 @Service
@@ -65,7 +86,22 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	private LocEmergencyDao locEmergencyDao;
 
 	@Autowired
+	private NotiTemplateDao notitemplateDao;
+
+	@Autowired
+	private ModeNotiDao modeNotiDao;
+
+	@Autowired
+	private SubjectNotiDao subjectNotiDao;
+
+	@Autowired
+	private ContentNotiDao contentNotiDao;
+
+	@Autowired
 	private ModelMapper modelMapper;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	@Override
 	public ResponseDto saveEmergencyActivate(EmergencyActivateDto eActivateDto) {
@@ -146,7 +182,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					res.setMessage("Condition data is invalid.");
 					return res;
 				}
-			}			
+			}
 
 			if (eActivate.getSyskey() == 0) {
 				EmergencyActivate entityres = emergencyActivateDao.save(eActivate);
@@ -196,7 +232,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					emergencyAcivateDto.setCondition_syskey(eActivate.getCondition().getSyskey());
 					ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
 					emergencyAcivateDto.setConditionDto(conditionDto);
-				}				
+				}
 
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
@@ -206,14 +242,15 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
 				List<RouteDto> routeDtos = routes.stream().map(route -> modelMapper.map(route, RouteDto.class))
 						.collect(Collectors.toList());
-				
-				List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream().map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
+
+				List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream()
+						.map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
 						.collect(Collectors.toList());
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 				emergencyAcivateDto.setLocEmergencyDtoList(locEmergencyDtos);
-				List<Long> locemergency=new ArrayList<>();
-				for(LocEmergencyDto loce:locEmergencyDtos) {
+				List<Long> locemergency = new ArrayList<>();
+				for (LocEmergencyDto loce : locEmergencyDtos) {
 					locemergency.add(loce.getSyskey());
 				}
 				emergencyAcivateDto.setLocemrgency_syskey(locemergency);
@@ -280,7 +317,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 				if (eActivateDto.getLocEmergencyDtoList() != null) {
 					for (LocEmergencyDto locEmergencyDto : eActivateDto.getLocEmergencyDtoList()) {
-						Optional<LocEmergency> locEmergencyOptional = locEmergencyDao.findById(locEmergencyDto.getSyskey());
+						Optional<LocEmergency> locEmergencyOptional = locEmergencyDao
+								.findById(locEmergencyDto.getSyskey());
 						if (locEmergencyOptional.isPresent() && locEmergencyOptional.get().getSyskey() != 0) {
 							locEmergencyList.add(locEmergencyOptional.get());
 						} else {
@@ -313,7 +351,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						return res;
 					}
 				}
-				
+
 				emergencyActivateDao.save(eActivate);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -423,12 +461,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
 						eActivateDto.setConditionDto(conditionDto);
 					}
-					if(!eActivate.getLocEmergencyList().isEmpty()) {
-						String locem="";
-						for(LocEmergency loce:eActivate.getLocEmergencyList()) {
-							locem+=loce.getName()+",";
+					if (!eActivate.getLocEmergencyList().isEmpty()) {
+						String locem = "";
+						for (LocEmergency loce : eActivate.getLocEmergencyList()) {
+							locem += loce.getName() + ",";
 						}
-						eActivateDto.setEmergency_location(locem.substring(0, locem.length()-1));
+						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
@@ -447,6 +485,106 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		return new PageImpl<>(emergencyActivateDtoList, pageRequest, emergencyList.getTotalElements());
 	}
 
+	@Override
+	public EActivationDto emergencyActivate(long id) {
+		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
+		EActivationDto eActivationDto = new EActivationDto();
+		logger.info("Searching emergency activate entity: " + id);
+		ZonedDateTime dateTime = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String strCreatedDate = dateTime.format(formatter);
+		LocalTime strCreatedTime = dateTime.toLocalTime();
+		try {
+			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
+			if (eActivateOptional.isPresent()) {
+				EmergencyActivate eActivate = eActivateOptional.get();
+				eActivate.setStartDate(strCreatedDate);
+				eActivate.setStartTime(strCreatedTime.toString());
+				eActivate.setStatus(2);
+				emergencyActivateDao.save(eActivate);
+				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
+
+				List<NotiTemplate> notiList = notitemplateDao.findAllByStatus(0);
+				if (!notiList.isEmpty()) {
+					NotiTemplate notiTemplate = notiList.get(0);
+
+					List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
+							.map(Long::parseLong).collect(Collectors.toList());
+					List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
+					List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+					if (!modeNotiList.isEmpty()) {
+						for (ModeNoti modeNoti : modeNotiList) {
+							ModeNotiDto modenotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+							modeNotiDtoList.add(modenotiDto);
+						}
+						eActivationDto.setModeNotiDtoList(modeNotiDtoList);
+					}
+					// Subject List
+					List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
+							.map(Long::parseLong).collect(Collectors.toList());
+					List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
+					EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
+					if (!subjectNotiList.isEmpty()) {
+						for (SubjectNoti subjectNoti : subjectNotiList) {
+							if (subjectNoti.getTableName() == "Date") {
+								eactivateSubjectDto.setDate(eActivate.getStartDate());
+							} else if (subjectNoti.getTableName() == "Time") {
+								eactivateSubjectDto.setTime(eActivate.getStartTime());
+							}
+							List<?> entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
+							if (!entities.isEmpty()) {
+								logger.info("Entities found: " + entities.size());
+								Object entity = entities.get(0);
+								eactivateSubjectDto = processEntity(entity, eActivate, eactivateSubjectDto);
+
+							} else {
+								logger.info("Entities not found for table: " + subjectNoti.getTableName());
+							}
+
+						}
+						eActivationDto.setEsubjectDto(eactivateSubjectDto);
+					}
+					// Content
+					List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
+							.map(Long::parseLong).collect(Collectors.toList());
+					List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
+					EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
+					if (!contentNotiList.isEmpty()) {
+						for (ContentNoti contentNoti : contentNotiList) {
+							if (contentNoti.getTableName().equals("Date")) {
+								eactivateContentDto.setDate(eActivate.getStartDate());
+							} else if (contentNoti.getTableName().equals("Time")) {
+								eactivateContentDto.setTime(eActivate.getStartTime());
+							}
+							List<?> entities = findEntitiesByTableName(contentNoti.getTableName(), null);
+							if (!entities.isEmpty()) {
+								logger.info("Entities found: " + entities.size());
+								Object entity = entities.get(0);
+
+								eactivateContentDto = processEntity(entity, eActivate, eactivateContentDto);
+
+							} else {
+								logger.info("Entities not found for table: " + contentNoti.getTableName());
+							}
+						}
+						eActivationDto.setEcontentDto(eactivateContentDto);
+					}
+				}
+			}
+			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
+			return eActivationDto;
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving emergency activate entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error saving emergency activate entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -462,4 +600,56 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 		return l_Date;
 	}
+
+	private EActivateSubjectDto processEntity(Object entity, EmergencyActivate eActivate,
+			EActivateSubjectDto eActivateSubjectDto) {
+		if (entity instanceof Emergency) {
+			if (eActivate.getEmergency() != null) {
+				EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
+				eActivateSubjectDto.setEmergencyDto(emergencyDto);
+			}
+
+		} else if (entity instanceof Condition) {
+			if (eActivate.getCondition() != null) {
+				ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
+				eActivateSubjectDto.setConditionDto(conditionDto);
+			}
+
+		} else if (entity instanceof Route) {
+			List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
+			List<RouteDto> routeDtos = routes.stream().map(route -> modelMapper.map(route, RouteDto.class))
+					.collect(Collectors.toList());
+			eActivateSubjectDto.setRouteDtoList(routeDtos);
+
+		} else if (entity instanceof Assembly) {
+			List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
+			List<AssemblyDto> assemblyDtos = assemblies.stream()
+					.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
+			eActivateSubjectDto.setAssemblyDtoList(assemblyDtos);
+		} else if (entity instanceof LocEmergency) {
+			List<LocEmergency> locEmergency = locEmergencyDao.findByEmergencyActivateId(eActivate.getSyskey());
+			List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream()
+					.map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
+					.collect(Collectors.toList());
+			eActivateSubjectDto.setLocEmergencyDtoList(locEmergencyDtos);
+		}
+		return eActivateSubjectDto;
+	}
+
+	private List<?> findEntitiesByTableName(String repositoryName, String criteria) {
+		try {
+			String beanName = Character.toLowerCase(repositoryName.charAt(0)) + repositoryName.substring(1);
+			JpaRepository<?, Long> repository = (JpaRepository<?, Long>) applicationContext.getBean(beanName);
+
+			Method findAllMethod = Arrays.stream(repository.getClass().getMethods())
+					.filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 0).findFirst()
+					.orElseThrow(() -> new NoSuchMethodException(
+							"Method findAll without Pageable not found on repository: " + repositoryName));
+			return (List<?>) findAllMethod.invoke(repository);			
+		} catch (Exception e) {
+			logger.info("Error finding entities for repository: " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
+
 }

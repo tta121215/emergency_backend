@@ -9,9 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.emergency.rollcall.service.BaseEntity;
+
 @Entity
 @Table(name = "Emergency")
-public class Emergency {
+public class Emergency implements BaseEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
@@ -30,7 +32,7 @@ public class Emergency {
 //    @JoinColumn(name = "emergency_activate_syskey")
 //    private EmergencyActivate emergencyActivate;
 
-	public long getSyskey() {
+	public Long getSyskey() {
 		return syskey;
 	}
 
@@ -78,6 +80,7 @@ public class Emergency {
 		this.modifieddate = modifieddate;
 	}
 
+	
 	
 //	public EmergencyActivate getEmergencyActivate() {
 //		return emergencyActivate;

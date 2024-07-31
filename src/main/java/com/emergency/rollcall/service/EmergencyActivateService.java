@@ -2,6 +2,7 @@ package com.emergency.rollcall.service;
 
 import org.springframework.data.domain.Page;
 
+import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.ResponseDto;
 
@@ -16,5 +17,7 @@ public interface EmergencyActivateService {
 	ResponseDto deleteEmergencyActivate(long id);
 
 	Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy, String direction);
+	
+	EActivationDto emergencyActivate(long id);
 
 }

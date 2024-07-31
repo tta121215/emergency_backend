@@ -20,6 +20,8 @@ public class EmergencyActivateDto {
 	private String emergency_location;
 	private EmergencyDto emergencyDto;
 	private ConditionDto conditionDto;
+	private String startTime;
+	private String startDate;
 
 	public long getSyskey() {
 		return syskey;
@@ -155,6 +157,22 @@ public class EmergencyActivateDto {
 
 	public void setEmergency_location(String emergency_location) {
 		this.emergency_location = emergency_location;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
 	}
 
 	@Override
