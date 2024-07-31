@@ -209,10 +209,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				
 				List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream().map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
 						.collect(Collectors.toList());
-
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 				emergencyAcivateDto.setLocEmergencyDtoList(locEmergencyDtos);
+				List<Long> locemergency=new ArrayList<>();
+				for(LocEmergencyDto loce:locEmergencyDtos) {
+					locemergency.add(loce.getSyskey());
+				}
+				emergencyAcivateDto.setLocemrgency_syskey(locemergency);
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return emergencyAcivateDto;
@@ -419,9 +423,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
 						eActivateDto.setConditionDto(conditionDto);
 					}
-
-					
-
+					if(!eActivate.getLocEmergencyList().isEmpty()) {
+						String locem="";
+						for(LocEmergency loce:eActivate.getLocEmergencyList()) {
+							locem+=loce.getName()+",";
+						}
+						eActivateDto.setEmergency_location(locem.substring(0, locem.length()-1));
+					}
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}

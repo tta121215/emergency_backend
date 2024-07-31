@@ -13,4 +13,5 @@ public interface NotiTemplateDao extends JpaRepository<NotiTemplate, Long> {
 
 	List<NotiTemplate> findAllByStatus(int status);
 
+
 }

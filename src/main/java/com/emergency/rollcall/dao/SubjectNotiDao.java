@@ -20,5 +20,8 @@ public interface SubjectNotiDao extends JpaRepository<SubjectNoti, Long> {
 	Page<SubjectNoti> findByNameOrCode(Pageable pageable);
 	
 	List<SubjectNoti> findAllByStatus(Integer status);
-
+	
+	@Query("SELECT 1 as status from SubjectNoti c where c.name='Route' and c.syskey in :ids ")
+	Integer isRouteStatus(@Param("ids")List<Long> ids);
+	
 }

@@ -14,6 +14,8 @@ public interface NotiTemplateService {
 
 	ResponseDto deleteNotiTemplate(long id);
 
+	Boolean getRouteStatus();
+
 //	Page<NotificationDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 //	
 //	List<NotificationDto> searchByEmergency(long id);

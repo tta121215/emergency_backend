@@ -148,5 +148,25 @@ public class NotiTemplateController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("routestatus")
+	public ResponseEntity<Response<Boolean>> getRouteStatus() {
+		Boolean notiTemplateDto = false;
+		Response<Boolean> response = new Response<>();
+		Message message = new Message();
+		logger.info("Received request to retrieve notification with data: {}");
+
+		notiTemplateDto = notiTemplateService.getRouteStatus();
+	
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully to save notification with data: {}", notiTemplateDto);
+
+		response.setMessage(message);
+		response.setData(notiTemplateDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 }

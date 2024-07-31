@@ -16,6 +16,8 @@ public class EmergencyActivateDto {
 	private List<AssemblyDto> assemblyDtoList;
 	private List<RouteDto> routeDtoList;
 	private List<LocEmergencyDto> locEmergencyDtoList;
+	private List<Long>locemrgency_syskey;
+	private String emergency_location;
 	private EmergencyDto emergencyDto;
 	private ConditionDto conditionDto;
 
@@ -137,6 +139,22 @@ public class EmergencyActivateDto {
 
 	public void setRouteDtoList(List<RouteDto> routeDtoList) {
 		this.routeDtoList = routeDtoList;
+	}
+	
+	public List<Long> getLocemrgency_syskey() {
+		return locemrgency_syskey;
+	}
+
+	public void setLocemrgency_syskey(List<Long> locemrgency_syskey) {
+		this.locemrgency_syskey = locemrgency_syskey;
+	}
+	
+	public String getEmergency_location() {
+		return emergency_location;
+	}
+
+	public void setEmergency_location(String emergency_location) {
+		this.emergency_location = emergency_location;
 	}
 
 	@Override

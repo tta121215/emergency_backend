@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -10,7 +11,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+
+import com.emergency.rollcall.dao.ContentNotiDao;
 import com.emergency.rollcall.dao.NotiTemplateDao;
+import com.emergency.rollcall.dao.SubjectNotiDao;
 import com.emergency.rollcall.dto.NotiTemplateDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.NotiTemplate;
@@ -23,6 +27,12 @@ public class NotiTemplateServiceImpl implements NotiTemplateService {
 
 	@Autowired
 	private NotiTemplateDao notiTemplateDao;
+	
+	@Autowired
+	private SubjectNotiDao subjectDao;
+	
+	@Autowired
+	private ContentNotiDao contentDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -179,5 +189,41 @@ public class NotiTemplateServiceImpl implements NotiTemplateService {
 			l_Date = aDate.replaceAll("-", "");
 
 		return l_Date;
+	}
+
+	@Override
+	public Boolean getRouteStatus() {
+		Boolean routestatus=false;
+		List<NotiTemplate> notificationList = notiTemplateDao.findAll();
+		if (notificationList.size() > 0) {
+			NotiTemplate notiTemplate = notificationList.get(0);
+			String[] ids=notiTemplate.getNoti_subject().split(",");
+			if(ids.length>0) {
+				List<Long> longids=new ArrayList<>();
+				for(String id:ids) {
+					longids.add(Long.parseLong(id));
+				}
+				System.out.println(longids);
+				Integer status=subjectDao.isRouteStatus(longids);
+				if(status!=null) {
+					routestatus=true;
+				}
+				
+			}
+			if(!routestatus) {
+				String[] cids=notiTemplate.getNoti_content().split(",");
+				if(cids.length>0) {
+					List<Long> clongids=new ArrayList<>();
+					for(String id:cids) {
+						clongids.add(Long.parseLong(id));
+					}
+					Integer status=contentDao.isRouteStatus(clongids);
+					if(status!=null) {
+						routestatus=true;
+					}
+				}
+			}
+		}
+		return routestatus;
 	}
 }
