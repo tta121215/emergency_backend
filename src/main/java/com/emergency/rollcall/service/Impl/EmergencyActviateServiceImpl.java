@@ -22,6 +22,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -531,16 +532,10 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							} else if (subjectNoti.getTableName() == "Time") {
 								eactivateSubjectDto.setTime(eActivate.getStartTime());
 							}
-							List<?> entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
-							if (!entities.isEmpty()) {
-								logger.info("Entities found: " + entities.size());
-								Object entity = entities.get(0);
-								eactivateSubjectDto = processEntity(entity, eActivate, eactivateSubjectDto);
-
-							} else {
-								logger.info("Entities not found for table: " + subjectNoti.getTableName());
+							Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
+							if (entities != null) {
+								eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
 							}
-
 						}
 						eActivationDto.setEsubjectDto(eactivateSubjectDto);
 					}
@@ -556,15 +551,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							} else if (contentNoti.getTableName().equals("Time")) {
 								eactivateContentDto.setTime(eActivate.getStartTime());
 							}
-							List<?> entities = findEntitiesByTableName(contentNoti.getTableName(), null);
-							if (!entities.isEmpty()) {
-								logger.info("Entities found: " + entities.size());
-								Object entity = entities.get(0);
-
-								eactivateContentDto = processEntity(entity, eActivate, eactivateContentDto);
-
-							} else {
-								logger.info("Entities not found for table: " + contentNoti.getTableName());
+							Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
+							if (entities != null) {
+								eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
 							}
 						}
 						eActivationDto.setEcontentDto(eactivateContentDto);
@@ -636,19 +625,23 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		return eActivateSubjectDto;
 	}
 
-	private List<?> findEntitiesByTableName(String repositoryName, String criteria) {
+	private Object findEntitiesByTableName(String repositoryName, String criteria) {
 		try {
 			String beanName = Character.toLowerCase(repositoryName.charAt(0)) + repositoryName.substring(1);
 			JpaRepository<?, Long> repository = (JpaRepository<?, Long>) applicationContext.getBean(beanName);
-
+			Pageable pageable = PageRequest.of(0, 1);
 			Method findAllMethod = Arrays.stream(repository.getClass().getMethods())
-					.filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 0).findFirst()
+					.filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 1).findFirst()
 					.orElseThrow(() -> new NoSuchMethodException(
 							"Method findAll without Pageable not found on repository: " + repositoryName));
-			return (List<?>) findAllMethod.invoke(repository);			
+			Page<?> page = (Page<?>) findAllMethod.invoke(repository, pageable);
+			// return (List<?>) findAllMethod.invoke(repository);
+			return page.hasContent() ? page.getContent().get(0) : null;
+
 		} catch (Exception e) {
 			logger.info("Error finding entities for repository: " + e.getMessage());
-			return Collections.emptyList();
+			// return Collections.emptyList();
+			return null;
 		}
 	}
 
