@@ -573,6 +573,39 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 
 	}
+	
+	@Override
+	public ResponseDto emergencyActivateManualEnd(long id) {
+		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
+		ResponseDto responseDto = new ResponseDto();
+		ZonedDateTime dateTime = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String strCreatedDate = dateTime.format(formatter);
+		LocalTime strCreatedTime = dateTime.toLocalTime();
+		logger.info("Searching emergency activate entity: " + id);
+		try {
+			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
+			if (eActivateOptional.isPresent()) {
+				EmergencyActivate eActivate = eActivateOptional.get();
+				eActivate.setEndDate(strCreatedDate);
+				eActivate.setEndTime(strCreatedTime.toString());
+				eActivate.setStatus(3);
+				emergencyActivateDao.save(eActivate);
+				
+			}
+			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
+			return responseDto;
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving emergency activate entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error saving emergency activate entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";

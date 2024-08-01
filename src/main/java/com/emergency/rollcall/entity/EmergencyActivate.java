@@ -33,6 +33,8 @@ public class EmergencyActivate {
 	private String modifieddate;
 	private String startTime;
 	private String startDate;
+	private String endTime;
+	private String endDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
@@ -176,6 +178,22 @@ public class EmergencyActivate {
 
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 }

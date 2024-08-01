@@ -3,6 +3,7 @@ package com.emergency.rollcall.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 import org.slf4j.Logger;
@@ -29,24 +30,35 @@ import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
+import com.emergency.rollcall.service.AuditLogService;
 import com.emergency.rollcall.service.EmergencyActivateService;
-
 
 @RestController
 @CrossOrigin
 @RequestMapping("eactivate")
 public class EmergencyActivateController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(EmergencyActivateController.class);
 
 	@Autowired
 	private EmergencyActivateService emergencyActivateService;
 
+	@Autowired
+	private AuditLogService auditLogService;
+
 	@PostMapping("")
-	public ResponseEntity<Response<ResponseDto>> saveEmergencyActivate(@RequestBody EmergencyActivateDto eActivateDto) {
+	public ResponseEntity<Response<ResponseDto>> saveEmergencyActivate(@RequestBody EmergencyActivateDto eActivateDto,
+			HttpServletRequest request) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
+		// UserAgent userAgent =
+		// UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
 		ResponseDto responseDto = new ResponseDto();
+		String username = "kzc";
+		String ipAddress = request.getRemoteAddr();
+		String browserVersion = request.getHeader("User-Agent");
+		// String broswerVersion = userAgent.getBrowser().getName();
+		System.out.println(" Ip address " + ipAddress + " userAgent" + browserVersion);
 		logger.info("Received request to save emergency activate with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.saveEmergencyActivate(eActivateDto);
@@ -55,17 +67,21 @@ public class EmergencyActivateController {
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully request to save emergency activate with data: {}", eActivateDto);
+				auditLogService.saveAuditLog(username, "saveEmergencyActivate", responseDto.getMessage(), ipAddress,
+						browserVersion);
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Error save emergency activate with data: {}", responseDto);
+				auditLogService.saveAuditLog(username, "saveEmergencyActivate", responseDto.getMessage(), "ipaddress",
+						"browserVersion");
 			}
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
-			message.setMessage("Error Save assembly");
+			message.setMessage("Error Save Emergency Activate");
 			logger.info("Error save emergency activate with data: {}", responseDto);
 		}
 		response.setMessage(message);
@@ -107,10 +123,14 @@ public class EmergencyActivateController {
 	}
 
 	@PutMapping("")
-	public ResponseEntity<Response<ResponseDto>> updateNotification(@RequestBody EmergencyActivateDto eActivateDto) {
+	public ResponseEntity<Response<ResponseDto>> updateEmergencyActivate(@RequestBody EmergencyActivateDto eActivateDto,
+			HttpServletRequest request) {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
+		String username = "kzc";
+		String ipAddress = request.getRemoteAddr();
+		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to update emergency with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.updateEmergencyActivate(eActivateDto);
@@ -119,11 +139,17 @@ public class EmergencyActivateController {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Data does not found update emergency activate with data: {}", eActivateDto);
+				auditLogService.saveAuditLog(username, "updateEmergencyActivate", responseDto.getMessage(), ipAddress,
+						browserVersion);
+
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully update emergency activate with data: {}", eActivateDto);
+				auditLogService.saveAuditLog(username, "updateEmergencyActivate", responseDto.getMessage(), ipAddress,
+						browserVersion);
+
 			}
 		} else {
 			message.setState(false);
@@ -136,10 +162,14 @@ public class EmergencyActivateController {
 	}
 
 	@DeleteMapping("{id}")
-	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathVariable("id") long id) {
+	public ResponseEntity<Response<ResponseDto>> deleteNotification(@PathVariable("id") long id,
+			HttpServletRequest request) {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
+		String username = "kzc";
+		String ipAddress = request.getRemoteAddr();
+		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to delete emergency activate with data: {}", id);
 		if (id != 0) {
 			responseDto = emergencyActivateService.deleteEmergencyActivate(id);
@@ -148,11 +178,17 @@ public class EmergencyActivateController {
 				message.setCode("401");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Data does not found to delete emergency activate with data: {}", responseDto);
+				auditLogService.saveAuditLog(username, "DeleteEmergencyActivate", responseDto.getMessage(), ipAddress,
+						browserVersion);
+
 			} else {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully to delete emergency activate with data: {}", id);
+				auditLogService.saveAuditLog(username, "DeleteEmergencyActivate", responseDto.getMessage(), ipAddress,
+						browserVersion);
+
 			}
 		} else {
 			message.setState(false);
@@ -173,9 +209,11 @@ public class EmergencyActivateController {
 
 		ResponseList<EmergencyActivateDto> response = new ResponseList<>();
 		Message message = new Message();
-		logger.info("Received request to search emergency activate with data: {}", page,size,params,sortBy,direction);
+		logger.info("Received request to search emergency activate with data: {}", page, size, params, sortBy,
+				direction);
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
-		Page<EmergencyActivateDto> emergencyActivatePage = emergencyActivateService.searchByParams(page, size, params, sortBy, direction);
+		Page<EmergencyActivateDto> emergencyActivatePage = emergencyActivateService.searchByParams(page, size, params,
+				sortBy, direction);
 		emergencyActivateDtoList = emergencyActivatePage.getContent();
 		if (!emergencyActivateDtoList.isEmpty()) {
 			message.setState(true);
@@ -198,9 +236,9 @@ public class EmergencyActivateController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("emergencyActivate")
-	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam ("id") long id) {
+	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam("id") long id) {
 		EActivationDto eActivationDto = new EActivationDto();
 		Response<EActivationDto> response = new Response<>();
 		Message message = new Message();
@@ -231,5 +269,37 @@ public class EmergencyActivateController {
 
 	}
 
+	@GetMapping("manualend")
+	public ResponseEntity<Response<ResponseDto>> emergencyActivateManualEnd(@PathParam("id") long id) {
+		EActivationDto eActivationDto = new EActivationDto();
+		Response<ResponseDto> response = new Response<>();
+		ResponseDto responseDto = new ResponseDto();
+		Message message = new Message();
+		logger.info("Received request to retrieve emergency with data: {}", id);
+		if (id != 0) {
+			responseDto = emergencyActivateService.emergencyActivateManualEnd(id);
+			if (responseDto != null) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+		}
+		response.setMessage(message);
+		response.setData(responseDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 }

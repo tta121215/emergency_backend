@@ -19,5 +19,7 @@ public interface EmergencyActivateService {
 	Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
 	EActivationDto emergencyActivate(long id);
+	
+	ResponseDto emergencyActivateManualEnd(long id);
 
 }
