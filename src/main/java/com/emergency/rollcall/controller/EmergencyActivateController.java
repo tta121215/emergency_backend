@@ -57,8 +57,7 @@ public class EmergencyActivateController {
 		String username = "kzc";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
-		// String broswerVersion = userAgent.getBrowser().getName();
-		System.out.println(" Ip address " + ipAddress + " userAgent" + browserVersion);
+		// String broswerVersion = userAgent.getBrowser().getName();		
 		logger.info("Received request to save emergency activate with data: {}", eActivateDto);
 		if (eActivateDto != null) {
 			responseDto = emergencyActivateService.saveEmergencyActivate(eActivateDto);

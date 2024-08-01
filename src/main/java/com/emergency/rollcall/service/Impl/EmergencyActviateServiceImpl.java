@@ -188,8 +188,10 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			if (eActivate.getSyskey() == 0) {
 				EmergencyActivate entityres = emergencyActivateDao.save(eActivate);
 				if (entityres.getSyskey() > 0) {
+					System.out.println("syskey " + entityres.getSyskey());
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
+					res.setEmergencySyskey(entityres.getSyskey());
 					logger.info("Saving emergency activate entity: " + entityres);
 				}
 			} else {
