@@ -489,6 +489,65 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	}
 
 	@Override
+	public List<EmergencyActivateDto> getAllList() {
+		logger.info("Searching emergency activate entity: ");
+		List<EmergencyActivate> emergencyActivateList = new ArrayList<>();
+		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
+
+		try {
+			emergencyActivateList = emergencyActivateDao.findAllByStatus(1);
+
+			if (!emergencyActivateList.isEmpty()) {
+				for (EmergencyActivate eActivate : emergencyActivateList) {
+					EmergencyActivateDto eActivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
+
+					if (!eActivate.getAssemblyList().isEmpty()) {
+						List<AssemblyDto> assemblyDtoList = eActivate.getAssemblyList().stream()
+								.map(assembly -> modelMapper.map(assembly, AssemblyDto.class))
+								.collect(Collectors.toList());
+						eActivateDto.setAssemblyDtoList(assemblyDtoList);
+					}
+
+					if (!eActivate.getRouteList().isEmpty()) {
+						List<RouteDto> routeDtoList = eActivate.getRouteList().stream()
+								.map(route -> modelMapper.map(route, RouteDto.class)).collect(Collectors.toList());
+						eActivateDto.setRouteDtoList(routeDtoList);
+					}
+
+					if (eActivate.getEmergency() != null && eActivate.getEmergency().getSyskey() != 0) {
+						EmergencyDto emergencyDto = modelMapper.map(eActivate.getEmergency(), EmergencyDto.class);
+						eActivateDto.setEmergencyDto(emergencyDto);
+					}
+
+					if (eActivate.getCondition() != null && eActivate.getCondition().getSyskey() != 0) {
+						ConditionDto conditionDto = modelMapper.map(eActivate.getCondition(), ConditionDto.class);
+						eActivateDto.setConditionDto(conditionDto);
+					}
+					if (!eActivate.getLocEmergencyList().isEmpty()) {
+						String locem = "";
+						for (LocEmergency loce : eActivate.getLocEmergencyList()) {
+							locem += loce.getName() + ",";
+						}
+						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
+					}
+					emergencyActivateDtoList.add(eActivateDto);
+					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
+				}
+			}
+		} catch (DataAccessException dae) {
+			logger.info("Error searching emergency activate entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error searching emergency activate entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return emergencyActivateDtoList;
+	}
+
+	@Override
 	public EActivationDto emergencyActivate(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
@@ -575,7 +634,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 
 	}
-	
+
 	@Override
 	public ResponseDto emergencyActivateManualEnd(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();

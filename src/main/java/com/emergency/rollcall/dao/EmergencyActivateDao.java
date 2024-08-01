@@ -1,5 +1,7 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,6 +33,8 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 		       "LEFT JOIN c.emergency e " +
 		       "LEFT JOIN c.condition con " )		      
 		Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
+	
+	List<EmergencyActivate> findAllByStatus(int status);
 
 
 }

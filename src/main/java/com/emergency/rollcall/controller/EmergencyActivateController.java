@@ -235,6 +235,34 @@ public class EmergencyActivateController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/all-list")
+	public ResponseEntity<ResponseList<EmergencyActivateDto>> getAllList() {
+
+		ResponseList<EmergencyActivateDto> response = new ResponseList<>();
+		Message message = new Message();
+		logger.info("Received request to search emergency activate with data: {}");
+		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
+		emergencyActivateDtoList = emergencyActivateService.getAllList();		
+		if (!emergencyActivateDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully to search emergency activate with data: {}", emergencyActivateDtoList);
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", emergencyActivateDtoList);
+		}
+
+		response.setMessage(message);
+		response.setData(emergencyActivateDtoList);		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 
 	@GetMapping("emergencyActivate")
 	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam("id") long id, HttpServletRequest request) {
