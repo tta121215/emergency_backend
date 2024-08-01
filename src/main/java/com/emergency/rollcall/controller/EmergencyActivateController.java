@@ -289,7 +289,7 @@ public class EmergencyActivateController {
 				message.setState(true);
 				message.setCode("200");
 				message.setMessage("Data is successfully");
-				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
+				logger.info("Successfully emergency activate end with data: {}", eActivationDto);
 
 			} else {
 				message.setState(false);
