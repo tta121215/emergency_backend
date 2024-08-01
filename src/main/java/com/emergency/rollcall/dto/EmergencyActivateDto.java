@@ -24,6 +24,7 @@ public class EmergencyActivateDto {
 	private String startDate;
 	private String endTime;
 	private String endDate;
+	private int activateStatus;
 
 	public long getSyskey() {
 		return syskey;
@@ -191,6 +192,14 @@ public class EmergencyActivateDto {
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	public int getActivateStatus() {
+		return activateStatus;
+	}
+
+	public void setActivateStatus(int activateStatus) {
+		this.activateStatus = activateStatus;
 	}
 
 	@Override

@@ -238,10 +238,13 @@ public class EmergencyActivateController {
 	}
 
 	@GetMapping("emergencyActivate")
-	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam("id") long id) {
+	public ResponseEntity<Response<EActivationDto>> emergencyActivate(@PathParam("id") long id, HttpServletRequest request) {
 		EActivationDto eActivationDto = new EActivationDto();
 		Response<EActivationDto> response = new Response<>();
 		Message message = new Message();
+		String username = "kzc";
+		String ipAddress = request.getRemoteAddr();
+		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to retrieve emergency with data: {}", id);
 		if (id != 0) {
 			eActivationDto = emergencyActivateService.emergencyActivate(id);
@@ -250,12 +253,16 @@ public class EmergencyActivateController {
 				message.setCode("200");
 				message.setMessage("Data is successfully");
 				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
+				auditLogService.saveAuditLog(username, "DeleteEmergencyActivate", message.getMessage(), ipAddress,
+						browserVersion);
 
 			} else {
 				message.setState(false);
 				message.setCode("401");
 				message.setMessage("No Data found");
-				logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+				logger.info("Data does not found emergency  activate with data: {}", eActivationDto);
+				auditLogService.saveAuditLog(username, "Emergency Activate Start", message.getMessage(), ipAddress,
+						browserVersion);
 			}
 		} else {
 			message.setState(false);
@@ -269,7 +276,7 @@ public class EmergencyActivateController {
 
 	}
 
-	@GetMapping("manualend")
+	@GetMapping("evaluateEnd")
 	public ResponseEntity<Response<ResponseDto>> emergencyActivateManualEnd(@PathParam("id") long id) {
 		EActivationDto eActivationDto = new EActivationDto();
 		Response<ResponseDto> response = new Response<>();

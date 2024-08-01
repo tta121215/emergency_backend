@@ -501,7 +501,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setStartDate(strCreatedDate);
 				eActivate.setStartTime(strCreatedTime.toString());
-				eActivate.setStatus(2);
+				eActivate.setActivateStatus(1);
 				emergencyActivateDao.save(eActivate);
 				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
 
@@ -589,9 +589,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setEndDate(strCreatedDate);
 				eActivate.setEndTime(strCreatedTime.toString());
-				eActivate.setStatus(3);
+				eActivate.setActivateStatus(2);
 				emergencyActivateDao.save(eActivate);
-				
+				responseDto.setStatus_code(200);
+				responseDto.setMessage("Successfully Emergency Activate End");
+				logger.info("Successfully End emergency activate entity: " + responseDto.getMessage());
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return responseDto;
