@@ -56,6 +56,7 @@ public class AuditLogServiceImpl implements AuditLogService {
         auditLog.setApiMethod(apiMethod);
         auditLog.setDetails(details);
         auditLog.setBrowserVersion(browserVersion);
+        auditLog.setIpaddress(ipaddress);
         auditLogDao.save(auditLog);
 	}
 	
