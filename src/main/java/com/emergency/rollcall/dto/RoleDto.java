@@ -5,6 +5,7 @@ import java.util.List;
 public class RoleDto {
 	private long syskey;
 	private String role;
+	private String description;
 	private List<MenuDto> menu;
 	private int status;
 	public long getSyskey() {
@@ -21,6 +22,14 @@ public class RoleDto {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public List<MenuDto> getMenu() {

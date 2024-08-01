@@ -5,6 +5,7 @@ public class MenuDto {
 	private String name;
 	private String buttons;
 	private int status;
+	private int id;
 	private String createddate;
 	private String modifieddate;
 
@@ -56,6 +57,14 @@ public class MenuDto {
 		this.modifieddate = modifieddate;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -68,8 +77,9 @@ public class MenuDto {
 
 	@Override
 	public String toString() {
-		return "MenuDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", buttons='" + buttons + '\'' + ", status='"
-				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + '}';
+		return "MenuDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", buttons='" + buttons + '\''
+				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ '}';
 	}
 
 }

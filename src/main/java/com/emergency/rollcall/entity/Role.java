@@ -23,6 +23,7 @@ public class Role {
 	private Long syskey;
 
 	private String role;
+	private String description;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "role_id")
@@ -38,6 +39,14 @@ public class Role {
 
 	public void setSyskey(Long syskey) {
 		this.syskey = syskey;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getRole() {

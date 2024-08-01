@@ -18,6 +18,7 @@ public class Menu {
 	private String name;
 	private String buttons;
 	private int status;
+	private int id;
 	private String createddate;
 	private String modifieddate;
 
@@ -67,6 +68,14 @@ public class Menu {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }

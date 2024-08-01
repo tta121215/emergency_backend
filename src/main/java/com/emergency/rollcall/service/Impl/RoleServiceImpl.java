@@ -60,16 +60,15 @@ public class RoleServiceImpl implements RoleService {
 		role.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
 		if(!roleDto.getMenu().isEmpty()) {
 			for (MenuDto menuDto : roleDto.getMenu()) {
-				Menu menuData = new Menu();
+				Menu menuData = new Menu();				
 				menuData.setName(menuDto.getName());
 				menuData.setButtons(menuDto.getButtons());
 				menuData.setCreateddate(strCreatedDate);
-				menuData.setStatus(menuDto.getStatus());				
+				menuData.setStatus(menuDto.getStatus());	
+				menuData.setId(menuDto.getId());
 				menuDao.save(menuData);
 				menuList.add(menuData);
-			}
-			
-			
+			}	
 		}
 	    role.setMenus(menuList);
 		try {
@@ -118,6 +117,7 @@ public class RoleServiceImpl implements RoleService {
 	                menuDto.setSyskey(menu.getSyskey());
 	                menuDto.setName(menu.getName());
 	                menuDto.setButtons(menu.getButtons());
+	                menuDto.setId(menu.getId());
 	                menuDto.setCreateddate(menu.getCreateddate());
 	                menuDto.setModifieddate(menu.getModifieddate());
 	                menuDto.setStatus(menu.getStatus());
@@ -160,6 +160,7 @@ public class RoleServiceImpl implements RoleService {
 					roleDao.save(role);
 					for (MenuDto menuDto : roleDto.getMenu()) {						
 						Menu menu = new Menu();
+						menu.setId(menuDto.getId());
 		                menu.setName(menuDto.getName());
 		                menu.setButtons(String.join(",", menuDto.getButtons()));
 		                menu.setStatus(menuDto.getStatus());
