@@ -8,14 +8,10 @@ public class DashboardResponseDto {
 	//private List<AssemblyPointNotCheckInDto> notCheckInCounts;
 	private Long totalCheckInCount;
 	private Long totalNotCheckInCount;
-	private Long totalTime;
-	private Long averageTime;
+	private String totalTime;
+	private Double averageTime;
 
-	public DashboardResponseDto(List<AssemblyPointCheckInDto> checkInCounts, Long totalCheckInCount) {
-		this.checkInCounts = checkInCounts;
-		this.totalCheckInCount = totalCheckInCount;
-	}
-
+	
 	// Getters and Setters
 	public List<AssemblyPointCheckInDto> getCheckInCounts() {
 		return checkInCounts;
@@ -31,5 +27,29 @@ public class DashboardResponseDto {
 
 	public void setTotalCheckInCount(Long totalCheckInCount) {
 		this.totalCheckInCount = totalCheckInCount;
+	}
+
+	public Long getTotalNotCheckInCount() {
+		return totalNotCheckInCount;
+	}
+
+	public void setTotalNotCheckInCount(Long totalNotCheckInCount) {
+		this.totalNotCheckInCount = totalNotCheckInCount;
+	}
+
+	public Double getAverageTime() {
+		return averageTime;
+	}
+
+	public void setAverageTime(Double averageTime) {
+		this.averageTime = averageTime;
+	}
+
+	public String getTotalTime() {
+		return totalTime;
+	}
+
+	public void setTotalTime(String totalTime) {
+		this.totalTime = totalTime;
 	}
 }

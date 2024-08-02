@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -553,15 +554,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EActivationDto eActivationDto = new EActivationDto();
 		logger.info("Searching emergency activate entity: " + id);
 		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 		String strCreatedDate = dateTime.format(formatter);
 		LocalTime strCreatedTime = dateTime.toLocalTime();
+		
+		LocalDateTime startTime = LocalDateTime.now();
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setStartDate(strCreatedDate);
-				eActivate.setStartTime(strCreatedTime.toString());
+				eActivate.setStartTime(startTime.format(formatter));
 				eActivate.setActivateStatus(1);
 				emergencyActivateDao.save(eActivate);
 				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
@@ -591,9 +596,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
 						if (!subjectNotiList.isEmpty()) {
 							for (SubjectNoti subjectNoti : subjectNotiList) {
-								if (subjectNoti.getTableName() == "Date") {
+								if (subjectNoti.getTableName().equals("Date")) {
 									eactivateSubjectDto.setDate(eActivate.getStartDate());
-								} else if (subjectNoti.getTableName() == "Time") {
+								} else if (subjectNoti.getTableName().equals("Time")) {
 									eactivateSubjectDto.setTime(eActivate.getStartTime());
 								}
 								Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
@@ -646,16 +651,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		ResponseDto responseDto = new ResponseDto();
 		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime startTime = LocalDateTime.now();
 		String strCreatedDate = dateTime.format(formatter);
 		LocalTime strCreatedTime = dateTime.toLocalTime();
+		
 		logger.info("Searching emergency activate entity: " + id);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setEndDate(strCreatedDate);
-				eActivate.setEndTime(strCreatedTime.toString());
+				eActivate.setEndTime(startTime.format(formatter));
 				eActivate.setActivateStatus(2);
 				emergencyActivateDao.save(eActivate);
 				responseDto.setStatus_code(200);
