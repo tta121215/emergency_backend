@@ -197,31 +197,36 @@ public class NotiTemplateServiceImpl implements NotiTemplateService {
 		List<NotiTemplate> notificationList = notiTemplateDao.findAll();
 		if (notificationList.size() > 0) {
 			NotiTemplate notiTemplate = notificationList.get(0);
-			String[] ids=notiTemplate.getNoti_subject().split(",");
-			if(ids.length>0) {
-				List<Long> longids=new ArrayList<>();
-				for(String id:ids) {
-					longids.add(Long.parseLong(id));
-				}
-				System.out.println(longids);
-				Integer status=subjectDao.isRouteStatus(longids);
-				if(status!=null) {
-					routestatus=true;
-				}
-				
-			}
-			if(!routestatus) {
-				String[] cids=notiTemplate.getNoti_content().split(",");
-				if(cids.length>0) {
-					List<Long> clongids=new ArrayList<>();
-					for(String id:cids) {
-						clongids.add(Long.parseLong(id));
-					}
-					Integer status=contentDao.isRouteStatus(clongids);
+			if(notiTemplate.getNoti_subject() != null) {
+				String[] ids=notiTemplate.getNoti_subject().split(",");
+				if(ids.length>0) {
+					List<Long> longids=new ArrayList<>();
+					for(String id:ids) {
+						longids.add(Long.parseLong(id));
+					}					
+					Integer status=subjectDao.isRouteStatus(longids);
 					if(status!=null) {
 						routestatus=true;
 					}
+					
 				}
+			}
+			
+			if(!routestatus) {
+				if(notiTemplate.getNoti_content() != null) {
+					String[] cids=notiTemplate.getNoti_content().split(",");
+					if(cids.length>0) {
+						List<Long> clongids=new ArrayList<>();
+						for(String id:cids) {
+							clongids.add(Long.parseLong(id));
+						}
+						Integer status=contentDao.isRouteStatus(clongids);
+						if(status!=null) {
+							routestatus=true;
+						}
+					}
+				}
+				
 			}
 		}
 		return routestatus;

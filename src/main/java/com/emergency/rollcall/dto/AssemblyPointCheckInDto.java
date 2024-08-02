@@ -2,6 +2,7 @@ package com.emergency.rollcall.dto;
 
 public class AssemblyPointCheckInDto {
 
+	private Long assemlbySyskey;
 	private String assemblyPointName;
 	private Long checkInCount;
 

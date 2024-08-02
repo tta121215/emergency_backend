@@ -7,7 +7,7 @@ import com.emergency.rollcall.dto.AuditLogDto;
 
 public interface AuditLogService {
 
-	void saveAuditLog(String username,String apiMethod, String details, String ipaddress, String browserVersion);    
+	void saveAuditLog(String username,String apiMethod, String details, String ipaddress, String browserVersion, String menu);    
 	
 	
 	Page<AuditLogDto> searchByParams(int page, int size, String params, String sortBy, String direction);

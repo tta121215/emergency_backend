@@ -569,55 +569,61 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<NotiTemplate> notiList = notitemplateDao.findAllByStatus(0);
 				if (!notiList.isEmpty()) {
 					NotiTemplate notiTemplate = notiList.get(0);
-
-					List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
-					List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
-					if (!modeNotiList.isEmpty()) {
-						for (ModeNoti modeNoti : modeNotiList) {
-							ModeNotiDto modenotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-							modeNotiDtoList.add(modenotiDto);
+					if(notiTemplate.getNoti_mode() != null) {
+						List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
+						List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+						if (!modeNotiList.isEmpty()) {
+							for (ModeNoti modeNoti : modeNotiList) {
+								ModeNotiDto modenotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+								modeNotiDtoList.add(modenotiDto);
+							}
+							eActivationDto.setModeNotiDtoList(modeNotiDtoList);
 						}
-						eActivationDto.setModeNotiDtoList(modeNotiDtoList);
 					}
+				
 					// Subject List
-					List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
-					EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
-					if (!subjectNotiList.isEmpty()) {
-						for (SubjectNoti subjectNoti : subjectNotiList) {
-							if (subjectNoti.getTableName() == "Date") {
-								eactivateSubjectDto.setDate(eActivate.getStartDate());
-							} else if (subjectNoti.getTableName() == "Time") {
-								eactivateSubjectDto.setTime(eActivate.getStartTime());
+					if(notiTemplate.getNoti_subject() != null) {
+						List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
+						EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
+						if (!subjectNotiList.isEmpty()) {
+							for (SubjectNoti subjectNoti : subjectNotiList) {
+								if (subjectNoti.getTableName() == "Date") {
+									eactivateSubjectDto.setDate(eActivate.getStartDate());
+								} else if (subjectNoti.getTableName() == "Time") {
+									eactivateSubjectDto.setTime(eActivate.getStartTime());
+								}
+								Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
+								if (entities != null) {
+									eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
+								}
 							}
-							Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
-							if (entities != null) {
-								eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
-							}
+							eActivationDto.setEsubjectDto(eactivateSubjectDto);
 						}
-						eActivationDto.setEsubjectDto(eactivateSubjectDto);
-					}
+					}				
 					// Content
-					List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
-					EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
-					if (!contentNotiList.isEmpty()) {
-						for (ContentNoti contentNoti : contentNotiList) {
-							if (contentNoti.getTableName().equals("Date")) {
-								eactivateContentDto.setDate(eActivate.getStartDate());
-							} else if (contentNoti.getTableName().equals("Time")) {
-								eactivateContentDto.setTime(eActivate.getStartTime());
+					if(notiTemplate.getNoti_content() != null) {
+						List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
+						EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
+						if (!contentNotiList.isEmpty()) {
+							for (ContentNoti contentNoti : contentNotiList) {
+								if (contentNoti.getTableName().equals("Date")) {
+									eactivateContentDto.setDate(eActivate.getStartDate());
+								} else if (contentNoti.getTableName().equals("Time")) {
+									eactivateContentDto.setTime(eActivate.getStartTime());
+								}
+								Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
+								if (entities != null) {
+									eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
+								}
 							}
-							Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
-							if (entities != null) {
-								eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
-							}
+							eActivationDto.setEcontentDto(eactivateContentDto);
 						}
-						eActivationDto.setEcontentDto(eactivateContentDto);
 					}
 				}
 			}

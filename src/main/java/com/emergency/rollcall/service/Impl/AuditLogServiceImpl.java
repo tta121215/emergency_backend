@@ -43,7 +43,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 	
 	@Override
 	public void saveAuditLog(String username, String apiMethod, String details, String ipaddress,
-			String browserVersion) {
+			String browserVersion, String menu) {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
@@ -57,6 +57,7 @@ public class AuditLogServiceImpl implements AuditLogService {
         auditLog.setDetails(details);
         auditLog.setBrowserVersion(browserVersion);
         auditLog.setIpaddress(ipaddress);
+        auditLog.setMenu(menu);
         auditLogDao.save(auditLog);
 	}
 	

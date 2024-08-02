@@ -9,6 +9,7 @@ public class AuditLogDto {
 	private String details;
 	private String ipaddress;
 	private String browserVersion;
+	private String menu;
 
 	public Long getSyskey() {
 		return syskey;
@@ -72,6 +73,14 @@ public class AuditLogDto {
 
 	public void setBrowserVersion(String browserVersion) {
 		this.browserVersion = browserVersion;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

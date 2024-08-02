@@ -22,6 +22,7 @@ public class AuditLog {
 	private String details;
 	private String ipaddress;
 	private String browserVersion;
+	private String menu;
 
 	public long getSyskey() {
 		return syskey;
@@ -95,6 +96,14 @@ public class AuditLog {
 
 	public void setBrowserVersion(String browserVersion) {
 		this.browserVersion = browserVersion;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
 	}
 
 	

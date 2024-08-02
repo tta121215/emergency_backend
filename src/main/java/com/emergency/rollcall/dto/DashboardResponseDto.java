@@ -5,7 +5,11 @@ import java.util.List;
 public class DashboardResponseDto {
 
 	private List<AssemblyPointCheckInDto> checkInCounts;
+	//private List<AssemblyPointNotCheckInDto> notCheckInCounts;
 	private Long totalCheckInCount;
+	private Long totalNotCheckInCount;
+	private Long totalTime;
+	private Long averageTime;
 
 	public DashboardResponseDto(List<AssemblyPointCheckInDto> checkInCounts, Long totalCheckInCount) {
 		this.checkInCounts = checkInCounts;
