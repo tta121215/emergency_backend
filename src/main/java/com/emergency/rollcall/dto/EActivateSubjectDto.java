@@ -11,6 +11,7 @@ public class EActivateSubjectDto {
 	private List<LocEmergencyDto> locEmergencyDtoList;
 	private String date;
 	private String time;
+	private String othersDes;
 	public EmergencyDto getEmergencyDto() {
 		return emergencyDto;
 	}
@@ -52,6 +53,12 @@ public class EActivateSubjectDto {
 	}
 	public void setTime(String time) {
 		this.time = time;
+	}
+	public String getOthersDes() {
+		return othersDes;
+	}
+	public void setOthersDes(String othersDes) {
+		this.othersDes = othersDes;
 	}
 	
 	

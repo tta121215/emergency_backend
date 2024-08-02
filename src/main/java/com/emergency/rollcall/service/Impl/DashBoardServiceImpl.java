@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
@@ -42,6 +43,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	
 
@@ -91,6 +95,59 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		return dashboardDto;
 	}
+	
+	@Override
+	public List<AssemblyCheckInDto> getByActivateAndAssembly(Long activateId, Long assemblyId) {
+		// TODO Auto-generated method stub
+		
+		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<AssemblyCheckIn> assemblyCheckInList = new ArrayList<>();
+		try {
+			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId);
+			if (!assemblyCheckInList.isEmpty()) {
+				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
+					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
+					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					assemblyCheckInDtoList.add(assemblyCheckInDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return assemblyCheckInDtoList;
+	}
+	
+	@Override
+	public List<AssemblyCheckInDto> getByActivateId(Long activateId) {
+		// TODO Auto-generated method stub
+		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<AssemblyCheckIn> assemblyCheckInList = new ArrayList<>();
+		try {
+			assemblyCheckInList = assemblyCheckInDao.getAllListByActivationId(activateId);
+			if (!assemblyCheckInList.isEmpty()) {
+				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
+					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
+					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					assemblyCheckInDtoList.add(assemblyCheckInDto);
+				}
+			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return assemblyCheckInDtoList;
+	}
 
 	public String yyyyMMddFormat(String aDate) {
 		String l_Date = "";
@@ -99,5 +156,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 		return l_Date;
 	}
+
+	
+
+	
 	
 }

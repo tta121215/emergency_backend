@@ -598,8 +598,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							for (SubjectNoti subjectNoti : subjectNotiList) {
 								if (subjectNoti.getTableName().equals("Date")) {
 									eactivateSubjectDto.setDate(eActivate.getStartDate());
-								} else if (subjectNoti.getTableName().equals("Time")) {
+								} 
+								if (subjectNoti.getTableName().equals("Time")) {
 									eactivateSubjectDto.setTime(eActivate.getStartTime());
+								} 
+								if (subjectNoti.getTableName().equals("Others")) {
+									eactivateSubjectDto.setOthersDes(subjectNoti.getDescription());
 								}
 								Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
 								if (entities != null) {
@@ -619,8 +623,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							for (ContentNoti contentNoti : contentNotiList) {
 								if (contentNoti.getTableName().equals("Date")) {
 									eactivateContentDto.setDate(eActivate.getStartDate());
-								} else if (contentNoti.getTableName().equals("Time")) {
+								}
+								if (contentNoti.getTableName().equals("Time")) {
 									eactivateContentDto.setTime(eActivate.getStartTime());
+								}
+								if (contentNoti.getTableName().equals("Others")){
+									eactivateContentDto.setOthersDes(contentNoti.getDescription());
 								}
 								Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
 								if (entities != null) {
