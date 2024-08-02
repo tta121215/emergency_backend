@@ -6,9 +6,10 @@ public class AssemblyPointCheckInDto {
 	private String assemblyPointName;
 	private Long checkInCount;
 
-	public AssemblyPointCheckInDto(String assemblyPointName, Long checkInCount) {
+	public AssemblyPointCheckInDto(String assemblyPointName, Long checkInCount, Long assemblySyskey) {
 		this.assemblyPointName = assemblyPointName;
 		this.checkInCount = checkInCount;
+		this.assemlbySyskey = assemblySyskey;
 	}
 
 	public String getAssemblyPointName() {
@@ -25,5 +26,13 @@ public class AssemblyPointCheckInDto {
 
 	public void setCheckInCount(Long checkInCount) {
 		this.checkInCount = checkInCount;
+	}
+
+	public Long getAssemlbySyskey() {
+		return assemlbySyskey;
+	}
+
+	public void setAssemlbySyskey(Long assemlbySyskey) {
+		this.assemlbySyskey = assemlbySyskey;
 	}
 }

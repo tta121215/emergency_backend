@@ -43,8 +43,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
 
-	@Autowired
-	private ModelMapper modelMapper;
+	
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -60,7 +59,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		List<AssemblyPointCheckInDto> checkInCounts = allAssemblies.stream().map(assembly -> {
 			Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
-			return new AssemblyPointCheckInDto(assembly.getName(), checkInCount);
+			return new AssemblyPointCheckInDto(assembly.getName(), checkInCount,assembly.getSyskey());
 		}).collect(Collectors.toList());
 
 		Long totalCheckInCount = checkInCounts.stream().mapToLong(AssemblyPointCheckInDto::getCheckInCount).sum();
