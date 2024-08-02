@@ -335,5 +335,45 @@ public class EmergencyActivateController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+
+	@GetMapping("emergencyActivateNoti")
+	public ResponseEntity<Response<EActivationDto>> emergencyActivateForNoti(@PathParam("id") long id, HttpServletRequest request) {
+		EActivationDto eActivationDto = new EActivationDto();
+		Response<EActivationDto> response = new Response<>();
+		Message message = new Message();
+		String username = "kzc";
+		String ipAddress = request.getRemoteAddr();
+		String browserVersion = request.getHeader("User-Agent");
+		logger.info("Received request to retrieve emergency with data: {}", id);
+		if (id != 0) {
+			eActivationDto = emergencyActivateService.emergencyActivate(id);
+			if (eActivationDto != null) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
+				auditLogService.saveAuditLog(username, "DeleteEmergencyActivate", message.getMessage(), ipAddress,
+						browserVersion);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found emergency  activate with data: {}", eActivationDto);
+				auditLogService.saveAuditLog(username, "Emergency Activate Start", message.getMessage(), ipAddress,
+						browserVersion);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
+		}
+		response.setMessage(message);
+		response.setData(eActivationDto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 }

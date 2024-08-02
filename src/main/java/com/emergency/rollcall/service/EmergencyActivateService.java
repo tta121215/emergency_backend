@@ -25,5 +25,7 @@ public interface EmergencyActivateService {
 	EActivationDto emergencyActivate(long id);
 	
 	ResponseDto emergencyActivateManualEnd(long id);
+	
+	EActivationDto emergencyActivateForNoti(long id);
 
 }
