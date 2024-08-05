@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
@@ -97,13 +101,13 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 	
 	@Override
-	public List<AssemblyCheckInDto> getByActivateAndAssembly(Long activateId, Long assemblyId) {
+	public Page<AssemblyCheckInDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page ,int size) {
 		// TODO Auto-generated method stub
-		
+		PageRequest pageRequest = PageRequest.of(page, size);
 		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
-		List<AssemblyCheckIn> assemblyCheckInList = new ArrayList<>();
+		Page<AssemblyCheckIn> assemblyCheckInList; 
 		try {
-			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId);
+			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
@@ -120,16 +124,17 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return assemblyCheckInDtoList;
+		return new PageImpl<>(assemblyCheckInDtoList, pageRequest, assemblyCheckInList.getTotalElements());
 	}
 	
 	@Override
-	public List<AssemblyCheckInDto> getByActivateId(Long activateId) {
+	public Page<AssemblyCheckInDto> getByActivateId(Long activateId, int page, int size) {
 		// TODO Auto-generated method stub
+		PageRequest pageRequest = PageRequest.of(page, size);
 		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
-		List<AssemblyCheckIn> assemblyCheckInList = new ArrayList<>();
+		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
-			assemblyCheckInList = assemblyCheckInDao.getAllListByActivationId(activateId);
+			assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
@@ -146,7 +151,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return assemblyCheckInDtoList;
+		return new PageImpl<>(assemblyCheckInDtoList, pageRequest, assemblyCheckInList.getTotalElements());
+ 
 	}
 
 	public String yyyyMMddFormat(String aDate) {

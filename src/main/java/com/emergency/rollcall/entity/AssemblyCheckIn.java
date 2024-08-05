@@ -26,6 +26,7 @@ public class AssemblyCheckIn {
 	private long emergencySyskey;
 	private String currentdate;
 	private String currenttime;
+	private int status;
 
 	public long getSyskey() {
 		return syskey;
@@ -113,6 +114,14 @@ public class AssemblyCheckIn {
 
 	public void setCurrenttime(String currenttime) {
 		this.currenttime = currenttime;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 }

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,11 +35,13 @@ public class DashBoardController {
 	private DashBoardService dashboardService;
 
 	@GetMapping("/check-in-counts")
-    public ResponseEntity<Response<DashboardResponseDto>> getCheckInCountsByAssemblyPoint(@RequestParam ("id") Long emergencyActivateSyskey) {
+	public ResponseEntity<Response<DashboardResponseDto>> getCheckInCountsByAssemblyPoint(
+			@RequestParam("id") Long emergencyActivateSyskey) {
 		Response<DashboardResponseDto> response = new Response<>();
 		Message message = new Message();
-		DashboardResponseDto dashboardResponseDto = dashboardService.getCheckInCountsByAssemblyPoint(emergencyActivateSyskey);
-        if (dashboardResponseDto != null) {
+		DashboardResponseDto dashboardResponseDto = dashboardService
+				.getCheckInCountsByAssemblyPoint(emergencyActivateSyskey);
+		if (dashboardResponseDto != null) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -52,59 +55,71 @@ public class DashBoardController {
 		}
 
 		response.setMessage(message);
-		response.setData(dashboardResponseDto);		
+		response.setData(dashboardResponseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
- 
-    }
-	
+
+	}
+
 	@GetMapping("/byassemblyandactivate")
-	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getAllListByActivateAndAssembly(@RequestParam ("activateId") Long activateId, 
-			@RequestParam ("assemblyId") Long assemblyId) {
+	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getAllListByActivateAndAssembly(
+			@RequestParam("activateId") Long activateId, @RequestParam("assemblyId") Long assemblyId,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		ResponseList<AssemblyCheckInDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<AssemblyCheckInDto> AssemblyCheckInDtoList = new ArrayList<>();
+		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
 		logger.info("Received request to get assembly check in by activation id " + activateId);
-		
-			AssemblyCheckInDtoList = dashboardService.getByActivateAndAssembly(activateId, assemblyId);
-			if (!AssemblyCheckInDtoList.isEmpty()) {
-				message.setState(true);
-				message.setCode("200");
-				message.setMessage("Data is successfully");
 
-			} else {
-				message.setState(false);
-				message.setCode("401");
-				message.setMessage("No Data found");
-			}
-		
+		Page<AssemblyCheckInDto> assemblyCheckInPage = dashboardService.getByActivateAndAssembly(activateId, assemblyId,
+				page, size);
+		assemblyCheckInDtoList = assemblyCheckInPage.getContent();
+		if (!assemblyCheckInDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
 		response.setMessage(message);
-		response.setData(AssemblyCheckInDtoList);
+		response.setData(assemblyCheckInDtoList);
+		response.setTotalItems(assemblyCheckInPage.getTotalElements());
+		response.setTotalPages(assemblyCheckInPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/byactivate")
-	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getistByActivationId(@RequestParam ("activateId") Long activateId) {
+	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getistByActivationId(
+			@RequestParam("activateId") Long activateId, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
 		ResponseList<AssemblyCheckInDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<AssemblyCheckInDto> AssemblyCheckInDtoList = new ArrayList<>();
-		logger.info("Received request to get assembly check in by activation id " + activateId);
-		
-			AssemblyCheckInDtoList = dashboardService.getByActivateId(activateId);
-			if (!AssemblyCheckInDtoList.isEmpty()) {
-				message.setState(true);
-				message.setCode("200");
-				message.setMessage("Data is successfully");
+		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
 
-			} else {
-				message.setState(false);
-				message.setCode("401");
-				message.setMessage("No Data found");
-			}
-		
+		logger.info("Received request to get assembly check in by activation id " + activateId);
+
+		Page<AssemblyCheckInDto> assemblyCheckInPage = dashboardService.getByActivateId(activateId, page, size);
+		assemblyCheckInDtoList = assemblyCheckInPage.getContent();
+		if (!assemblyCheckInDtoList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+		}
+
 		response.setMessage(message);
-		response.setData(AssemblyCheckInDtoList);
+		response.setData(assemblyCheckInDtoList);
+		response.setTotalItems(assemblyCheckInPage.getTotalElements());
+		response.setTotalPages(assemblyCheckInPage.getTotalPages());
+		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 
 }

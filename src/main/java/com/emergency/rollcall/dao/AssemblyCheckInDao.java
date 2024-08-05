@@ -2,6 +2,8 @@ package com.emergency.rollcall.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,9 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
     List<Object[]> findCheckInCountsByAssemblyPoint(@Param("emergencyActivateSyskey") Long emergencyActivateSyskey);
     
     @Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :activateId and a.assemblyPoint = :assemblyId ")
-	List<AssemblyCheckIn> getListByAssemblyAndActivate(@Param("activateId") Long activateId, @Param("assemblyId") Long assemblyId);
+	Page<AssemblyCheckIn> getListByAssemblyAndActivate(@Param("activateId") Long activateId, @Param("assemblyId") Long assemblyId, Pageable pageable);
+    
+    @Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
+	Page<AssemblyCheckIn> getListByActivationId(@Param("id") Long id, Pageable pageable);
 }
 

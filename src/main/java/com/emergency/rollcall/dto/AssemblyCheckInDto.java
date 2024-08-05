@@ -14,6 +14,7 @@ public class AssemblyCheckInDto {
 	private long emergencySyskey;
 	private String currentdate;
 	private String currenttime;
+	private int status;
 
 	public long getSyskey() {
 		return syskey;
@@ -103,11 +104,19 @@ public class AssemblyCheckInDto {
 		this.currenttime = currenttime;
 	}
 
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "AssemblyCheckInDto [syskey=" + syskey + ", createddate=" + createddate + ", modifieddate="
 				+ modifieddate + ", staffId=" + staffId + ", latitude=" + latitude + ", longtiude=" + longtiude
 				+ ", assemblyPoint=" + assemblyPoint + ", deviceType=" + deviceType + ", emergencySyskey="
-				+ emergencySyskey + ", currentdate=" + currentdate + ", currenttime=" + currenttime + "]";
+				+ emergencySyskey + ", currentdate=" + currentdate + ", currenttime=" + currenttime + ", status=" + status + "]";
 	}
 }
