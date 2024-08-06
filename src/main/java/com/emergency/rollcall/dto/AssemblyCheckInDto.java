@@ -15,7 +15,7 @@ public class AssemblyCheckInDto {
 	private String currentdate;
 	private String currenttime;
 	private int status;
-	private String assemblyName;
+
 
 	public long getSyskey() {
 		return syskey;
@@ -111,14 +111,6 @@ public class AssemblyCheckInDto {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public String getAssemblyName() {
-		return assemblyName;
-	}
-
-	public void setAssemblyName(String assemblyName) {
-		this.assemblyName = assemblyName;
 	}
 
 	@Override

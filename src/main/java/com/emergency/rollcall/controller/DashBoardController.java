@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.AssemblyCheckInDto;
 import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
@@ -61,18 +62,18 @@ public class DashBoardController {
 	}
 
 	@GetMapping("/byassemblyandactivate")
-	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getAllListByActivateAndAssembly(
+	public ResponseEntity<ResponseList<DashboardDetailDto>> getAllListByActivateAndAssembly(
 			@RequestParam("activateId") Long activateId, @RequestParam("assemblyId") Long assemblyId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-		ResponseList<AssemblyCheckInDto> response = new ResponseList<>();
+		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
-		Page<AssemblyCheckInDto> assemblyCheckInPage = dashboardService.getByActivateAndAssembly(activateId, assemblyId,
+		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateAndAssembly(activateId, assemblyId,
 				page, size);
-		assemblyCheckInDtoList = assemblyCheckInPage.getContent();
-		if (!assemblyCheckInDtoList.isEmpty()) {
+		dashboardDetailDtoList = dashboardDetailPage.getContent();
+		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -84,26 +85,26 @@ public class DashBoardController {
 		}
 
 		response.setMessage(message);
-		response.setData(assemblyCheckInDtoList);
-		response.setTotalItems(assemblyCheckInPage.getTotalElements());
-		response.setTotalPages(assemblyCheckInPage.getTotalPages());
+		response.setData(dashboardDetailDtoList);
+		response.setTotalItems(dashboardDetailPage.getTotalElements());
+		response.setTotalPages(dashboardDetailPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/byactivate")
-	public ResponseEntity<ResponseList<AssemblyCheckInDto>> getistByActivationId(
+	public ResponseEntity<ResponseList<DashboardDetailDto>> getistByActivationId(
 			@RequestParam("activateId") Long activateId, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
-		ResponseList<AssemblyCheckInDto> response = new ResponseList<>();
+		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
-		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
-		Page<AssemblyCheckInDto> assemblyCheckInPage = dashboardService.getByActivateId(activateId, page, size);
-		assemblyCheckInDtoList = assemblyCheckInPage.getContent();
-		if (!assemblyCheckInDtoList.isEmpty()) {
+		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size);
+		dashboardDetailDtoList = dashboardDetailPage.getContent();
+		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
@@ -115,9 +116,9 @@ public class DashBoardController {
 		}
 
 		response.setMessage(message);
-		response.setData(assemblyCheckInDtoList);
-		response.setTotalItems(assemblyCheckInPage.getTotalElements());
-		response.setTotalPages(assemblyCheckInPage.getTotalPages());
+		response.setData(dashboardDetailDtoList);
+		response.setTotalItems(dashboardDetailPage.getTotalElements());
+		response.setTotalPages(dashboardDetailPage.getTotalPages());
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

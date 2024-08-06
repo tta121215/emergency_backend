@@ -27,6 +27,7 @@ import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
 import com.emergency.rollcall.dto.AssemblyCheckInDto;
 import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
+import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Assembly;
@@ -145,23 +146,27 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 	
 	@Override
-	public Page<AssemblyCheckInDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page ,int size) {
+	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page ,int size) {
 		// TODO Auto-generated method stub
 		PageRequest pageRequest = PageRequest.of(page, size);
-		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList; 
 		try {
 			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
-					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
-					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
+					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
+					dashboardDetailDto.setUsername(" ");
+					dashboardDetailDto.setEmail(" ");
+					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
+					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
 					if(assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
-						assemblyCheckInDto.setAssemblyName(assembly.getName());
+						dashboardDetailDto.setAssemblyName(assembly.getName());
 					}
-					assemblyCheckInDtoList.add(assemblyCheckInDto);
+					dashboardDetailDtoList.add(dashboardDetailDto);
 				}
 			}
 
@@ -173,27 +178,31 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(assemblyCheckInDtoList, pageRequest, assemblyCheckInList.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
 	}
 	
 	@Override
-	public Page<AssemblyCheckInDto> getByActivateId(Long activateId, int page, int size) {
+	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size) {
 		// TODO Auto-generated method stub
 		PageRequest pageRequest = PageRequest.of(page, size);
-		List<AssemblyCheckInDto> assemblyCheckInDtoList = new ArrayList<>();
+		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
 			assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
-					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
-					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
+					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
+					dashboardDetailDto.setUsername(" ");
+					dashboardDetailDto.setEmail(" ");
+					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
+					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
 					if(assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
-						assemblyCheckInDto.setAssemblyName(assembly.getName());
+						dashboardDetailDto.setAssemblyName(assembly.getName());
 					}
-					assemblyCheckInDtoList.add(assemblyCheckInDto);
+					dashboardDetailDtoList.add(dashboardDetailDto);
 				}
 			}
 
@@ -205,7 +214,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(assemblyCheckInDtoList, pageRequest, assemblyCheckInList.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
  
 	}
 
