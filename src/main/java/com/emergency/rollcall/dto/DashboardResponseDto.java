@@ -10,6 +10,7 @@ public class DashboardResponseDto {
 	private Long totalNotCheckInCount;
 	private String totalTime;
 	private Double averageTime;
+	private Long totalHeadCount;
 
 	
 	// Getters and Setters
@@ -52,4 +53,13 @@ public class DashboardResponseDto {
 	public void setTotalTime(String totalTime) {
 		this.totalTime = totalTime;
 	}
+
+	public Long getTotalHeadCount() {
+		return totalHeadCount;
+	}
+
+	public void setTotalHeadCount(Long totalHeadCount) {
+		this.totalHeadCount = totalHeadCount;
+	}
+	
 }

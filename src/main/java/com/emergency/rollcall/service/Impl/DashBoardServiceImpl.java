@@ -84,11 +84,12 @@ public class DashBoardServiceImpl implements DashBoardService {
 			long minutes = duration.toMinutes() % 60;
 			long seconds = duration.getSeconds() % 60;
 			if (days > 0) {
-				dashboardDto.setTotalTime(days + " days " + hours + " hours");
+				dashboardDto.setTotalTime(days + " " + hours);
 			} else if (hours > 0) {
-				dashboardDto.setTotalTime(hours + " hours " + minutes + " minutes");
+				dashboardDto.setTotalTime(hours + ":" + minutes);
 			} else {
-				dashboardDto.setTotalTime(minutes + " minutes " + seconds + " seconds");
+					String str=seconds<10?"0"+seconds:seconds+"" ;
+					dashboardDto.setTotalTime(minutes<10?"0"+minutes:minutes + ":"+str);
 			}
 			double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
 			dashboardDto.setAverageTime(averageTimePerCheckIn);
@@ -96,7 +97,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		dashboardDto.setCheckInCounts(checkInCounts);
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
-
+		dashboardDto.setTotalNotCheckInCount(Long.parseLong("5"));
+		dashboardDto.setTotalHeadCount(Long.parseLong("23"));
 		return dashboardDto;
 	}
 	
