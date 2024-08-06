@@ -83,16 +83,57 @@ public class DashBoardServiceImpl implements DashBoardService {
 			long hours = duration.toHours() % 24;
 			long minutes = duration.toMinutes() % 60;
 			long seconds = duration.getSeconds() % 60;
+			
 			if (days > 0) {
-				dashboardDto.setTotalTime(days + " " + hours);
-			} else if (hours > 0) {
-				dashboardDto.setTotalTime(hours + ":" + minutes);
-			} else {
-					String str=seconds<10?"0"+seconds:seconds+"" ;
-					dashboardDto.setTotalTime(minutes<10?"0"+minutes:minutes + ":"+str);
+				days=days*24;
 			}
-			double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
-			dashboardDto.setAverageTime(averageTimePerCheckIn);
+			hours=hours+days;
+			String hoursstr="";
+			if(hours<10) {
+				hoursstr="0"+hours;
+			}else {
+				hoursstr=""+hours;
+			}
+			String minutesstr="";
+			if(minutes<10) {
+				minutesstr="0"+minutes;
+			}else {
+				minutesstr=""+minutes;
+			}
+			String secondstr="";
+			if(seconds<10) {
+				secondstr="0"+seconds;
+			}else {
+				secondstr=""+seconds;
+			}
+			dashboardDto.setTotalTime(hoursstr+":"+minutesstr+":"+secondstr);
+			long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+			System.out.println(averageTimePerCheckIn);
+			Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+
+	        // Extract hours, minutes, and seconds
+	        long avghours = averageDuration.toHours();
+	        long avgminutes = averageDuration.toMinutesPart();
+	        long avgseconds = averageDuration.toSecondsPart();
+	        String avghoursstr="";
+			if(avghours<10) {
+				avghoursstr="0"+avghours;
+			}else {
+				avghoursstr=""+avghours;
+			}
+			String avgminutesstr="";
+			if(avgminutes<10) {
+				avgminutesstr="0"+avgminutes;
+			}else {
+				avgminutesstr=""+avgminutes;
+			}
+			String avgsecondstr="";
+			if(avgseconds<10) {
+				avgsecondstr="0"+avgseconds;
+			}else {
+				avgsecondstr=""+avgseconds;
+			}
+			dashboardDto.setAverageTime(avghoursstr+":"+avgminutesstr+":"+avgsecondstr);
 		}
 
 		dashboardDto.setCheckInCounts(checkInCounts);

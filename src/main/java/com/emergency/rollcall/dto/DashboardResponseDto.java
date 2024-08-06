@@ -9,7 +9,7 @@ public class DashboardResponseDto {
 	private Long totalCheckInCount;
 	private Long totalNotCheckInCount;
 	private String totalTime;
-	private Double averageTime;
+	private String averageTime;
 	private Long totalHeadCount;
 
 	
@@ -38,11 +38,11 @@ public class DashboardResponseDto {
 		this.totalNotCheckInCount = totalNotCheckInCount;
 	}
 
-	public Double getAverageTime() {
+	public String getAverageTime() {
 		return averageTime;
 	}
 
-	public void setAverageTime(Double averageTime) {
+	public void setAverageTime(String averageTime) {
 		this.averageTime = averageTime;
 	}
 
