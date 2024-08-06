@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Audit_Log")
+@Table(name = "ERC_Audit_Log")
 public class AuditLog {
 
 	@Id

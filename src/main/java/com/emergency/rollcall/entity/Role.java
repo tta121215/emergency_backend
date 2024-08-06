@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Role")
+@Table(name = "ERC_Role")
 public class Role {
 
 	@Id

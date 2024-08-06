@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Subject_Noti")
+@Table(name = "ERC_Subject_Noti")
 public class SubjectNoti {
 
 	@Id

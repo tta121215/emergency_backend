@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 
 import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
+import com.emergency.rollcall.dto.EmergencyRollCallDto;
 import com.emergency.rollcall.dto.ResponseDto;
 
 public interface EmergencyActivateService {
@@ -27,5 +28,7 @@ public interface EmergencyActivateService {
 	ResponseDto emergencyActivateManualEnd(long id);
 	
 	EActivationDto emergencyActivateForNoti(long id);
+	
+	Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page, int size);
 
 }

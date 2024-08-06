@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Menu")
+@Table(name = "ERC_Menu")
 public class Menu {
 
 	@Id

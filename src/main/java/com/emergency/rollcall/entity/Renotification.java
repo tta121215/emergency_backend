@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Renofication")
+@Table(name = "ERC_Renofication")
 public class Renotification {
 
 	@Id

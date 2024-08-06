@@ -25,5 +25,8 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
     
     @Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
 	Page<AssemblyCheckIn> getListByActivationId(@Param("id") Long id, Pageable pageable);
+    
+    @Query("SELECT a.emergencySyskey, COUNT(a) FROM AssemblyCheckIn a WHERE a.emergencySyskey = :emergencyActivateSyskey GROUP BY a.emergencySyskey")
+    List<Object[]> findCheckInCountsByEmergencyActivate(@Param("emergencyActivateSyskey") Long emergencyActivateSyskey);
 }
 

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import com.emergency.rollcall.service.BaseEntity;
 
 @Entity
-@Table(name = "Emergency")
+@Table(name = "ERC_Emergency")
 public class Emergency implements BaseEntity{
 
 	@Id

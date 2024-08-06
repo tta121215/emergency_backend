@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -29,6 +30,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
+import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.ConditionDao;
 import com.emergency.rollcall.dao.ContentNotiDao;
@@ -41,11 +43,14 @@ import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dao.SubjectNotiDao;
 import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
 import com.emergency.rollcall.dto.ConditionDto;
+import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.EActivateSubjectDto;
 import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
+import com.emergency.rollcall.dto.EmergencyRollCallDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.NotificationDto;
@@ -68,6 +73,8 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
+	
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
@@ -98,6 +105,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private ContentNotiDao contentNotiDao;
+	
+	@Autowired
+	private AssemblyCheckInDao assemblyCheckInDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -775,6 +785,62 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 
 	}
+	
+	@Override
+	public Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page,
+			int size) {
+		DashboardResponseDto dashboardDto = new DashboardResponseDto();
+		PageRequest pageRequest = PageRequest.of(page, size);
+		//Pageable pageable = PageRequest.of(page, size);
+		
+		Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(
+	            date != null && !date.isEmpty() ? date : null,
+	            emergencyType,
+	            emergencyStatus ,
+	            pageRequest
+	        );
+		
+		//Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(pageRequest);
+
+        // Prepare the result list		
+        List<EmergencyRollCallDto> emergencyRollCallDtoList = emergencyActivateList.stream().map(emergencyActivate -> {
+            Long emergencySyskey = emergencyActivate.getSyskey();
+            
+            // Fetch check-in counts for the current emergency activation
+            List<Object[]> results = assemblyCheckInDao.findCheckInCountsByEmergencyActivate(emergencySyskey);
+            Map<Long, Long> checkInCountMap = results.stream()
+                    .collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
+
+            Long totalCheckInCount = checkInCountMap.values().stream().mapToLong(Long::longValue).sum();
+
+            // Calculate total time in minutes           
+            
+            LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+            LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
+            Duration duration = Duration.between(startTime, endTime);
+            long totalTimeInMinutes = duration.toMinutes();
+
+            // Calculate average time per check-in
+            double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
+
+            // Create the DTO
+            EmergencyRollCallDto dto = new EmergencyRollCallDto();
+            dto.setSyskey(emergencySyskey);
+            dto.setName(emergencyActivate.getName());
+            dto.setRemark(emergencyActivate.getRemark());
+            dto.setActivateDate(emergencyActivate.getActivateDate());
+            dto.setActivateTime(emergencyActivate.getActivateTime());
+            dto.setTotalCheckIn(totalCheckInCount);
+            dto.setTotalTime(formatDuration(duration));
+            dto.setConditionName(emergencyActivate.getCondition().getName());
+            dto.setAverageTime(averageTimePerCheckIn);
+            dto.setEmergencyName(emergencyActivate.getEmergency().getName());
+            return dto;
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(emergencyRollCallDtoList, pageRequest, emergencyActivateList.getTotalElements());
+	}
+
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
@@ -846,5 +912,21 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			return null;
 		}
 	}
+	
+	private String formatDuration(Duration duration) {
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
 
+        if (days > 0) {
+            return days + " days " + hours + " hours";
+        } else if (hours > 0) {
+            return hours + " hours " + minutes + " minutes";
+        } else {
+            return minutes + " minutes " + seconds + " seconds";
+        }
+    }
+
+	
 }

@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "noti_template")
+@Table(name = "ERC_Noti_Template")
 public class NotiTemplate {
 
 	@Id

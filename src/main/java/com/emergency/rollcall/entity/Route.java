@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Route")
+@Table(name = "ERC_Route")
 public class Route {
 
 	@Id

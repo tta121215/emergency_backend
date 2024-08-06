@@ -12,7 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Noti")
+@Table(name = "ERC_Noti")
 public class Notification {
 
 	@Id

@@ -15,7 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Loc_Emergency")
+@Table(name = "ERC_Loc_Emergency")
 public class LocEmergency {
 
 	@Id
@@ -30,7 +30,7 @@ public class LocEmergency {
 	private String modifieddate;
 	
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "loc_route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+	@JoinTable(name = "ERC_Loc_Route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
 	
 	@ManyToMany(mappedBy = "locEmergencyList")

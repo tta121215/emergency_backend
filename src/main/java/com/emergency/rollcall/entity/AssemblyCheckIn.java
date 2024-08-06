@@ -8,7 +8,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Assembly_check_in")
+@Table(name = "ERC_Assembly_check_in")
 public class AssemblyCheckIn {
 
 	@Id

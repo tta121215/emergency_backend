@@ -17,7 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "emergency_activate")
+@Table(name = "ERC_Emergency_Activate")
 public class EmergencyActivate {
 
 	@Id
@@ -50,15 +50,15 @@ public class EmergencyActivate {
 //	private LocEmergency locEmergency;
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "activate_assembly", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
+	@JoinTable(name = "ERC_Activate_Assembly", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
 	private List<Assembly> assemblyList = new ArrayList<>();
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "activate_route", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
+	@JoinTable(name = "ERC_Activate_Route", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-	@JoinTable(name = "activate_locemergency", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
+	@JoinTable(name = "ERC_Activate_Locemergency", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
 	private List<LocEmergency> locEmergencyList = new ArrayList<>();
 
 	public long getSyskey() {

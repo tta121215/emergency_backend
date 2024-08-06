@@ -12,7 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ASSEMBLY")
+@Table(name = "ERC_ASSEMBLY")
 public class Assembly {
 //	@Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
