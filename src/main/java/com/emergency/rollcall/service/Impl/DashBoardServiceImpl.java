@@ -161,6 +161,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDto.setEmail(" ");
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
 					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
+					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
+					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
 					if(assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
@@ -197,6 +199,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDto.setEmail(" ");
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
 					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
+					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
+					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
 					if(assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
