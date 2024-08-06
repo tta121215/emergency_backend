@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -155,6 +156,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
 					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
+					if(assemblyOptional.isPresent()) {
+						Assembly assembly = assemblyOptional.get();
+						assemblyCheckInDto.setAssemblyName(assembly.getName());
+					}
 					assemblyCheckInDtoList.add(assemblyCheckInDto);
 				}
 			}
@@ -182,6 +188,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					AssemblyCheckInDto assemblyCheckInDto = new AssemblyCheckInDto();
 					assemblyCheckInDto = modelMapper.map(assemblyCheckIn, AssemblyCheckInDto.class);
+					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
+					if(assemblyOptional.isPresent()) {
+						Assembly assembly = assemblyOptional.get();
+						assemblyCheckInDto.setAssemblyName(assembly.getName());
+					}
 					assemblyCheckInDtoList.add(assemblyCheckInDto);
 				}
 			}
