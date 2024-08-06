@@ -34,7 +34,7 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 		       "LEFT JOIN c.condition con " )		      
 		Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
 	
-	List<EmergencyActivate> findAllByStatus(int status);
+	List<EmergencyActivate> findAllByActivateStatus(int status);
 	
 //	@Query("SELECT c FROM EmergencyActivate c where c.activateStatus = 2")
 //	Page<EmergencyActivate> findAllByStatus(Pageable pageable);
