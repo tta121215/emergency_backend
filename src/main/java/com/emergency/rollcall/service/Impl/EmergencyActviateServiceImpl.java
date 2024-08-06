@@ -839,18 +839,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				String locem = "";
 				int count = 0;
 				for (LocEmergency loce : emergencyActivate.getLocEmergencyList()) {
-					//locem += loce.getName() + ",";
-					
 					if(count > 0) {
-						locem += loce.getName() + ",";
+						locem += "," + loce.getName();
 					}else {
 						locem += loce.getName();
 					}
 					count++;
-					
 				}
 				dto.setEmegencyLocation(locem);
-				//eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 			}
             return dto;
         }).collect(Collectors.toList());
