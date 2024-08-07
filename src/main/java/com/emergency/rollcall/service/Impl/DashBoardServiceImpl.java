@@ -1,45 +1,39 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
-
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
-import com.emergency.rollcall.dto.AssemblyCheckInDto;
 import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
-import com.emergency.rollcall.dto.ResponseDto;
+import com.emergency.rollcall.dto.StaffDto;
 import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.AssemblyCheckIn;
 import com.emergency.rollcall.entity.EmergencyActivate;
-import com.emergency.rollcall.service.AssemblyCheckInService;
 import com.emergency.rollcall.service.DashBoardService;
 
 @Service
 public class DashBoardServiceImpl implements DashBoardService {
 
-	private final Logger logger = Logger.getLogger(AssemblyCheckInService.class.getName());
+	private final Logger logger = Logger.getLogger(DashBoardService.class.getName());
 
 	@Autowired
 	private AssemblyDao assemblyDao;
@@ -49,11 +43,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
-	
-	@Autowired
-	private ModelMapper modelMapper;
-
-	
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -69,10 +58,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		List<AssemblyPointCheckInDto> checkInCounts = allAssemblies.stream().map(assembly -> {
 			Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
-			return new AssemblyPointCheckInDto(assembly.getName(), checkInCount,assembly.getSyskey());
+			return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey());
 		}).collect(Collectors.toList());
 
-		Long totalCheckInCount = checkInCounts.stream().mapToLong(AssemblyPointCheckInDto::getCheckInCount).sum();
+		List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
+
+		List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
+				.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
+
+		long totalCheckInCount = (long) checkedInUsers.size();
 
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
 		if (emergencyActivate != null) {
@@ -85,72 +79,72 @@ public class DashBoardServiceImpl implements DashBoardService {
 			long hours = duration.toHours() % 24;
 			long minutes = duration.toMinutes() % 60;
 			long seconds = duration.getSeconds() % 60;
-			
-			if (days > 0) {
-				days=days*24;
-			}
-			hours=hours+days;
-			String hoursstr="";
-			if(hours<10) {
-				hoursstr="0"+hours;
-			}else {
-				hoursstr=""+hours;
-			}
-			String minutesstr="";
-			if(minutes<10) {
-				minutesstr="0"+minutes;
-			}else {
-				minutesstr=""+minutes;
-			}
-			String secondstr="";
-			if(seconds<10) {
-				secondstr="0"+seconds;
-			}else {
-				secondstr=""+seconds;
-			}
-			dashboardDto.setTotalTime(hoursstr+":"+minutesstr+":"+secondstr);
-			long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
-			System.out.println(averageTimePerCheckIn);
-			Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
 
-	        // Extract hours, minutes, and seconds
-	        long avghours = averageDuration.toHours();
-	        long avgminutes = averageDuration.toMinutesPart();
-	        long avgseconds = averageDuration.toSecondsPart();
-	        String avghoursstr="";
-			if(avghours<10) {
-				avghoursstr="0"+avghours;
-			}else {
-				avghoursstr=""+avghours;
+			if (days > 0) {
+				days = days * 24;
 			}
-			String avgminutesstr="";
-			if(avgminutes<10) {
-				avgminutesstr="0"+avgminutes;
-			}else {
-				avgminutesstr=""+avgminutes;
+			hours = hours + days;
+			String hoursstr = "";
+			if (hours < 10) {
+				hoursstr = "0" + hours;
+			} else {
+				hoursstr = "" + hours;
 			}
-			String avgsecondstr="";
-			if(avgseconds<10) {
-				avgsecondstr="0"+avgseconds;
-			}else {
-				avgsecondstr=""+avgseconds;
+			String minutesstr = "";
+			if (minutes < 10) {
+				minutesstr = "0" + minutes;
+			} else {
+				minutesstr = "" + minutes;
 			}
-			dashboardDto.setAverageTime(avghoursstr+":"+avgminutesstr+":"+avgsecondstr);
+			String secondstr = "";
+			if (seconds < 10) {
+				secondstr = "0" + seconds;
+			} else {
+				secondstr = "" + seconds;
+			}
+			dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
+			long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+			Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+			
+			long avghours = averageDuration.toHours();
+			long avgminutes = averageDuration.toMinutesPart();
+			long avgseconds = averageDuration.toSecondsPart();
+			String avghoursstr = "";
+			if (avghours < 10) {
+				avghoursstr = "0" + avghours;
+			} else {
+				avghoursstr = "" + avghours;
+			}
+			String avgminutesstr = "";
+			if (avgminutes < 10) {
+				avgminutesstr = "0" + avgminutes;
+			} else {
+				avgminutesstr = "" + avgminutes;
+			}
+			String avgsecondstr = "";
+			if (avgseconds < 10) {
+				avgsecondstr = "0" + avgseconds;
+			} else {
+				avgsecondstr = "" + avgseconds;
+			}
+			dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 		}
+
+		long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
 
 		dashboardDto.setCheckInCounts(checkInCounts);
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
-		dashboardDto.setTotalNotCheckInCount(Long.parseLong("5"));
-		dashboardDto.setTotalHeadCount(Long.parseLong("23"));
+		dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
+		dashboardDto.setTotalHeadCount((long) allUsers.size());
 		return dashboardDto;
 	}
-	
+
 	@Override
-	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page ,int size) {
+	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size) {
 		// TODO Auto-generated method stub
 		PageRequest pageRequest = PageRequest.of(page, size);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		Page<AssemblyCheckIn> assemblyCheckInList; 
+		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
 			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
@@ -164,7 +158,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
 					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
-					if(assemblyOptional.isPresent()) {
+					if (assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
 						dashboardDetailDto.setAssemblyName(assembly.getName());
 					}
@@ -182,7 +176,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
 	}
-	
+
 	@Override
 	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size) {
 		// TODO Auto-generated method stub
@@ -202,7 +196,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
 					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
 					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
-					if(assemblyOptional.isPresent()) {
+					if (assemblyOptional.isPresent()) {
 						Assembly assembly = assemblyOptional.get();
 						dashboardDetailDto.setAssemblyName(assembly.getName());
 					}
@@ -219,7 +213,41 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 
 		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
- 
+
+	}
+
+	@Override
+	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size) {
+		// TODO Auto-generated method stub
+		PageRequest pageRequest = PageRequest.of(page, size);
+		List<StaffDto> staffDtoList = new ArrayList<>();
+		Page<Map<String, Object>> usersNotCheckedInPage;
+
+		try {
+			usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+					pageRequest);
+
+			staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
+				StaffDto staffDto = new StaffDto();
+				staffDto.setId((BigDecimal) staff.get("id"));
+				staffDto.setUsername((String) staff.get("username"));
+				staffDto.setEmail((String) staff.get("email"));
+				staffDto.setMobileNo((String) staff.get("mobileNo"));
+				staffDto.setName((String) staff.get("name"));
+				staffDto.setIcnumber((String) staff.get("icnumber"));
+				staffDto.setPassportNumber((String) staff.get("passportnumber"));
+				return staffDto;
+			}).collect(Collectors.toList());
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return new PageImpl<>(staffDtoList, pageRequest, usersNotCheckedInPage.getTotalElements());
 	}
 
 	public String yyyyMMddFormat(String aDate) {
@@ -230,8 +258,4 @@ public class DashBoardServiceImpl implements DashBoardService {
 		return l_Date;
 	}
 
-	
-
-	
-	
 }

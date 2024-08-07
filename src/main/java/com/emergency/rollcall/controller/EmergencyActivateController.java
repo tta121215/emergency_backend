@@ -68,7 +68,7 @@ public class EmergencyActivateController {
 				message.setCode("200");
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully request to save emergency activate with data: {}", eActivateDto);
-				auditLogService.saveAuditLog(username, "save", responseDto.getMessage(), ipAddress, browserVersion,
+				auditLogService.saveAuditLog(username, "Save", responseDto.getMessage(), ipAddress, browserVersion,
 						"Emergency Activation");
 			} else {
 				message.setState(false);

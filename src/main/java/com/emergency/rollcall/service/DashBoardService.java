@@ -1,12 +1,10 @@
 package com.emergency.rollcall.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
-import com.emergency.rollcall.dto.AssemblyCheckInDto;
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
+import com.emergency.rollcall.dto.StaffDto;
 
 public interface DashBoardService {
 
@@ -15,4 +13,6 @@ public interface DashBoardService {
 	Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size);
 
 	Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size);
+
+	Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size);
 }
