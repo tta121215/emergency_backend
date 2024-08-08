@@ -266,13 +266,14 @@ public class EmergencyActivateController {
 	}
 	
 	@GetMapping("/all-list")
-	public ResponseEntity<ResponseList<EmergencyActivateDto>> getAllList() {
+	public ResponseEntity<ResponseList<EmergencyActivateDto>> getAllList(@RequestParam(value = "fromDate", required = false) String fromDate,
+			@RequestParam(value = "toDate", required = false) String toDate) {
 
 		ResponseList<EmergencyActivateDto> response = new ResponseList<>();
 		Message message = new Message();
 		logger.info("Received request to search emergency activate with data: {}");
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
-		emergencyActivateDtoList = emergencyActivateService.getAllList();
+		emergencyActivateDtoList = emergencyActivateService.getAllList(fromDate, toDate);
 		if (!emergencyActivateDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");

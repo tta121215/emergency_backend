@@ -551,13 +551,18 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	}
 
 	@Override
-	public List<EmergencyActivateDto> getAllList() {
+	public List<EmergencyActivateDto> getAllList(String fromDate, String toDate) {
 		logger.info("Searching emergency activate entity: ");
 		List<EmergencyActivate> emergencyActivateList = new ArrayList<>();
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 
 		try {
-			emergencyActivateList = emergencyActivateDao.findAll();
+			if(fromDate != null && toDate != null) {
+				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
+			}else {
+				emergencyActivateList = emergencyActivateDao.findAll();
+			}
+			
 
 			if (!emergencyActivateList.isEmpty()) {
 				for (EmergencyActivate eActivate : emergencyActivateList) {

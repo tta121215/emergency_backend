@@ -23,7 +23,7 @@ public interface EmergencyActivateService {
 	
 	List<EmergencyActivateDto> getAllDashboardList();
 	
-	List<EmergencyActivateDto> getAllList();
+	List<EmergencyActivateDto> getAllList(String fromDate, String toDate);
 	
 	EActivationDto emergencyActivate(long id);
 	
@@ -32,5 +32,6 @@ public interface EmergencyActivateService {
 	EActivationDto emergencyActivateForNoti(long id);
 	
 	Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page, int size);
+
 
 }
