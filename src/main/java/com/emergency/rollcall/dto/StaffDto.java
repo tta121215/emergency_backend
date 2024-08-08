@@ -16,6 +16,9 @@ public class StaffDto {
 	private int status;
 	private String createddate;
 	private String updateddate;
+	private String lastEntryPoint;
+	private String department;
+	private String type;
 
 	public BigDecimal getId() {
 		return id;
@@ -119,6 +122,30 @@ public class StaffDto {
 
 	public void setUpdateddate(String updateddate) {
 		this.updateddate = updateddate;
+	}
+
+	public String getLastEntryPoint() {
+		return lastEntryPoint;
+	}
+
+	public void setLastEntryPoint(String lastEntryPoint) {
+		this.lastEntryPoint = lastEntryPoint;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

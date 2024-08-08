@@ -65,7 +65,7 @@ import com.emergency.rollcall.service.EmergencyActivateService;
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
-	
+
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	@Autowired
@@ -97,7 +97,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private ContentNotiDao contentNotiDao;
-	
+
 	@Autowired
 	private AssemblyCheckInDao assemblyCheckInDao;
 
@@ -549,7 +549,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 		return emergencyActivateDtoList;
 	}
-	
+
 	@Override
 	public List<EmergencyActivateDto> getAllList() {
 		logger.info("Searching emergency activate entity: ");
@@ -609,19 +609,18 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		return emergencyActivateDtoList;
 	}
 
-
 	@Override
 	public EActivationDto emergencyActivate(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
 		logger.info("Searching emergency activate entity: " + id);
 		ZonedDateTime dateTime = ZonedDateTime.now();
-		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 		String strCreatedDate = dateTime.format(formatter);
 		LocalTime strCreatedTime = dateTime.toLocalTime();
-		
+
 		LocalDateTime startTime = LocalDateTime.now();
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
@@ -636,7 +635,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<NotiTemplate> notiList = notitemplateDao.findAllByStatus(0);
 				if (!notiList.isEmpty()) {
 					NotiTemplate notiTemplate = notiList.get(0);
-					if(notiTemplate.getNoti_mode() != null) {
+					if (notiTemplate.getNoti_mode() != null) {
 						List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
 								.map(Long::parseLong).collect(Collectors.toList());
 						List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
@@ -649,21 +648,21 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							eActivationDto.setModeNotiDtoList(modeNotiDtoList);
 						}
 					}
-				
+
 					// Subject List
-					if(notiTemplate.getNoti_subject() != null) {
-						List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
-								.map(Long::parseLong).collect(Collectors.toList());
+					if (notiTemplate.getNoti_subject() != null) {
+						List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(","))
+								.map(String::trim).map(Long::parseLong).collect(Collectors.toList());
 						List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
 						EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
 						if (!subjectNotiList.isEmpty()) {
 							for (SubjectNoti subjectNoti : subjectNotiList) {
 								if (subjectNoti.getTableName().equals("Date")) {
 									eactivateSubjectDto.setDate(eActivate.getStartDate());
-								} 
+								}
 								if (subjectNoti.getTableName().equals("Time")) {
 									eactivateSubjectDto.setTime(eActivate.getStartTime());
-								} 
+								}
 								if (subjectNoti.getTableName().equals("Others")) {
 									eactivateSubjectDto.setOthersDes(subjectNoti.getDescription());
 								}
@@ -674,11 +673,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							}
 							eActivationDto.setEsubjectDto(eactivateSubjectDto);
 						}
-					}				
+					}
 					// Content
-					if(notiTemplate.getNoti_content() != null) {
-						List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
-								.map(Long::parseLong).collect(Collectors.toList());
+					if (notiTemplate.getNoti_content() != null) {
+						List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(","))
+								.map(String::trim).map(Long::parseLong).collect(Collectors.toList());
 						List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
 						EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
 						if (!contentNotiList.isEmpty()) {
@@ -689,7 +688,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 								if (contentNoti.getTableName().equals("Time")) {
 									eactivateContentDto.setTime(eActivate.getStartTime());
 								}
-								if (contentNoti.getTableName().equals("Others")){
+								if (contentNoti.getTableName().equals("Others")) {
 									eactivateContentDto.setOthersDes(contentNoti.getDescription());
 								}
 								Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
@@ -721,12 +720,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		ResponseDto responseDto = new ResponseDto();
 		ZonedDateTime dateTime = ZonedDateTime.now();
-		//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime startTime = LocalDateTime.now();
 		String strCreatedDate = dateTime.format(formatter);
 		LocalTime strCreatedTime = dateTime.toLocalTime();
-		
+
 		logger.info("Searching emergency activate entity: " + id);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
@@ -753,7 +752,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 
 	}
-	
+
 	@Override
 	public EActivationDto emergencyActivateForNoti(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
@@ -766,7 +765,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
-				EmergencyActivate eActivate = eActivateOptional.get();				
+				EmergencyActivate eActivate = eActivateOptional.get();
 				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
 
 				List<NotiTemplate> notiList = notitemplateDao.findAllByStatus(0);
@@ -837,76 +836,63 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 
 	}
-	
+
 	@Override
 	public Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page,
-			int size) {
-		DashboardResponseDto dashboardDto = new DashboardResponseDto();
+			int size) {		
 		PageRequest pageRequest = PageRequest.of(page, size);
-		//Pageable pageable = PageRequest.of(page, size);
-		
 		Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(
-	            date != null && !date.isEmpty() ? date : null,
-	            emergencyType,
-	            emergencyStatus ,
-	            pageRequest
-	        );
-		
-		//Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(pageRequest);
+				date != null && !date.isEmpty() ? date : null, emergencyType, emergencyStatus, pageRequest);
 
-        // Prepare the result list		
-        List<EmergencyRollCallDto> emergencyRollCallDtoList = emergencyActivateList.stream().map(emergencyActivate -> {
-            Long emergencySyskey = emergencyActivate.getSyskey();
-            
-            // Fetch check-in counts for the current emergency activation
-            List<Object[]> results = assemblyCheckInDao.findCheckInCountsByEmergencyActivate(emergencySyskey);
-            Map<Long, Long> checkInCountMap = results.stream()
-                    .collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
+		List<EmergencyRollCallDto> emergencyRollCallDtoList = emergencyActivateList.stream().map(emergencyActivate -> {
+			Long emergencySyskey = emergencyActivate.getSyskey();
 
-            Long totalCheckInCount = checkInCountMap.values().stream().mapToLong(Long::longValue).sum();
+			List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
 
-            // Calculate total time in minutes           
-            
-            LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
-            LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
-            Duration duration = Duration.between(startTime, endTime);
-            long totalTimeInMinutes = duration.toMinutes();
+			List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
+					.findCheckedInUsersByEmergencyActivate(emergencySyskey);
 
-            // Calculate average time per check-in
-            double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
+			long totalCheckInCount = (long) checkedInUsers.size();
+			long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
 
-            // Create the DTO
-            EmergencyRollCallDto dto = new EmergencyRollCallDto();
-            dto.setSyskey(emergencySyskey);
-            dto.setName(emergencyActivate.getName());
-            dto.setRemark(emergencyActivate.getRemark());
-            dto.setActivateDate(emergencyActivate.getActivateDate());
-            dto.setActivateTime(emergencyActivate.getActivateTime());
-            dto.setTotalCheckIn(totalCheckInCount);
-            dto.setTotalTime(formatDuration(duration));
-            dto.setConditionName(emergencyActivate.getCondition().getName());
-            dto.setAverageTime(averageTimePerCheckIn);
-            dto.setActivateStatus(emergencyActivate.getActivateStatus());
-            dto.setEmergencyName(emergencyActivate.getEmergency().getName());
-            if (!emergencyActivate.getLocEmergencyList().isEmpty()) {
+			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
+			Duration duration = Duration.between(startTime, endTime);
+			long totalTimeInMinutes = duration.toMinutes();
+
+			double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
+
+			EmergencyRollCallDto dto = new EmergencyRollCallDto();
+			dto.setSyskey(emergencySyskey);
+			dto.setName(emergencyActivate.getName());
+			dto.setRemark(emergencyActivate.getRemark());
+			dto.setActivateDate(emergencyActivate.getActivateDate());
+			dto.setActivateTime(emergencyActivate.getActivateTime());
+			dto.setTotalCheckIn(totalCheckInCount);
+			dto.setTotalNotCheckIn(totalUnCheckInCount);
+			dto.setTotalTime(formatDuration(duration));
+			dto.setConditionName(emergencyActivate.getCondition().getName());
+			dto.setAverageTime(averageTimePerCheckIn);
+			dto.setActivateStatus(emergencyActivate.getActivateStatus());
+			dto.setEmergencyName(emergencyActivate.getEmergency().getName());
+			if (!emergencyActivate.getLocEmergencyList().isEmpty()) {
 				String locem = "";
 				int count = 0;
 				for (LocEmergency loce : emergencyActivate.getLocEmergencyList()) {
-					if(count > 0) {
+					if (count > 0) {
 						locem += "," + loce.getLocationName();
-					}else {
+					} else {
 						locem += loce.getLocationName();
 					}
 					count++;
 				}
 				dto.setEmegencyLocation(locem);
 			}
-            return dto;
-        }).collect(Collectors.toList());
+			return dto;
+		}).collect(Collectors.toList());
 
-        return new PageImpl<>(emergencyRollCallDtoList, pageRequest, emergencyActivateList.getTotalElements());
+		return new PageImpl<>(emergencyRollCallDtoList, pageRequest, emergencyActivateList.getTotalElements());
 	}
-
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
@@ -978,21 +964,20 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			return null;
 		}
 	}
-	
+
 	private String formatDuration(Duration duration) {
-        long days = duration.toDays();
-        long hours = duration.toHours() % 24;
-        long minutes = duration.toMinutes() % 60;
-        long seconds = duration.getSeconds() % 60;
+		long days = duration.toDays();
+		long hours = duration.toHours() % 24;
+		long minutes = duration.toMinutes() % 60;
+		long seconds = duration.getSeconds() % 60;
 
-        if (days > 0) {
-            return days + " days " + hours + " hours";
-        } else if (hours > 0) {
-            return hours + " hours " + minutes + " minutes";
-        } else {
-            return minutes + " minutes " + seconds + " seconds";
-        }
-    }
+		if (days > 0) {
+			return days + " days " + hours + " hours";
+		} else if (hours > 0) {
+			return hours + " hours " + minutes + " minutes";
+		} else {
+			return minutes + " minutes " + seconds + " seconds";
+		}
+	}
 
-	
 }

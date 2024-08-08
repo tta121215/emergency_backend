@@ -12,6 +12,14 @@ public class DashboardDetailDto {
 	private String assemblyName;
 	private String lattitude;
 	private String longtitude;
+	private String icnumber;
+	private String mobileNo;
+	private String name;
+	private String passportNumber;
+	private String staffId;	
+	private String deviceType;
+	private String department;
+	private String type;
 
 	public Long getId() {
 		return id;
@@ -75,6 +83,70 @@ public class DashboardDetailDto {
 
 	public void setLongtitude(String longtitude) {
 		this.longtitude = longtitude;
+	}
+
+	public String getIcnumber() {
+		return icnumber;
+	}
+
+	public void setIcnumber(String icnumber) {
+		this.icnumber = icnumber;
+	}
+
+	public String getMobileNo() {
+		return mobileNo;
+	}
+
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	public String getStaffId() {
+		return staffId;
+	}
+
+	public void setStaffId(String staffId) {
+		this.staffId = staffId;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

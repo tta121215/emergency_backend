@@ -16,7 +16,7 @@ public class EmergencyRollCallDto {
 	private int activateStatus;
 	private String totalTime;
 	private Long totalCheckIn;
-	private String totalNotCheckIn;
+	private Long totalNotCheckIn;
 	private double averageTime;
 	private String conditionName;
 	private String emergencyName;
@@ -126,11 +126,11 @@ public class EmergencyRollCallDto {
 		this.totalCheckIn = totalCheckIn;
 	}
 
-	public String getTotalNotCheckIn() {
+	public Long getTotalNotCheckIn() {
 		return totalNotCheckIn;
 	}
 
-	public void setTotalNotCheckIn(String totalNotCheckIn) {
+	public void setTotalNotCheckIn(Long totalNotCheckIn) {
 		this.totalNotCheckIn = totalNotCheckIn;
 	}
 
