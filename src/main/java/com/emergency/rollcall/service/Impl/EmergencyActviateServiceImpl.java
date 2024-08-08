@@ -886,6 +886,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
             dto.setTotalTime(formatDuration(duration));
             dto.setConditionName(emergencyActivate.getCondition().getName());
             dto.setAverageTime(averageTimePerCheckIn);
+            dto.setActivateStatus(emergencyActivate.getActivateStatus());
             dto.setEmergencyName(emergencyActivate.getEmergency().getName());
             if (!emergencyActivate.getLocEmergencyList().isEmpty()) {
 				String locem = "";

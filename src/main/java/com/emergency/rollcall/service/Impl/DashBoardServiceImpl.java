@@ -236,6 +236,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				staffDto.setName((String) staff.get("name"));
 				staffDto.setIcnumber((String) staff.get("icnumber"));
 				staffDto.setPassportNumber((String) staff.get("passportnumber"));
+				staffDto.setStaffId((String) staff.get("staffid"));
 				return staffDto;
 			}).collect(Collectors.toList());
 
