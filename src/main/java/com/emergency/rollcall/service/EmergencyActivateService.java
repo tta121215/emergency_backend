@@ -21,6 +21,8 @@ public interface EmergencyActivateService {
 
 	Page<EmergencyActivateDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
+	List<EmergencyActivateDto> getAllDashboardList();
+	
 	List<EmergencyActivateDto> getAllList();
 	
 	EActivationDto emergencyActivate(long id);

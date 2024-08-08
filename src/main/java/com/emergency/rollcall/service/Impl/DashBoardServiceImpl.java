@@ -69,7 +69,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		long totalCheckInCount = (long) checkedInUsers.size();
 
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
-		if (emergencyActivate != null) {
+		if (emergencyActivate != null) {			
 			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
 
