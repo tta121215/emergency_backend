@@ -1,6 +1,5 @@
 package com.emergency.rollcall.service.Impl;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -9,7 +8,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +15,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
@@ -28,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
@@ -39,11 +35,9 @@ import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dao.ModeNotiDao;
 import com.emergency.rollcall.dao.NotiTemplateDao;
-import com.emergency.rollcall.dao.NotificationDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dao.SubjectNotiDao;
 import com.emergency.rollcall.dto.AssemblyDto;
-import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
 import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.EActivateSubjectDto;
@@ -53,7 +47,6 @@ import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.EmergencyRollCallDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.dto.ModeNotiDto;
-import com.emergency.rollcall.dto.NotificationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Assembly;
@@ -64,7 +57,6 @@ import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.ModeNoti;
 import com.emergency.rollcall.entity.NotiTemplate;
-import com.emergency.rollcall.entity.Notification;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.entity.SubjectNoti;
 import com.emergency.rollcall.service.EmergencyActivateService;
@@ -478,7 +470,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					if (!eActivate.getLocEmergencyList().isEmpty()) {
 						String locem = "";
 						for (LocEmergency loce : eActivate.getLocEmergencyList()) {
-							locem += loce.getName() + ",";
+							locem += loce.getLocationName() + ",";
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
@@ -537,7 +529,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					if (!eActivate.getLocEmergencyList().isEmpty()) {
 						String locem = "";
 						for (LocEmergency loce : eActivate.getLocEmergencyList()) {
-							locem += loce.getName() + ",";
+							locem += loce.getLocationName() + ",";
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
@@ -840,9 +832,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				int count = 0;
 				for (LocEmergency loce : emergencyActivate.getLocEmergencyList()) {
 					if(count > 0) {
-						locem += "," + loce.getName();
+						locem += "," + loce.getLocationName();
 					}else {
-						locem += loce.getName();
+						locem += loce.getLocationName();
 					}
 					count++;
 				}

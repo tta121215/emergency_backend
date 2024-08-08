@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.LocationDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
@@ -32,7 +32,7 @@ import com.emergency.rollcall.service.LocEmergencyService;
 @CrossOrigin
 @RequestMapping("locemergency")
 public class LocEmergencyController {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LocEmergencyController.class);
 
 	@Autowired
@@ -155,19 +155,20 @@ public class LocEmergencyController {
 		response.setData(responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("")
 	public ResponseEntity<ResponseList<LocEmergencyDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestParam("params") String params,
+			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
 			@RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<LocEmergencyDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
-		logger.info("Received request to search location of emergency with data: {}", page,size,params,sortBy,direction);
-		Page<LocEmergencyDto> locEmergencyPage = locEmergencyService.searchByParams(page,size,params,sortBy,direction);
+		logger.info("Received request to search location of emergency with data: {}", page, size, params, sortBy,
+				direction);
+		Page<LocEmergencyDto> locEmergencyPage = locEmergencyService.searchByParams(page, size, params, sortBy,
+				direction);
 		locEmergencyDtoList = locEmergencyPage.getContent();
 		if (!locEmergencyDtoList.isEmpty()) {
 			message.setState(true);
@@ -190,7 +191,7 @@ public class LocEmergencyController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("all-list")
 	public ResponseEntity<ResponseList<LocEmergencyDto>> getAllList() {
 
@@ -198,8 +199,8 @@ public class LocEmergencyController {
 		Message message = new Message();
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
 		logger.info("Received request to search location of emergency : ");
-		locEmergencyDtoList= locEmergencyService.getAllList();
-				
+		locEmergencyDtoList = locEmergencyService.getAllList();
+
 		if (!locEmergencyDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
@@ -214,10 +215,34 @@ public class LocEmergencyController {
 		}
 
 		response.setMessage(message);
-		response.setData(locEmergencyDtoList);		
+		response.setData(locEmergencyDtoList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
+	@GetMapping("all-location-list")
+	public ResponseEntity<ResponseList<LocationDto>> getAllLocationList() {
+
+		ResponseList<LocationDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<LocationDto> locationList = new ArrayList<>();
+		logger.info("Received request to search locations : ");
+		locationList = locEmergencyService.getAllLocationList();
+
+		if (!locationList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully location of emergency with data: {}", locationList);
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found location of emergency with data: {}", locationList);
+		}
+		response.setMessage(message);
+		response.setData(locationList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
 }

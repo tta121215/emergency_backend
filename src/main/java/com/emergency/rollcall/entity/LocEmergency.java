@@ -22,17 +22,17 @@ public class LocEmergency {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
-	private String code;
-	private String name;
+	private String locationId;
+	private String locationName;
 	private String description;
 	private int status;
 	private String createddate;
 	private String modifieddate;
-	
+
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "ERC_Loc_Route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
 	private List<Route> routeList = new ArrayList<>();
-	
+
 	@ManyToMany(mappedBy = "locEmergencyList")
 	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
@@ -44,20 +44,20 @@ public class LocEmergency {
 		this.syskey = syskey;
 	}
 
-	public String getCode() {
-		return code;
+	public String getLocationId() {
+		return locationId;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
-	public String getName() {
-		return name;
+	public String getLocationName() {
+		return locationName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 
 	public String getDescription() {
@@ -99,6 +99,5 @@ public class LocEmergency {
 	public void setRouteList(List<Route> routeList) {
 		this.routeList = routeList;
 	}
-	
 
 }

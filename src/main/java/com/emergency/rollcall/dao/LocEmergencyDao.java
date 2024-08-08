@@ -10,13 +10,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.emergency.rollcall.entity.LocEmergency;
-import com.emergency.rollcall.entity.Route;
 
 @Repository
 public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 
-	@Query("SELECT c FROM LocEmergency c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM LocEmergency c WHERE LOWER(c.locationName) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<LocEmergency> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
 	@Query("SELECT c FROM LocEmergency c")
@@ -29,5 +29,8 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 	
 	@Query("SELECT a FROM LocEmergency a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
     List<LocEmergency> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
+	
+	@Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP", nativeQuery = true)
+	List<Object[]> findAllLocationList();
 
 }

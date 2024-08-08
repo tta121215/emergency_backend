@@ -1,11 +1,13 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +22,15 @@ import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.LocationDto;
 import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.LocEmergencyService;
 
 @Service
 public class LocEmergencyServiceImpl implements LocEmergencyService {
-	
-	private final Logger logger = Logger.getLogger(LocEmergencyService.class.getName());
 
+	private final Logger logger = Logger.getLogger(LocEmergencyService.class.getName());
 
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
@@ -72,7 +74,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				if (entityres.getSyskey() > 0) {
 					res.setStatus_code(200);
 					res.setMessage("Successfully Saved");
-					logger.info("Successfully saving location emergency entity: " + entityres);					
+					logger.info("Successfully saving location emergency entity: " + entityres);
 				}
 			} else {
 				LocEmergency entityres = locEmergencyDao.save(locEmergency);
@@ -276,6 +278,29 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		}
 
 		return locEmergencyDtoList;
+	}
+
+	@Override
+	public List<LocationDto> getAllLocationList() {
+		List<LocationDto> locationList = new ArrayList<>();
+		try {
+			List<Object[]> results = locEmergencyDao.findAllLocationList();
+			
+			locationList = results.stream()
+            .map(result -> new LocationDto(
+            		((BigDecimal) result[0]).longValue(), 
+            		(String) result[1])
+            	)
+            .collect(Collectors.toList());
+			
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+		return locationList;
 	}
 
 	public String ddMMyyyFormat(String aDate) {

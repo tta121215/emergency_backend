@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.LocationDto;
 import com.emergency.rollcall.dto.ResponseDto;
 
 public interface LocEmergencyService {
@@ -20,5 +21,7 @@ public interface LocEmergencyService {
 	Page<LocEmergencyDto> searchByParams(int page, int size, String params, String sortBy, String direction);
 	
 	List<LocEmergencyDto> getAllList();
+	
+	List<LocationDto> getAllLocationList();
 
 }

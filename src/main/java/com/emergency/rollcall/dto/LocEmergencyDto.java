@@ -4,8 +4,8 @@ import java.util.List;
 
 public class LocEmergencyDto {
 	private long syskey;
-	private String code;
-	private String name;
+	private long locationId;
+	private String locationName;
 	private String description;
 	private int status;
 	private String createddate;
@@ -20,20 +20,20 @@ public class LocEmergencyDto {
 		this.syskey = syskey;
 	}
 
-	public String getCode() {
-		return code;
+	public long getLocationId() {
+		return locationId;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setLocationId(long locationId) {
+		this.locationId = locationId;
 	}
 
-	public String getName() {
-		return name;
+	public String getLocationName() {
+		return locationName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 
 	public String getDescription() {
@@ -88,8 +88,9 @@ public class LocEmergencyDto {
 
 	@Override
 	public String toString() {
-		return "LocEmergencyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", code='" + code + '\''
-				+ ", description='" + description + '\'' + ", status='" + status + '\'' + ", createddate=" + createddate
-				+ ", modifieddate=" + modifieddate + '}';
+		return "LocEmergencyDto [syskey=" + syskey + ", locationId=" + locationId + ", locationName=" + locationName
+				+ ", description=" + description + ", status=" + status + ", createddate=" + createddate
+				+ ", modifieddate=" + modifieddate + ", routeList=" + routeList + "]";
 	}
+
 }
