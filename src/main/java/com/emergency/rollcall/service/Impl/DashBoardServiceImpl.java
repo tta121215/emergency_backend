@@ -71,7 +71,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		dashboardDto.setTotalTime("00 : 00 : 00");
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
 		if (emergencyActivate != null) {
-			if (emergencyActivate.getActivateStatus() == 2) {
+			if (emergencyActivate.getActivateStatus() == 2) {				
 				LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 				LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
 
@@ -106,11 +106,28 @@ public class DashBoardServiceImpl implements DashBoardService {
 				}
 				dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
 				long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+				//double averageTimePerCheckInDouble = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+				//long secondsTotal = (long) (averageTimePerCheckInDouble * 60);
+				//System.out.println(" Tot sec " + secondsTotal + " kh " + averageTimePerCheckInDouble);
 				Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+				
+				long totalTimeInSeconds = totalTimeInMinutes * 60;
 
-				long avghours = averageDuration.toHours();
-				long avgminutes = averageDuration.toMinutesPart();
-				long avgseconds = averageDuration.toSecondsPart();
+				// Calculate average time per check-in in seconds
+				long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
+				
+				Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
+
+				// Extract hours, minutes, and seconds
+				long avghours = averageDuration1.toHours();
+				long avgminutes = averageDuration1.toMinutesPart();
+				long avgseconds = averageDuration1.toSecondsPart();
+
+//				long avghours = averageDuration.toHours();
+//				long avgminutes = averageDuration.toMinutesPart();
+//				long avgseconds = averageDuration.toSecondsPart();
+				System.out.println("Total min " + totalTimeInMinutes + " : check in" + totalCheckInCount + " Mi" + emergencyActivate.getEndTime());
+				System.out.println("Hr " + avghours + " : min " + avgminutes + " : second " + avgseconds + " time pr " + averageTimeInSeconds);
 				String avghoursstr = "";
 				if (avghours < 10) {
 					avghoursstr = "0" + avghours;
@@ -129,6 +146,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				} else {
 					avgsecondstr = "" + avgseconds;
 				}
+				System.out.println("Average Time " + avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 				dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 			}
 		}
@@ -154,8 +172,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
 					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
-					dashboardDetailDto.setUsername(" ");
-					dashboardDetailDto.setEmail(" ");
+					Map<String, Object> user = assemblyCheckInDao.findByUserId(assemblyCheckIn.getStaffId());
+					if (user != null) {
+						dashboardDetailDto.setUsername((String) user.get("name"));
+						dashboardDetailDto.setEmail((String) user.get("email"));
+					}
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
 					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
 					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
@@ -192,8 +213,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
 					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
-					dashboardDetailDto.setUsername(" ");
-					dashboardDetailDto.setEmail(" ");
+					Map<String, Object> user = assemblyCheckInDao.findByUserId(assemblyCheckIn.getStaffId());
+					if (user != null) {
+						dashboardDetailDto.setUsername((String) user.get("name"));
+						dashboardDetailDto.setEmail((String) user.get("email"));
+					}
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
 					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
 					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
@@ -239,7 +263,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				staffDto.setName((String) staff.get("name"));
 				staffDto.setIcnumber((String) staff.get("icnumber"));
 				staffDto.setPassportNumber((String) staff.get("passportnumber"));
-				staffDto.setStaffId((String) staff.get("staffid"));				
+				staffDto.setStaffId((String) staff.get("staffid"));
 				return staffDto;
 			}).collect(Collectors.toList());
 

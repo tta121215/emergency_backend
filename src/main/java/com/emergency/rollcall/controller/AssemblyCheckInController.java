@@ -46,7 +46,7 @@ public class AssemblyCheckInController {
 			responseDto = assemblyCheckInService.saveAssemblyCheckIn(assemblyCheckInDto);
 			message.setState(true);
 			message.setCode("200");
-			message.setMessage("Save successfully");
+			message.setMessage("Successfully Check In");
 			logger.info("Successfully saved assembly check in: {}", responseDto);
 		} else {
 			message.setState(false);

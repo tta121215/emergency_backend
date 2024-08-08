@@ -46,5 +46,8 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 					+ "WHERE ac.staff_id IS NULL", nativeQuery = true)
 	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable);
+	
+	@Query(value = "SELECT * FROM PYM_User where id = :id", nativeQuery = true)
+	Map<String, Object> findByUserId(@Param("id") Long id);
 
 }
