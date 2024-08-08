@@ -67,67 +67,70 @@ public class DashBoardServiceImpl implements DashBoardService {
 				.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
 
 		long totalCheckInCount = (long) checkedInUsers.size();
-
+		dashboardDto.setAverageTime("00: 00 : 00");
+		dashboardDto.setTotalTime("00 : 00 : 00");
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
-		if (emergencyActivate != null) {			
-			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
-			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
+		if (emergencyActivate != null) {
+			if (emergencyActivate.getActivateStatus() == 2) {
+				LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+				LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
 
-			Duration duration = Duration.between(startTime, endTime);
-			long totalTimeInMinutes = duration.toMinutes();
-			long days = duration.toDays();
-			long hours = duration.toHours() % 24;
-			long minutes = duration.toMinutes() % 60;
-			long seconds = duration.getSeconds() % 60;
+				Duration duration = Duration.between(startTime, endTime);
+				long totalTimeInMinutes = duration.toMinutes();
+				long days = duration.toDays();
+				long hours = duration.toHours() % 24;
+				long minutes = duration.toMinutes() % 60;
+				long seconds = duration.getSeconds() % 60;
 
-			if (days > 0) {
-				days = days * 24;
+				if (days > 0) {
+					days = days * 24;
+				}
+				hours = hours + days;
+				String hoursstr = "";
+				if (hours < 10) {
+					hoursstr = "0" + hours;
+				} else {
+					hoursstr = "" + hours;
+				}
+				String minutesstr = "";
+				if (minutes < 10) {
+					minutesstr = "0" + minutes;
+				} else {
+					minutesstr = "" + minutes;
+				}
+				String secondstr = "";
+				if (seconds < 10) {
+					secondstr = "0" + seconds;
+				} else {
+					secondstr = "" + seconds;
+				}
+				dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
+				long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+				Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+
+				long avghours = averageDuration.toHours();
+				long avgminutes = averageDuration.toMinutesPart();
+				long avgseconds = averageDuration.toSecondsPart();
+				String avghoursstr = "";
+				if (avghours < 10) {
+					avghoursstr = "0" + avghours;
+				} else {
+					avghoursstr = "" + avghours;
+				}
+				String avgminutesstr = "";
+				if (avgminutes < 10) {
+					avgminutesstr = "0" + avgminutes;
+				} else {
+					avgminutesstr = "" + avgminutes;
+				}
+				String avgsecondstr = "";
+				if (avgseconds < 10) {
+					avgsecondstr = "0" + avgseconds;
+				} else {
+					avgsecondstr = "" + avgseconds;
+				}
+				dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 			}
-			hours = hours + days;
-			String hoursstr = "";
-			if (hours < 10) {
-				hoursstr = "0" + hours;
-			} else {
-				hoursstr = "" + hours;
-			}
-			String minutesstr = "";
-			if (minutes < 10) {
-				minutesstr = "0" + minutes;
-			} else {
-				minutesstr = "" + minutes;
-			}
-			String secondstr = "";
-			if (seconds < 10) {
-				secondstr = "0" + seconds;
-			} else {
-				secondstr = "" + seconds;
-			}
-			dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
-			long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
-			Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
-			
-			long avghours = averageDuration.toHours();
-			long avgminutes = averageDuration.toMinutesPart();
-			long avgseconds = averageDuration.toSecondsPart();
-			String avghoursstr = "";
-			if (avghours < 10) {
-				avghoursstr = "0" + avghours;
-			} else {
-				avghoursstr = "" + avghours;
-			}
-			String avgminutesstr = "";
-			if (avgminutes < 10) {
-				avgminutesstr = "0" + avgminutes;
-			} else {
-				avgminutesstr = "" + avgminutes;
-			}
-			String avgsecondstr = "";
-			if (avgseconds < 10) {
-				avgsecondstr = "0" + avgseconds;
-			} else {
-				avgsecondstr = "" + avgseconds;
-			}
-			dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 		}
 
 		long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
@@ -236,7 +239,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				staffDto.setName((String) staff.get("name"));
 				staffDto.setIcnumber((String) staff.get("icnumber"));
 				staffDto.setPassportNumber((String) staff.get("passportnumber"));
-				staffDto.setStaffId((String) staff.get("staffid"));
+				staffDto.setStaffId((String) staff.get("staffid"));				
 				return staffDto;
 			}).collect(Collectors.toList());
 
