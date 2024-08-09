@@ -172,7 +172,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
 			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
-					|| sortBy.equals("staffid") || sortBy.equals("department")) {				
+					|| sortBy.equals("staffid") || sortBy.equals("department") || sortBy.equals("assemblyname")) {				
 				pageRequest = PageRequest.of(page, size);
 				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
 			} else {				
@@ -260,7 +260,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
 			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
-					|| sortBy.equals("staffid") || sortBy.equals("department")) {				
+					|| sortBy.equals("staffid") || sortBy.equals("department") || sortBy.equals("assemblyname")) {				
 				pageRequest = PageRequest.of(page, size);
 				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
 			} else {				
