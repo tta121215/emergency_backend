@@ -10,7 +10,7 @@ public interface DashBoardService {
 
 	DashboardResponseDto getCheckInCountsByAssemblyPoint(Long emergencyActivateId);
 
-	Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size);
+	Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size, String sortBy, String direction);
 
 	Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy, String direction);
 

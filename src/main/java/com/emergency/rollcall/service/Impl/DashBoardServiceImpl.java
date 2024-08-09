@@ -163,13 +163,23 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size) {
+	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size, String sortBy, String direction) {
 		// TODO Auto-generated method stub
-		PageRequest pageRequest = PageRequest.of(page, size);
+		//PageRequest pageRequest = PageRequest.of(page, size);
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
-			assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
+			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
+					|| sortBy.equals("staffid") || sortBy.equals("department")) {				
+				pageRequest = PageRequest.of(page, size);
+				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
+			} else {				
+				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
+			}
+			//assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
