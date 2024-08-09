@@ -91,14 +91,15 @@ public class DashBoardController {
 	@GetMapping("/byactivate")
 	public ResponseEntity<ResponseList<DashboardDetailDto>> getistByActivationId(
 			@RequestParam("activateId") Long activateId, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
-		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size);
+		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size,sortBy,direction);
 		dashboardDetailDtoList = dashboardDetailPage.getContent();
 		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);

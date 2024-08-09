@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
@@ -181,6 +182,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 						dashboardDetailDto.setMobileNo((String) user.get("mobileno"));
 						dashboardDetailDto.setName((String) user.get("name"));
 						dashboardDetailDto.setPassportNumber((String) user.get("passportnumber"));
+						dashboardDetailDto.setStaffId((String) user.get("staffid"));
 
 					}
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
@@ -209,13 +211,24 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size) {
+	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy,
+			String direction) {
 		// TODO Auto-generated method stub
-		PageRequest pageRequest = PageRequest.of(page, size);
+		// PageRequest pageRequest = PageRequest.of(page, size);
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
-			assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
+			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
+					|| sortBy.equals("staffid") || sortBy.equals("department")) {				
+				pageRequest = PageRequest.of(page, size);
+				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
+			} else {				
+				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
+			}
+			
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
@@ -228,6 +241,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 						dashboardDetailDto.setMobileNo((String) user.get("mobileno"));
 						dashboardDetailDto.setName((String) user.get("name"));
 						dashboardDetailDto.setPassportNumber((String) user.get("passportnumber"));
+						dashboardDetailDto.setStaffId((String) user.get("staffid"));
 
 					}
 					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
@@ -243,6 +257,31 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDtoList.add(dashboardDetailDto);
 				}
 			}
+			if ("name".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getName().compareTo(dto2.getName())
+								: dto2.getName().compareTo(dto1.getName()));
+			} else if ("passportnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getPassportNumber().compareTo(dto2.getPassportNumber())
+						: dto2.getPassportNumber().compareTo(dto1.getPassportNumber()));
+			} else if ("icnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+			} else if ("type".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
+								: dto2.getType().compareTo(dto1.getType()));
+			} else if ("staffid".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
+								: dto2.getStaffId().compareTo(dto1.getStaffId()));
+			} else if ("department".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getDepartment().compareTo(dto2.getDepartment())
+								: dto2.getDepartment().compareTo(dto1.getDepartment()));
+			} 
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());

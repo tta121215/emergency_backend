@@ -34,4 +34,6 @@ public interface EmergencyActivateService {
 	Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page, int size);
 
 
+
+
 }
