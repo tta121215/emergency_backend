@@ -49,5 +49,9 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	
 	@Query(value = "SELECT * FROM PYM_User where id = :id", nativeQuery = true)
 	Map<String, Object> findByUserId(@Param("id") Long id);
+	
+	@Query("SELECT ac.assemblyPoint, MAX(ac.currenttime) FROM AssemblyCheckIn ac WHERE ac.emergencySyskey = :emergencyActivateId GROUP BY ac.assemblyPoint")
+	List<Object[]> findMaxCheckInTimesByAssemblyPoint(@Param("emergencyActivateId") Long emergencyActivateId);
+
 
 }

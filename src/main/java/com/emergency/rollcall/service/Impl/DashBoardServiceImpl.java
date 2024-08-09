@@ -3,7 +3,7 @@ package com.emergency.rollcall.service.Impl;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -50,18 +50,45 @@ public class DashBoardServiceImpl implements DashBoardService {
 	@Override
 	public DashboardResponseDto getCheckInCountsByAssemblyPoint(Long emergencyActivateId) {
 		// TODO Auto-generated method stub
+		 
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
+		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
 		List<Assembly> allAssemblies = assemblyDao.findAll();
 
 		List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
 		Map<Long, Long> checkInCountMap = results.stream()
 				.collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
+		
+	    List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
+	    Map<Long, LocalTime> maxCheckInTimeMap = maxCheckInTimes.stream()
+	            .collect(Collectors.toMap(result -> (Long) result[0],
+	            		result -> LocalTime.parse((String) result[1], DateTimeFormatter.ofPattern("HH:mm:ss"))));
+	    
+	    EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+	    if(emergencyActivate.getStartTime() != null) {
+	    	LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+	    	checkInCounts = allAssemblies.stream().map(assembly -> {
+	    	Long assemblyPointId = assembly.getSyskey();
+	    			
+	    	LocalTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId, LocalTime.MIN);			
+	    	LocalDateTime maxCheckInDateTime = LocalDateTime.of(startTime.toLocalDate(), maxCheckInTime);
+	    	System.out.println("date " + maxCheckInDateTime);
+	    	Duration duration = Duration.between(startTime, maxCheckInDateTime);
+	    	System.out.println("dru " + duration);
+	    	long hours = duration.toHours();
+	    	long minutes = duration.toMinutesPart();
+	    	long seconds = duration.toSecondsPart();
 
-		List<AssemblyPointCheckInDto> checkInCounts = allAssemblies.stream().map(assembly -> {
-			Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
-			return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey());
-		}).collect(Collectors.toList());
+	    	String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+	    	System.out.println("total time " + totalTimeTaken);
+	    	Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);			
+	    	return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),totalTimeTaken);
+	    	}).collect(Collectors.toList());
+	    }
+	   
 
+	
+		
 		List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
 
 		List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
@@ -70,12 +97,13 @@ public class DashBoardServiceImpl implements DashBoardService {
 		long totalCheckInCount = (long) checkedInUsers.size();
 		dashboardDto.setAverageTime("00: 00 : 00");
 		dashboardDto.setTotalTime("00 : 00 : 00");
-		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+		
 		if (emergencyActivate != null) {
 			if (emergencyActivate.getActivateStatus() == 2) {
 				LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 				LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
-
+				
+				
 				Duration duration = Duration.between(startTime, endTime);
 				long totalTimeInMinutes = duration.toMinutes();
 				long days = duration.toDays();
@@ -163,23 +191,29 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size, String sortBy, String direction) {
+	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size,
+			String sortBy, String direction) {
 		// TODO Auto-generated method stub
-		//PageRequest pageRequest = PageRequest.of(page, size);
+		// PageRequest pageRequest = PageRequest.of(page, size);
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
-			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
-					|| sortBy.equals("staffid") || sortBy.equals("department") || sortBy.equals("assemblyname")) {				
+			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber")
+					|| sortBy.equals("type") || sortBy.equals("staffid") || sortBy.equals("department")
+					|| sortBy.equals("assemblyname")) {
 				pageRequest = PageRequest.of(page, size);
-				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
-			} else {				
+				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
+						pageRequest);
+			} else {
 				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
+				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
+						pageRequest);
 			}
-			//assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId, pageRequest);
+			// assemblyCheckInList =
+			// assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
+			// pageRequest);
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
@@ -221,22 +255,22 @@ public class DashBoardServiceImpl implements DashBoardService {
 						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
 								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 			} else if ("type".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
 								: dto2.getType().compareTo(dto1.getType()));
 			} else if ("staffid".equalsIgnoreCase(sortBy)) {
 				dashboardDetailDtoList.sort(
 						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
 								: dto2.getStaffId().compareTo(dto1.getStaffId()));
 			} else if ("department".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getDepartment().compareTo(dto2.getDepartment())
-								: dto2.getDepartment().compareTo(dto1.getDepartment()));
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getDepartment().compareTo(dto2.getDepartment())
+						: dto2.getDepartment().compareTo(dto1.getDepartment()));
 			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
-								: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
-			} 
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
+						: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
+			}
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -259,15 +293,16 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<AssemblyCheckIn> assemblyCheckInList;
 		try {
-			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber") || sortBy.equals("type") 
-					|| sortBy.equals("staffid") || sortBy.equals("department") || sortBy.equals("assemblyname")) {				
+			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber")
+					|| sortBy.equals("type") || sortBy.equals("staffid") || sortBy.equals("department")
+					|| sortBy.equals("assemblyname")) {
 				pageRequest = PageRequest.of(page, size);
 				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
-			} else {				
+			} else {
 				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
 			}
-			
+
 			if (!assemblyCheckInList.isEmpty()) {
 				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
 					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
@@ -309,22 +344,22 @@ public class DashBoardServiceImpl implements DashBoardService {
 						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
 								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 			} else if ("type".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
 								: dto2.getType().compareTo(dto1.getType()));
 			} else if ("staffid".equalsIgnoreCase(sortBy)) {
 				dashboardDetailDtoList.sort(
 						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
 								: dto2.getStaffId().compareTo(dto1.getStaffId()));
 			} else if ("department".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getDepartment().compareTo(dto2.getDepartment())
-								: dto2.getDepartment().compareTo(dto1.getDepartment()));
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getDepartment().compareTo(dto2.getDepartment())
+						: dto2.getDepartment().compareTo(dto1.getDepartment()));
 			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
-								: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
-			} 
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
+						: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
+			}
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -342,8 +377,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction) {
 		// TODO Auto-generated method stub
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		//PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-		
+		// PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection,
+		// sortBy));
+
 		Sort sort = Sort.by(sortDirection, sortBy);
 		if (sortBy.equals("name")) {
 			sort = Sort.by(sortDirection, "name");

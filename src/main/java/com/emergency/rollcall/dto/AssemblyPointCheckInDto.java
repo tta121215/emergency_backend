@@ -5,11 +5,13 @@ public class AssemblyPointCheckInDto {
 	private Long assemlbySyskey;
 	private String assemblyPointName;
 	private Long checkInCount;
+	private String totalTimeTaken;
 
-	public AssemblyPointCheckInDto(String assemblyPointName, Long checkInCount, Long assemblySyskey) {
+	public AssemblyPointCheckInDto(String assemblyPointName, Long checkInCount, Long assemblySyskey, String totalTimeTaken) {
 		this.assemblyPointName = assemblyPointName;
 		this.checkInCount = checkInCount;
 		this.assemlbySyskey = assemblySyskey;
+		this.totalTimeTaken = totalTimeTaken;
 	}
 
 	public String getAssemblyPointName() {
@@ -34,5 +36,13 @@ public class AssemblyPointCheckInDto {
 
 	public void setAssemlbySyskey(Long assemlbySyskey) {
 		this.assemlbySyskey = assemlbySyskey;
+	}
+
+	public String getTotalTimeTaken() {
+		return totalTimeTaken;
+	}
+
+	public void setTotalTimeTaken(String totalTimeTaken) {
+		this.totalTimeTaken = totalTimeTaken;
 	}
 }
