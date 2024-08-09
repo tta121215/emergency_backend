@@ -122,13 +122,14 @@ public class DashBoardController {
 
 	@GetMapping("/notcheckinlist")
 	public ResponseEntity<ResponseList<StaffDto>> getAllNotCheckInList(@RequestParam("activateId") Long activateId,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction) {
 		ResponseList<StaffDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<StaffDto> staffDtoList = new ArrayList<>();
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
-		Page<StaffDto> staffDtoPage = dashboardService.getAllUnCheckInList(activateId, page, size);
+		Page<StaffDto> staffDtoPage = dashboardService.getAllUnCheckInList(activateId, page, size,sortBy,direction);
 		staffDtoList = staffDtoPage.getContent();
 		if (!staffDtoList.isEmpty()) {
 			message.setState(true);

@@ -296,9 +296,28 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size) {
+	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction) {
 		// TODO Auto-generated method stub
-		PageRequest pageRequest = PageRequest.of(page, size);
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		//PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+		
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "name");
+		} else if (sortBy.equals("username")) {
+			sort = Sort.by(sortDirection, "username");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icnumber");
+		} else if (sortBy.equals("passportnumber")) {
+			sort = Sort.by(sortDirection, "passportnumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffid");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "mobileno");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<StaffDto> staffDtoList = new ArrayList<>();
 		Page<Map<String, Object>> usersNotCheckedInPage;
 

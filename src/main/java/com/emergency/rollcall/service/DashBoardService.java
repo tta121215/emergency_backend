@@ -14,5 +14,5 @@ public interface DashBoardService {
 
 	Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy, String direction);
 
-	Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size);
+	Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction);
 }
