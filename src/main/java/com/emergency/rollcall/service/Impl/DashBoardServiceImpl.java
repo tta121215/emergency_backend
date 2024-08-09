@@ -208,6 +208,35 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDetailDtoList.add(dashboardDetailDto);
 				}
 			}
+			if ("name".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getName().compareTo(dto2.getName())
+								: dto2.getName().compareTo(dto1.getName()));
+			} else if ("passportnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
+						? dto1.getPassportNumber().compareTo(dto2.getPassportNumber())
+						: dto2.getPassportNumber().compareTo(dto1.getPassportNumber()));
+			} else if ("icnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+			} else if ("type".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
+								: dto2.getType().compareTo(dto1.getType()));
+			} else if ("staffid".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
+								: dto2.getStaffId().compareTo(dto1.getStaffId()));
+			} else if ("department".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getDepartment().compareTo(dto2.getDepartment())
+								: dto2.getDepartment().compareTo(dto1.getDepartment()));
+			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
+								: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
+			} 
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -291,6 +320,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 				dashboardDetailDtoList.sort(
 						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getDepartment().compareTo(dto2.getDepartment())
 								: dto2.getDepartment().compareTo(dto1.getDepartment()));
+			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList.sort(
+						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
+								: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
 			} 
 
 		} catch (DataAccessException dae) {
