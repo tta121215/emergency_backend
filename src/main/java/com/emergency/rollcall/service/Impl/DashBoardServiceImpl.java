@@ -72,16 +72,17 @@ public class DashBoardServiceImpl implements DashBoardService {
 	    			
 	    	LocalTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId, LocalTime.MIN);			
 	    	LocalDateTime maxCheckInDateTime = LocalDateTime.of(startTime.toLocalDate(), maxCheckInTime);
-	    	System.out.println("date " + maxCheckInDateTime);
+	    	
 	    	Duration duration = Duration.between(startTime, maxCheckInDateTime);
-	    	System.out.println("dru " + duration);
+	    	
 	    	long hours = duration.toHours();
 	    	long minutes = duration.toMinutesPart();
 	    	long seconds = duration.toSecondsPart();
-
-	    	String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-	    	System.out.println("total time " + totalTimeTaken);
-	    	Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);			
+	    	String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);	    	
+	    	Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);	
+	    	if(checkInCount == 0) {
+	    		totalTimeTaken = "00:00:00";
+	    	}
 	    	return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),totalTimeTaken);
 	    	}).collect(Collectors.toList());
 	    }
