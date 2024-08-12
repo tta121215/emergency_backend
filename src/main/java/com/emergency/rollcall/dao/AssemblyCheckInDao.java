@@ -49,11 +49,15 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	
 	@Query(value = "SELECT u.* FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "AND ac.emergency_syskey = :emergencyActivateId "
-			+ "WHERE ac.staff_id IS NULL " + " AND LOWER(u.name) LIKE LOWER(CONCAT('%', :params, '%'))", 
+			+ "WHERE ac.staff_id IS NULL " + " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')" 
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') )", 
 			countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "AND ac.emergency_syskey = :emergencyActivateId "
-					+ "WHERE ac.staff_id IS NULL " +" AND LOWER(u.name) LIKE LOWER(CONCAT('%', :params, '%'))", nativeQuery = true)
+					+ "WHERE ac.staff_id IS NULL " +" AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+							+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
+							+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') )", nativeQuery = true)
 	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable,@Param("params") String params);
 	
