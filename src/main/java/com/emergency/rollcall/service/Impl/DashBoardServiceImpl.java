@@ -374,7 +374,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction) {
+	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction, String params) {
 		// TODO Auto-generated method stub
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		// PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection,
@@ -398,24 +398,32 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<StaffDto> staffDtoList = new ArrayList<>();
+				
 		Page<Map<String, Object>> usersNotCheckedInPage;
-
+		
 		try {
-			usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-					pageRequest);
-
-			staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
-				StaffDto staffDto = new StaffDto();
-				staffDto.setId((BigDecimal) staff.get("id"));
-				staffDto.setUsername((String) staff.get("username"));
-				staffDto.setEmail((String) staff.get("email"));
-				staffDto.setMobileNo((String) staff.get("mobileNo"));
-				staffDto.setName((String) staff.get("name"));
-				staffDto.setIcnumber((String) staff.get("icnumber"));
-				staffDto.setPassportNumber((String) staff.get("passportnumber"));
-				staffDto.setStaffId((String) staff.get("staffid"));
-				return staffDto;
-			}).collect(Collectors.toList());
+			if(params == null || params.isEmpty()) {
+				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+						pageRequest);
+			}else {				
+				System.out.println("Params " + params);
+				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+						pageRequest,params);
+			}		
+			if(!usersNotCheckedInPage.isEmpty()) {
+				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
+					StaffDto staffDto = new StaffDto();
+					staffDto.setId((BigDecimal) staff.get("id"));
+					staffDto.setUsername((String) staff.get("username"));
+					staffDto.setEmail((String) staff.get("email"));
+					staffDto.setMobileNo((String) staff.get("mobileNo"));
+					staffDto.setName((String) staff.get("name"));
+					staffDto.setIcnumber((String) staff.get("icnumber"));
+					staffDto.setPassportNumber((String) staff.get("passportnumber"));
+					staffDto.setStaffId((String) staff.get("staffid"));
+					return staffDto;
+				}).collect(Collectors.toList());
+			}			
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
