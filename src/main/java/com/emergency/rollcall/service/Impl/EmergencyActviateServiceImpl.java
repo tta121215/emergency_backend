@@ -838,11 +838,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	}
 
 	@Override
-	public Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page,
+	public Page<EmergencyRollCallDto> emergencyRollCall(String fromdate,String todate, Long emergencyType, Long emergencyStatus, int page,
 			int size) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(
-				date != null && !date.isEmpty() ? date : null, emergencyType, emergencyStatus, pageRequest);
+				fromdate != null && !fromdate.isEmpty() ? fromdate : null, 
+				todate != null && !todate.isEmpty() ? todate : null, 
+				emergencyType, emergencyStatus, pageRequest);
 
 		List<EmergencyRollCallDto> emergencyRollCallDtoList = emergencyActivateList.stream().map(emergencyActivate -> {
 			Long emergencySyskey = emergencyActivate.getSyskey();

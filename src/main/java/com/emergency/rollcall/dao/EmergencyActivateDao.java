@@ -35,10 +35,11 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 //	Page<EmergencyActivate> findAllByStatus(Pageable pageable);
 
 	@Query("SELECT e FROM EmergencyActivate e WHERE e.activateStatus = 2 AND"
-			+ "(:date IS NULL OR e.activateDate = :date) AND "
+			+ "(:fromdate IS NULL OR e.activateDate >= :fromdate) AND "
+			+ "(:todate IS NULL OR e.activateDate <= :todate) AND "
 			+ "(:emergencySyskey IS NULL OR e.emergency.syskey = :emergencySyskey) AND "
 			+ "(:conditionSyskey IS NULL OR e.condition.syskey = :conditionSyskey)")
-	Page<EmergencyActivate> findAllByStatus(@Param("date") String date, @Param("emergencySyskey") Long emergencySyskey,
+	Page<EmergencyActivate> findAllByStatus(@Param("fromdate") String fromdate,@Param("todate") String todate, @Param("emergencySyskey") Long emergencySyskey,
 			@Param("conditionSyskey") Long conditionSyskey, Pageable pageable);
 
 	@Query("SELECT ea FROM EmergencyActivate ea WHERE " + "(:fromDate IS NULL OR ea.activateDate >= :fromDate) AND "

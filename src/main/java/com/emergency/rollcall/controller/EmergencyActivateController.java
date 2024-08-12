@@ -420,7 +420,8 @@ public class EmergencyActivateController {
 	}
 
 	@GetMapping("/emergencyrollcall")
-	public ResponseEntity<ResponseList<EmergencyRollCallDto>> getistByActivationId(@RequestParam(value = "date", required = false) String date,
+	public ResponseEntity<ResponseList<EmergencyRollCallDto>> getistByActivationId(@RequestParam(value = "fromdate", required = false) String fromdate,
+			@RequestParam(value = "todate", required = false) String todate,
 			@RequestParam(value = "emergencyType", required = false) Long emergencyType,
 			@RequestParam(value = "emergencyStatus", required = false) Long emergencyStatus,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -430,7 +431,7 @@ public class EmergencyActivateController {
 
 		logger.info("Received request to get assembly check in by activation id ");
 
-		Page<EmergencyRollCallDto> emergencyRollCallPage = emergencyActivateService.emergencyRollCall(date,
+		Page<EmergencyRollCallDto> emergencyRollCallPage = emergencyActivateService.emergencyRollCall(fromdate,todate,
 				emergencyType, emergencyStatus, page, size);
 		emergencyRollCallList = emergencyRollCallPage.getContent();
 		if (!emergencyRollCallList.isEmpty()) {
