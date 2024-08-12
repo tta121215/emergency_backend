@@ -61,14 +61,14 @@ public class DashBoardController {
 	public ResponseEntity<ResponseList<DashboardDetailDto>> getAllListByActivateAndAssembly(
 			@RequestParam("activateId") Long activateId, @RequestParam("assemblyId") Long assemblyId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction) {
+			@RequestParam(defaultValue = "asc") String direction,@RequestParam("params") String params) {
 		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
 		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateAndAssembly(activateId, assemblyId,
-				page, size,sortBy,direction);
+				page, size,sortBy,direction,params);
 		dashboardDetailDtoList = dashboardDetailPage.getContent();
 		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);
@@ -93,14 +93,14 @@ public class DashBoardController {
 	public ResponseEntity<ResponseList<DashboardDetailDto>> getistByActivationId(
 			@RequestParam("activateId") Long activateId, @RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction) {
+			@RequestParam(defaultValue = "asc") String direction,@RequestParam("params") String params) {
 		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 
 		logger.info("Received request to get assembly check in by activation id " + activateId);
 
-		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size,sortBy,direction);
+		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size,sortBy,direction,params);
 		dashboardDetailDtoList = dashboardDetailPage.getContent();
 		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);

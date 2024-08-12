@@ -3,7 +3,6 @@ package com.emergency.rollcall.service.Impl;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
-
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.ConditionDao;
@@ -39,7 +36,6 @@ import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dao.SubjectNotiDao;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
-import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.EActivateSubjectDto;
 import com.emergency.rollcall.dto.EActivationDto;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
@@ -557,12 +553,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 
 		try {
-			if(fromDate != null && toDate != null) {
+			if (fromDate != null && toDate != null) {
 				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
-			}else {
+			} else {
 				emergencyActivateList = emergencyActivateDao.findAll();
 			}
-			
 
 			if (!emergencyActivateList.isEmpty()) {
 				for (EmergencyActivate eActivate : emergencyActivateList) {
@@ -624,7 +619,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 		String strCreatedDate = dateTime.format(formatter);
-		LocalTime strCreatedTime = dateTime.toLocalTime();
+		//LocalTime strCreatedTime = dateTime.toLocalTime();
 
 		LocalDateTime startTime = LocalDateTime.now();
 		try {
@@ -729,7 +724,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime startTime = LocalDateTime.now();
 		String strCreatedDate = dateTime.format(formatter);
-		LocalTime strCreatedTime = dateTime.toLocalTime();
+		//LocalTime strCreatedTime = dateTime.toLocalTime();
 
 		logger.info("Searching emergency activate entity: " + id);
 		try {
@@ -763,10 +758,10 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
 		logger.info("Searching emergency activate entity: " + id);
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
-		LocalTime strCreatedTime = dateTime.toLocalTime();
+//		ZonedDateTime dateTime = ZonedDateTime.now();
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		//String strCreatedDate = dateTime.format(formatter);
+		//LocalTime strCreatedTime = dateTime.toLocalTime();
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
@@ -844,7 +839,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Override
 	public Page<EmergencyRollCallDto> emergencyRollCall(String date, Long emergencyType, Long emergencyStatus, int page,
-			int size) {		
+			int size) {
 		PageRequest pageRequest = PageRequest.of(page, size);
 		Page<EmergencyActivate> emergencyActivateList = emergencyActivateDao.findAllByStatus(
 				date != null && !date.isEmpty() ? date : null, emergencyType, emergencyStatus, pageRequest);
@@ -865,7 +860,33 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			Duration duration = Duration.between(startTime, endTime);
 			long totalTimeInMinutes = duration.toMinutes();
 
-			double averageTimePerCheckIn = totalCheckInCount > 0 ? (double) totalTimeInMinutes / totalCheckInCount : 0;
+			long totalTimeInSeconds = totalTimeInMinutes * 60;
+
+			long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
+
+			Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
+
+			long avghours = averageDuration1.toHours();
+			long avgminutes = averageDuration1.toMinutesPart();
+			long avgseconds = averageDuration1.toSecondsPart();
+
+			StringBuilder avgTimeString = new StringBuilder();
+
+			if (avghours > 0) {
+				avgTimeString.append(avghours).append(avghours == 1 ? " hour " : " hours ");
+			}
+
+			if (avgminutes > 0) {
+				avgTimeString.append(avgminutes).append(avgminutes == 1 ? " minute " : " minutes ");
+			}
+
+			if (avgseconds > 0) {
+				avgTimeString.append(avgseconds).append(avgseconds == 1 ? " second" : " seconds");
+			}
+
+			if (avgTimeString.length() == 0) {
+				avgTimeString.append("0 seconds");
+			}
 
 			EmergencyRollCallDto dto = new EmergencyRollCallDto();
 			dto.setSyskey(emergencySyskey);
@@ -877,7 +898,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			dto.setTotalNotCheckIn(totalUnCheckInCount);
 			dto.setTotalTime(formatDuration(duration));
 			dto.setConditionName(emergencyActivate.getCondition().getName());
-			dto.setAverageTime(averageTimePerCheckIn);
+			dto.setAverageTime(avgTimeString.toString().trim());
 			dto.setActivateStatus(emergencyActivate.getActivateStatus());
 			dto.setEmergencyName(emergencyActivate.getEmergency().getName());
 			if (!emergencyActivate.getLocEmergencyList().isEmpty()) {

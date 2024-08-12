@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.StaffDto;
 import com.emergency.rollcall.entity.Assembly;
-import com.emergency.rollcall.entity.AssemblyCheckIn;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.service.DashBoardService;
 
@@ -50,7 +48,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 	@Override
 	public DashboardResponseDto getCheckInCountsByAssemblyPoint(Long emergencyActivateId) {
 		// TODO Auto-generated method stub
-		 
+
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
 		List<Assembly> allAssemblies = assemblyDao.findAll();
@@ -58,38 +56,36 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
 		Map<Long, Long> checkInCountMap = results.stream()
 				.collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
-		
-	    List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
-	    Map<Long, LocalTime> maxCheckInTimeMap = maxCheckInTimes.stream()
-	            .collect(Collectors.toMap(result -> (Long) result[0],
-	            		result -> LocalTime.parse((String) result[1], DateTimeFormatter.ofPattern("HH:mm:ss"))));
-	    
-	    EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
-	    if(emergencyActivate.getStartTime() != null) {
-	    	LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
-	    	checkInCounts = allAssemblies.stream().map(assembly -> {
-	    	Long assemblyPointId = assembly.getSyskey();
-	    			
-	    	LocalTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId, LocalTime.MIN);			
-	    	LocalDateTime maxCheckInDateTime = LocalDateTime.of(startTime.toLocalDate(), maxCheckInTime);
-	    	
-	    	Duration duration = Duration.between(startTime, maxCheckInDateTime);
-	    	
-	    	long hours = duration.toHours();
-	    	long minutes = duration.toMinutesPart();
-	    	long seconds = duration.toSecondsPart();
-	    	String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);	    	
-	    	Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);	
-	    	if(checkInCount == 0) {
-	    		totalTimeTaken = "00:00:00";
-	    	}
-	    	return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),totalTimeTaken);
-	    	}).collect(Collectors.toList());
-	    }
-	   
 
-	
-		
+		List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
+		Map<Long, LocalTime> maxCheckInTimeMap = maxCheckInTimes.stream()
+				.collect(Collectors.toMap(result -> (Long) result[0],
+						result -> LocalTime.parse((String) result[1], DateTimeFormatter.ofPattern("HH:mm:ss"))));
+
+		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+		if (emergencyActivate.getStartTime() != null) {
+			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+			checkInCounts = allAssemblies.stream().map(assembly -> {
+				Long assemblyPointId = assembly.getSyskey();
+
+				LocalTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId, LocalTime.MIN);
+				LocalDateTime maxCheckInDateTime = LocalDateTime.of(startTime.toLocalDate(), maxCheckInTime);
+
+				Duration duration = Duration.between(startTime, maxCheckInDateTime);
+
+				long hours = duration.toHours();
+				long minutes = duration.toMinutesPart();
+				long seconds = duration.toSecondsPart();
+				String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
+				if (checkInCount == 0) {
+					totalTimeTaken = "00:00:00";
+				}
+				return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),
+						totalTimeTaken);
+			}).collect(Collectors.toList());
+		}
+
 		List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
 
 		List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
@@ -98,13 +94,12 @@ public class DashBoardServiceImpl implements DashBoardService {
 		long totalCheckInCount = (long) checkedInUsers.size();
 		dashboardDto.setAverageTime("00: 00 : 00");
 		dashboardDto.setTotalTime("00 : 00 : 00");
-		
+
 		if (emergencyActivate != null) {
 			if (emergencyActivate.getActivateStatus() == 2) {
 				LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 				LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
-				
-				
+
 				Duration duration = Duration.between(startTime, endTime);
 				long totalTimeInMinutes = duration.toMinutes();
 				long days = duration.toDays();
@@ -193,84 +188,53 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Override
 	public Page<DashboardDetailDto> getByActivateAndAssembly(Long activateId, Long assemblyId, int page, int size,
-			String sortBy, String direction) {
-		// TODO Auto-generated method stub
-		// PageRequest pageRequest = PageRequest.of(page, size);
+			String sortBy, String direction, String params) {
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "name");
+		} else if (sortBy.equals("username")) {
+			sort = Sort.by(sortDirection, "username");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icnumber");
+		} else if (sortBy.equals("passportnumber")) {
+			sort = Sort.by(sortDirection, "passportnumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffid");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "mobileno");
+		} else if (sortBy.equals("assemblyname")) {
+			sort = Sort.by(sortDirection, "a.name");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		Page<AssemblyCheckIn> assemblyCheckInList;
+		Page<Map<String, Object>> usersCheckedInPage;
 		try {
-			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber")
-					|| sortBy.equals("type") || sortBy.equals("staffid") || sortBy.equals("department")
-					|| sortBy.equals("assemblyname")) {
-				pageRequest = PageRequest.of(page, size);
-				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
+			if (params == null || params.isEmpty()) {
+				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
 						pageRequest);
 			} else {
-				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-				assemblyCheckInList = assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
-						pageRequest);
+				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
+						pageRequest, params);
 			}
-			// assemblyCheckInList =
-			// assemblyCheckInDao.getListByAssemblyAndActivate(activateId, assemblyId,
-			// pageRequest);
-			if (!assemblyCheckInList.isEmpty()) {
-				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
-					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
-					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
-					Map<String, Object> user = assemblyCheckInDao.findByUserId(assemblyCheckIn.getStaffId());
-					if (user != null) {
-						dashboardDetailDto.setUsername((String) user.get("username"));
-						dashboardDetailDto.setEmail((String) user.get("email"));
-						dashboardDetailDto.setIcnumber((String) user.get("icnumber"));
-						dashboardDetailDto.setMobileNo((String) user.get("mobileno"));
-						dashboardDetailDto.setName((String) user.get("name"));
-						dashboardDetailDto.setPassportNumber((String) user.get("passportnumber"));
-						dashboardDetailDto.setStaffId((String) user.get("staffid"));
-
-					}
-					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
-					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
-					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
-					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
-					dashboardDetailDto.setDeviceType(assemblyCheckIn.getDeviceType());
-					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
-					if (assemblyOptional.isPresent()) {
-						Assembly assembly = assemblyOptional.get();
-						dashboardDetailDto.setAssemblyName(assembly.getName());
-					}
-					dashboardDetailDtoList.add(dashboardDetailDto);
-				}
-			}
-			if ("name".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getName().compareTo(dto2.getName())
-								: dto2.getName().compareTo(dto1.getName()));
-			} else if ("passportnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getPassportNumber().compareTo(dto2.getPassportNumber())
-						: dto2.getPassportNumber().compareTo(dto1.getPassportNumber()));
-			} else if ("icnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
-								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
-			} else if ("type".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
-								: dto2.getType().compareTo(dto1.getType()));
-			} else if ("staffid".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
-								: dto2.getStaffId().compareTo(dto1.getStaffId()));
-			} else if ("department".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getDepartment().compareTo(dto2.getDepartment())
-						: dto2.getDepartment().compareTo(dto1.getDepartment()));
-			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
-						: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
+			if (!usersCheckedInPage.isEmpty()) {
+				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
+					DashboardDetailDto detailDto = new DashboardDetailDto();
+					detailDto.setId((BigDecimal) staff.get("id"));
+					detailDto.setUsername((String) staff.get("username"));
+					detailDto.setEmail((String) staff.get("email"));
+					detailDto.setMobileNo((String) staff.get("mobileno"));
+					detailDto.setIcnumber((String) staff.get("icnumber"));
+					detailDto.setPassportNumber((String) staff.get("passportnumber"));
+					detailDto.setStaffId((String) staff.get("staffid"));
+					detailDto.setName((String) staff.get("name"));
+					detailDto.setCheckInDate((String) staff.get("currentdate"));
+					detailDto.setCheckInTime((String) staff.get("currenttime"));
+					detailDto.setAssemblyName((String) staff.get("assembly"));
+					return detailDto;
+				}).collect(Collectors.toList());
 			}
 
 		} catch (DataAccessException dae) {
@@ -281,85 +245,58 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, usersCheckedInPage.getTotalElements());
+
 	}
 
 	@Override
 	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy,
-			String direction) {
-		// TODO Auto-generated method stub
-		// PageRequest pageRequest = PageRequest.of(page, size);
+			String direction, String params) {
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "name");
+		} else if (sortBy.equals("username")) {
+			sort = Sort.by(sortDirection, "username");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icnumber");
+		} else if (sortBy.equals("passportnumber")) {
+			sort = Sort.by(sortDirection, "passportnumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffid");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "mobileno");
+		} else if (sortBy.equals("assemblyname")) {
+			sort = Sort.by(sortDirection, "a.name");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		Page<AssemblyCheckIn> assemblyCheckInList;
+		Page<Map<String, Object>> usersCheckedInPage;
 		try {
-			if (sortBy.equals("name") || sortBy.equals("passportnumber") || sortBy.equals("icnumber")
-					|| sortBy.equals("type") || sortBy.equals("staffid") || sortBy.equals("department")
-					|| sortBy.equals("assemblyname")) {
-				pageRequest = PageRequest.of(page, size);
-				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
+			if (params == null || params.isEmpty()) {
+				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest);
 			} else {
-				pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-				assemblyCheckInList = assemblyCheckInDao.getListByActivationId(activateId, pageRequest);
+				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest,
+						params);
 			}
-
-			if (!assemblyCheckInList.isEmpty()) {
-				for (AssemblyCheckIn assemblyCheckIn : assemblyCheckInList) {
-					DashboardDetailDto dashboardDetailDto = new DashboardDetailDto();
-					dashboardDetailDto.setId(assemblyCheckIn.getStaffId());
-					Map<String, Object> user = assemblyCheckInDao.findByUserId(assemblyCheckIn.getStaffId());
-					if (user != null) {
-						dashboardDetailDto.setUsername((String) user.get("username"));
-						dashboardDetailDto.setEmail((String) user.get("email"));
-						dashboardDetailDto.setIcnumber((String) user.get("icnumber"));
-						dashboardDetailDto.setMobileNo((String) user.get("mobileno"));
-						dashboardDetailDto.setName((String) user.get("name"));
-						dashboardDetailDto.setPassportNumber((String) user.get("passportnumber"));
-						dashboardDetailDto.setStaffId((String) user.get("staffid"));
-
-					}
-					dashboardDetailDto.setCheckInDate(assemblyCheckIn.getCurrentdate());
-					dashboardDetailDto.setCheckInTime(assemblyCheckIn.getCurrenttime());
-					dashboardDetailDto.setLattitude(assemblyCheckIn.getLatitude());
-					dashboardDetailDto.setLongtitude(assemblyCheckIn.getLongtiude());
-					dashboardDetailDto.setDeviceType(assemblyCheckIn.getDeviceType());
-					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyCheckIn.getAssemblyPoint());
-					if (assemblyOptional.isPresent()) {
-						Assembly assembly = assemblyOptional.get();
-						dashboardDetailDto.setAssemblyName(assembly.getName());
-					}
-					dashboardDetailDtoList.add(dashboardDetailDto);
-				}
-			}
-			if ("name".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getName().compareTo(dto2.getName())
-								: dto2.getName().compareTo(dto1.getName()));
-			} else if ("passportnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getPassportNumber().compareTo(dto2.getPassportNumber())
-						: dto2.getPassportNumber().compareTo(dto1.getPassportNumber()));
-			} else if ("icnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
-								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
-			} else if ("type".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getType().compareTo(dto2.getType())
-								: dto2.getType().compareTo(dto1.getType()));
-			} else if ("staffid".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort(
-						(dto1, dto2) -> sortDirection.isAscending() ? dto1.getStaffId().compareTo(dto2.getStaffId())
-								: dto2.getStaffId().compareTo(dto1.getStaffId()));
-			} else if ("department".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getDepartment().compareTo(dto2.getDepartment())
-						: dto2.getDepartment().compareTo(dto1.getDepartment()));
-			} else if ("assemblyname".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList.sort((dto1, dto2) -> sortDirection.isAscending()
-						? dto1.getAssemblyName().compareTo(dto2.getAssemblyName())
-						: dto2.getAssemblyName().compareTo(dto1.getAssemblyName()));
+			if (!usersCheckedInPage.isEmpty()) {
+				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
+					DashboardDetailDto detailDto = new DashboardDetailDto();
+					detailDto.setId((BigDecimal) staff.get("id"));
+					detailDto.setUsername((String) staff.get("username"));
+					detailDto.setEmail((String) staff.get("email"));
+					detailDto.setMobileNo((String) staff.get("mobileno"));
+					detailDto.setIcnumber((String) staff.get("icnumber"));
+					detailDto.setPassportNumber((String) staff.get("passportnumber"));
+					detailDto.setStaffId((String) staff.get("staffid"));
+					detailDto.setName((String) staff.get("name"));
+					detailDto.setCheckInDate((String) staff.get("currentdate"));
+					detailDto.setCheckInTime((String) staff.get("currenttime"));
+					detailDto.setAssemblyName((String) staff.get("assembly"));
+					return detailDto;
+				}).collect(Collectors.toList());
 			}
 
 		} catch (DataAccessException dae) {
@@ -370,17 +307,14 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(dashboardDetailDtoList, pageRequest, assemblyCheckInList.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, usersCheckedInPage.getTotalElements());
 
 	}
 
 	@Override
-	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction, String params) {
-		// TODO Auto-generated method stub
+	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction,
+			String params) {
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		// PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection,
-		// sortBy));
-
 		Sort sort = Sort.by(sortDirection, sortBy);
 		if (sortBy.equals("name")) {
 			sort = Sort.by(sortDirection, "name");
@@ -399,19 +333,19 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<StaffDto> staffDtoList = new ArrayList<>();
-				
+
 		Page<Map<String, Object>> usersNotCheckedInPage;
-		
+
 		try {
-			if(params == null || params.isEmpty()) {
+			if (params == null || params.isEmpty()) {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
 						pageRequest);
-			}else {				
+			} else {
 				System.out.println("Params " + params);
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						pageRequest,params);
-			}		
-			if(!usersNotCheckedInPage.isEmpty()) {
+						pageRequest, params);
+			}
+			if (!usersNotCheckedInPage.isEmpty()) {
 				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();
 					staffDto.setId((BigDecimal) staff.get("id"));
@@ -424,7 +358,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setStaffId((String) staff.get("staffid"));
 					return staffDto;
 				}).collect(Collectors.toList());
-			}			
+			}
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());

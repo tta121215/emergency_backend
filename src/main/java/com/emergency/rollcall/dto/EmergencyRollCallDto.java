@@ -1,7 +1,5 @@
 package com.emergency.rollcall.dto;
 
-import java.util.List;
-
 public class EmergencyRollCallDto {
 	private long syskey;
 	private String name;
@@ -17,7 +15,7 @@ public class EmergencyRollCallDto {
 	private String totalTime;
 	private Long totalCheckIn;
 	private Long totalNotCheckIn;
-	private double averageTime;
+	private String averageTime;
 	private String conditionName;
 	private String emergencyName;
 	private String emegencyLocation;
@@ -134,11 +132,11 @@ public class EmergencyRollCallDto {
 		this.totalNotCheckIn = totalNotCheckIn;
 	}
 
-	public double getAverageTime() {
+	public String getAverageTime() {
 		return averageTime;
 	}
 
-	public void setAverageTime(double averageTime) {
+	public void setAverageTime(String averageTime) {
 		this.averageTime = averageTime;
 	}
 

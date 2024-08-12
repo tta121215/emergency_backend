@@ -1,10 +1,10 @@
 package com.emergency.rollcall.dto;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 public class DashboardDetailDto {
 
-	private Long id;
+	private BigDecimal id;
 	private String username;
 	private String email;
 	private String checkInDate;
@@ -21,11 +21,11 @@ public class DashboardDetailDto {
 	private String department;
 	private String type;
 
-	public Long getId() {
+	public BigDecimal getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(BigDecimal id) {
 		this.id = id;
 	}
 
