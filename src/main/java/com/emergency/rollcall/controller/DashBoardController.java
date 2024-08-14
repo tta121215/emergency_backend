@@ -42,13 +42,13 @@ public class DashBoardController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
-			logger.info("Successfully data assembly list " + dashboardResponseDto);
+			logger.info("Successfully data check in count list " + dashboardResponseDto);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
-			logger.info("No data assembly list " + dashboardResponseDto);
+			logger.info("No data check in count list " + dashboardResponseDto);
 		}
 
 		response.setMessage(message);
@@ -65,7 +65,7 @@ public class DashBoardController {
 		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		logger.info("Received request to get assembly check in by activation id " + activateId);
+		logger.info("Received request to check in count by activation id and assembly id " + activateId + " : And " + assemblyId);
 
 		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateAndAssembly(activateId, assemblyId,
 				page, size,sortBy,direction,params);
@@ -74,11 +74,13 @@ public class DashBoardController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully data to check in count by activation id and assembly id  " + activateId + " : And " + assemblyId);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("No data found for check in count by activation id and assembly id  " + activateId + " : And " + assemblyId);
 		}
 
 		response.setMessage(message);
@@ -98,7 +100,7 @@ public class DashBoardController {
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 
-		logger.info("Received request to get assembly check in by activation id " + activateId);
+		logger.info("Received request to get check in count by activation id " + activateId);
 
 		Page<DashboardDetailDto> dashboardDetailPage = dashboardService.getByActivateId(activateId, page, size,sortBy,direction,params);
 		dashboardDetailDtoList = dashboardDetailPage.getContent();
@@ -106,11 +108,13 @@ public class DashBoardController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully data for check in count by activation id" + activateId );
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("No data found for check in count by activation " + activateId);
 		}
 
 		response.setMessage(message);
@@ -128,7 +132,7 @@ public class DashBoardController {
 		ResponseList<StaffDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<StaffDto> staffDtoList = new ArrayList<>();
-		logger.info("Received request to get assembly check in by activation id " + activateId);
+		logger.info("Received request to get not check in count by activation id " + activateId);
 
 		Page<StaffDto> staffDtoPage = dashboardService.getAllUnCheckInList(activateId, page, size,sortBy,direction,params);
 		staffDtoList = staffDtoPage.getContent();
@@ -136,11 +140,13 @@ public class DashBoardController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
+			logger.info("Successfully to get not check in count by activation id " + activateId);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
+			logger.info("No data found to get not check in count by activation id " + activateId);
 		}
 
 		response.setMessage(message);
