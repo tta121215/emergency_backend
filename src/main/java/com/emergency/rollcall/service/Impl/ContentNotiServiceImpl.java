@@ -137,10 +137,17 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		ContentNoti contentNoti = new ContentNoti();
 		logger.info("Deleting content noti entity: " + id);
 		try {
+			Long count = contentNotiDao.findNotiTemplatesByContentNotiSyskey(id);		
+			if(count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the content noti because it is associated with noti template.");
+				return res;
+			}
 			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(id);
 			if (contentNotiOptional.isPresent()) {
 				contentNoti = contentNotiOptional.get();
-				contentNotiDao.delete(contentNoti);
+				contentNoti.setIsDelete(1);
+				contentNotiDao.save(contentNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully delete mode noti entity: " + res.getMessage());
@@ -204,7 +211,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		List<ContentNoti> contentNotiList = new ArrayList<>();
 		logger.info("Retrieving content noti entity: ");
 		try {
-			contentNotiList = contentNotiDao.findAllByStatus(1);
+			contentNotiList = contentNotiDao.findAllByStatusAndIsDelete(1,0);
 			if (!contentNotiList.isEmpty()) {
 				for (ContentNoti contentNoti : contentNotiList) {
 					ContentNotiDto contentNotiDto = new ContentNotiDto();

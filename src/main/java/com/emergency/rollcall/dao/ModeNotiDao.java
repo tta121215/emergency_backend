@@ -13,12 +13,17 @@ import com.emergency.rollcall.entity.ModeNoti;
 @Repository
 public interface ModeNotiDao extends JpaRepository<ModeNoti, Long> {
 
-	@Query("SELECT c FROM ModeNoti c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM ModeNoti c WHERE c.isDelete = 0 AND LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<ModeNoti> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
-	@Query("SELECT c FROM ModeNoti c")
+	@Query("SELECT c FROM ModeNoti c WHERE c.isDelete = 0 ")
 	Page<ModeNoti> findByNameOrCode(Pageable pageable);
 	
-	List<ModeNoti> findAllByStatus(Integer status);
+	List<ModeNoti> findAllByStatusAndIsDelete(Integer status, Integer isDelete);
+	
+	@Query(value = "SELECT COUNT(*) FROM ERC_noti_template WHERE noti_mode LIKE '%,' || :modeNotiId || ',%' "
+			+ "OR noti_mode LIKE :modeNotiId || ',%' " + "OR noti_mode LIKE '%,' || :modeNotiId "
+			+ "OR noti_mode = :modeNotiId", nativeQuery = true)
+	Long findNotiTemplatesByModeNotiSyskey(@Param("modeNotiId") long modeNotiId);
 
 }

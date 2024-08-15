@@ -143,10 +143,17 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		ModeNoti modeNoti = new ModeNoti();
 		logger.info("Deleting mode noti entity: " + id);
 		try {
+			Long count = modeNotiDao.findNotiTemplatesByModeNotiSyskey(id);		
+			if(count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the mode noti because it is associated with noti template.");
+				return res;
+			}
 			Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(id);
 			if (modeNotiOptional.isPresent()) {
 				modeNoti = modeNotiOptional.get();
-				modeNotiDao.delete(modeNoti);
+				modeNoti.setIsDelete(1);
+				modeNotiDao.save(modeNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully delete mode noti entity: " + res.getMessage());
@@ -210,7 +217,7 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		List<ModeNoti> modeNotiList = new ArrayList<>();
 		logger.info("Retrieving mode noti entity: " );
 		try {
-			modeNotiList = modeNotiDao.findAllByStatus(1);
+			modeNotiList = modeNotiDao.findAllByStatusAndIsDelete(1,0);
 			if (modeNotiList != null) {
 				for (ModeNoti modeNoti : modeNotiList) {
 					ModeNotiDto modeNotiDto = new ModeNotiDto();
