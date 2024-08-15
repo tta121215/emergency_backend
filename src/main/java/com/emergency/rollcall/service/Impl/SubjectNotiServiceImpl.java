@@ -136,10 +136,18 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		SubjectNoti subjectNoti = new SubjectNoti();
 		logger.info("Deleting subject noti entity: " + id);
 		try {
+
+			Long count = subjectNotiDao.findNotiTemplatesBySubjectNotiSyskey(id);
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the subject noti because it is associated with noti template.");
+				return res;
+			}
 			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(id);
 			if (subjectNotiOptional.isPresent()) {
 				subjectNoti = subjectNotiOptional.get();
-				subjectNotiDao.delete(subjectNoti);
+				subjectNoti.setIsDelete(1);
+				subjectNotiDao.save(subjectNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully delete subject noti entity: " + res.getMessage());
@@ -203,7 +211,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		List<SubjectNoti> subjectNotiList = new ArrayList<>();
 		logger.info("Retrieving subject noti entity: ");
 		try {
-			subjectNotiList = subjectNotiDao.findAllByStatus(1);
+			subjectNotiList = subjectNotiDao.findAllByStatusAndIsDelete(1, 0);
 			if (subjectNotiList != null) {
 				for (SubjectNoti subjectNoti : subjectNotiList) {
 					SubjectNotiDto subjectNotiDto = new SubjectNotiDto();
