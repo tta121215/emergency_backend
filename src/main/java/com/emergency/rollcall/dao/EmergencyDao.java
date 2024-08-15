@@ -22,7 +22,7 @@ public interface EmergencyDao extends JpaRepository<Emergency, Long> {
 	
 	List<Emergency> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
-	@Query("SELECT COUNT(e) FROM EmergencyActivate e WHERE e.emergency_syskey = :syskey and e.isDelete = 0")
+	@Query("SELECT COUNT(e) FROM EmergencyActivate e WHERE e.emergency.syskey = :syskey and e.isDelete = 0")
     Long countEmergencyActivatesByEmergencyTypeId(@Param("syskey") Long syskey);
 
 }

@@ -268,7 +268,7 @@ public class RouteServiceImpl implements RouteService {
 		List<Route> routeList = new ArrayList<>();
 		logger.info("Retrieving list route entity: ");
 		try {
-			routeList = routeDao.findAllByStatus(1);
+			routeList = routeDao.findAllByStatusAndIsDelete(1,0);
 			if (routeList != null) {
 				for (Route route : routeList) {
 					RouteDto routeDto = new RouteDto();
