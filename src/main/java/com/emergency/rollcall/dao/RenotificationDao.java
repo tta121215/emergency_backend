@@ -11,10 +11,10 @@ import com.emergency.rollcall.entity.Renotification;
 @Repository
 public interface RenotificationDao extends JpaRepository<Renotification, Long> {
 
-	@Query("SELECT c FROM Renotification c WHERE LOWER(c.time) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM Renotification c WHERE c.isDelete = 0 AND LOWER(c.time) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<Renotification> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
-	@Query("SELECT c FROM Renotification c")
+	@Query("SELECT c FROM Renotification c WHERE c.isDelete = 0")
 	Page<Renotification> findByNameOrCode(Pageable pageable);
 
 }

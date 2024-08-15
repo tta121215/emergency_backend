@@ -154,6 +154,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+				return res;
 			}
 			Optional<Assembly> assemblyOptional = assemblyDao.findById(id);
 			if (assemblyOptional.isPresent()) {
@@ -224,7 +225,7 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		List<Assembly> assemblyList = new ArrayList<>();
 		logger.info("Received assembly data list ");
 		try {
-			assemblyList = assemblyDao.findAllByStatus(1);
+			assemblyList = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 			if (!assemblyList.isEmpty()) {
 				for (Assembly assembly : assemblyList) {
 					AssemblyDto assemblyDto = new AssemblyDto();

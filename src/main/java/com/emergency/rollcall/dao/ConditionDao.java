@@ -14,15 +14,15 @@ import com.emergency.rollcall.entity.Condition;
 @Repository
 public interface ConditionDao extends JpaRepository<Condition, Long> {
 
-	@Query("SELECT c FROM Condition c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM Condition c WHERE c.isDelete = 0 and (LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%')))")
 	Page<Condition> findByNameOrCode(Pageable pageable, @Param("param") String param);
 	
-	@Query("SELECT c FROM Condition c")
+	@Query("SELECT c FROM Condition c WHERE c.isDelete = 0")
 	Page<Condition> findByNameOrCode(Pageable pageable);
 	
-	List<Condition> findAllByStatus(int status);
+	List<Condition> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
-	@Query("SELECT COUNT(ec) FROM EmergencyActivate ec WHERE ec.condition.syskey = :syskey")
+	@Query("SELECT COUNT(ec) FROM EmergencyActivate ec WHERE ec.condition.syskey = :syskey and ec.isDelete = 0")
     Long countEmergencyActivatesByConditionId(@Param("syskey") Long syskey);
 
 }

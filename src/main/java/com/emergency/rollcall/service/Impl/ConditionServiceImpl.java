@@ -152,6 +152,7 @@ public class ConditionServiceImpl implements ConditionService {
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the condition because it is associated with active emergencies.");
+				return res;
 			}
 			Optional<Condition> conditionOptional = conditionDao.findById(id);
 			if (conditionOptional.isPresent()) {
@@ -219,7 +220,7 @@ public class ConditionServiceImpl implements ConditionService {
 		List<ConditionDto> conditionDtoList = new ArrayList<>();
 		List<Condition> conditionList = new ArrayList<>();
 		try {
-			conditionList = conditionDao.findAllByStatus(1);
+			conditionList = conditionDao.findAllByStatusAndIsDelete(1, 0);
 			if (!conditionList.isEmpty()) {
 				for (Condition condition : conditionList) {
 					ConditionDto conditionDto = new ConditionDto();

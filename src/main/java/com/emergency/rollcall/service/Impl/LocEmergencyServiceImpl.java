@@ -188,6 +188,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the emergency location because it is associated with active emergencies.");
+				return res;
 			}
 			
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(id);
@@ -267,7 +268,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
 		try {
-			locEmergencyList = locEmergencyDao.findAllByStatus(1);
+			locEmergencyList = locEmergencyDao.findAllByStatusAndIsDelete(1, 0);
 			if (locEmergencyList != null) {
 				for (LocEmergency locEmergency : locEmergencyList) {
 					LocEmergencyDto locEmergencyDto = new LocEmergencyDto();

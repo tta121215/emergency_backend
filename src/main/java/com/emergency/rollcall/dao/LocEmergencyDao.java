@@ -16,24 +16,24 @@ import com.emergency.rollcall.entity.LocEmergency;
 @Repository
 public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 
-	@Query("SELECT c FROM LocEmergency c WHERE LOWER(c.locationName) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM LocEmergency c WHERE c.isDelete = 0 and LOWER(c.locationName) LIKE LOWER(CONCAT('%', :param, '%'))")
 	Page<LocEmergency> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
-	@Query("SELECT c FROM LocEmergency c")
+	@Query("SELECT c FROM LocEmergency c WHERE c.isDelete = 0")
 	Page<LocEmergency> findByNameOrCode(Pageable pageable);
 	
 	@EntityGraph(attributePaths = {"routeList"})
     Optional<LocEmergency> findById(Long id);
 	
-	List<LocEmergency> findAllByStatus(int status);
+	List<LocEmergency> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
-	@Query("SELECT a FROM LocEmergency a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
+	@Query("SELECT a FROM LocEmergency a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId and a.isDelete = 0")
     List<LocEmergency> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 	
 	@Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP", nativeQuery = true)
 	List<Object[]> findAllLocationList();
 	
-	@Query("SELECT COUNT(e) FROM LocEmergency l JOIN l.emergencyActivatesList e WHERE l.syskey = :syskey")
+	@Query("SELECT COUNT(e) FROM LocEmergency l JOIN l.emergencyActivatesList e WHERE l.syskey = :syskey and e.isDelete = 0")
     Long countEmergencyActivatesByEmergencyLocationId(@Param("syskey") Long syskey);
 
 }

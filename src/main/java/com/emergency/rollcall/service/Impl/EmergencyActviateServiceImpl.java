@@ -494,7 +494,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
 
 		try {
-			emergencyActivateList = emergencyActivateDao.findAllByActivateStatus(2);
+			emergencyActivateList = emergencyActivateDao.findAllByActivateStatusAndIsDelete(2, 0);
 
 			if (!emergencyActivateList.isEmpty()) {
 				for (EmergencyActivate eActivate : emergencyActivateList) {

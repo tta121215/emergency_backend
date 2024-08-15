@@ -14,15 +14,15 @@ import com.emergency.rollcall.entity.Emergency;
 @Repository
 public interface EmergencyDao extends JpaRepository<Emergency, Long> {
 
-	@Query("SELECT c FROM Emergency c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM Emergency c WHERE c.isDelete = 0 and (LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.code) LIKE LOWER(CONCAT('%', :param, '%')))")
 	Page<Emergency> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
-	@Query("SELECT c FROM Emergency c ")
+	@Query("SELECT c FROM Emergency c WHERE c.isDelete = 0")
 	Page<Emergency> findByNameOrCode(Pageable pageable);
 	
-	List<Emergency> findAllByStatus(int status);
+	List<Emergency> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
-	@Query("SELECT COUNT(e) FROM EmergencyActivate e WHERE e.emergency_syskey = :syskey")
+	@Query("SELECT COUNT(e) FROM EmergencyActivate e WHERE e.emergency_syskey = :syskey and e.isDelete = 0")
     Long countEmergencyActivatesByEmergencyTypeId(@Param("syskey") Long syskey);
 
 }

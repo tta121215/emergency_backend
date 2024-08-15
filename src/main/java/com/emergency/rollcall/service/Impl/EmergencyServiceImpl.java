@@ -149,6 +149,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the emergency type because it is associated with active emergencies.");
+				return res;
 			}
 			
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
@@ -217,7 +218,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 		List<Emergency> emergencyList = new ArrayList<>();
 		logger.info("Retrieving Emergency entity: " );
 		try {
-			emergencyList = emergencyDao.findAllByStatus(1);
+			emergencyList = emergencyDao.findAllByStatusAndIsDelete(1, 0);
 			if (emergencyList != null) {
 				for (Emergency emergency : emergencyList) {
 					EmergencyDto emergencyDto = new EmergencyDto();

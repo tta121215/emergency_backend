@@ -201,6 +201,7 @@ public class RouteServiceImpl implements RouteService {
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+				return res;
 			}
 			
 			Optional<Route> routeOptional = routeDao.findById(id);

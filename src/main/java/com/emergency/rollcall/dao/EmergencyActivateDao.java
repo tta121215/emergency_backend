@@ -20,21 +20,21 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 //	Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
 
 	@Query("SELECT c FROM EmergencyActivate c " + "LEFT JOIN c.emergency e " + "LEFT JOIN c.condition con "
-			+ "WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) "
+			+ "WHERE c.isDelete = 0 and (LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) "
 			+ "OR LOWER(c.remark) LIKE LOWER(CONCAT('%', :param, '%')) "
 			+ "OR LOWER(e.name) LIKE LOWER(CONCAT('%', :param, '%')) "
-			+ "OR LOWER(con.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+			+ "OR LOWER(con.name) LIKE LOWER(CONCAT('%', :param, '%')))")
 	Page<EmergencyActivate> findByNameandRemark(Pageable pageable, @Param("param") String param);
 
-	@Query("SELECT c FROM EmergencyActivate c " + "LEFT JOIN c.emergency e " + "LEFT JOIN c.condition con ")
+	@Query("SELECT c FROM EmergencyActivate c " + "LEFT JOIN c.emergency e " + "LEFT JOIN c.condition con WHERE c.isDelete = 0")
 	Page<EmergencyActivate> findByNameandRemark(Pageable pageable);
 
-	List<EmergencyActivate> findAllByActivateStatus(int status);
+	List<EmergencyActivate> findAllByActivateStatusAndIsDelete(int status, int isDelete);
 
 //	@Query("SELECT c FROM EmergencyActivate c where c.activateStatus = 2")
 //	Page<EmergencyActivate> findAllByStatus(Pageable pageable);
 
-	@Query("SELECT e FROM EmergencyActivate e WHERE e.activateStatus = 2 AND"
+	@Query("SELECT e FROM EmergencyActivate e WHERE e.activateStatus = 2 AND e.isDelete = 0 AND "
 			+ "(:fromdate IS NULL OR e.activateDate >= :fromdate) AND "
 			+ "(:todate IS NULL OR e.activateDate <= :todate) AND "
 			+ "(:emergencySyskey IS NULL OR e.emergency.syskey = :emergencySyskey) AND "
@@ -42,7 +42,7 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 	Page<EmergencyActivate> findAllByStatus(@Param("fromdate") String fromdate,@Param("todate") String todate, @Param("emergencySyskey") Long emergencySyskey,
 			@Param("conditionSyskey") Long conditionSyskey, Pageable pageable);
 
-	@Query("SELECT ea FROM EmergencyActivate ea WHERE " + "(:fromDate IS NULL OR ea.activateDate >= :fromDate) AND "
+	@Query("SELECT ea FROM EmergencyActivate ea WHERE ea.isDelete = 0 AND " + "(:fromDate IS NULL OR ea.activateDate >= :fromDate) AND "
 			+ "(:toDate IS NULL OR ea.activateDate <= :toDate)")
 	List<EmergencyActivate> findAllByDateRange(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 
