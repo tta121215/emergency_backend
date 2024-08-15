@@ -151,7 +151,7 @@ public class ConditionServiceImpl implements ConditionService {
 
 			if (count > 0) {
 				res.setStatus_code(200);
-				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+				res.setMessage("Cannot delete the condition because it is associated with active emergencies.");
 			}
 			Optional<Condition> conditionOptional = conditionDao.findById(id);
 			if (conditionOptional.isPresent()) {
