@@ -52,7 +52,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
-		List<Assembly> allAssemblies = assemblyDao.findAll();
+		List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 
 		List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
 		Map<Long, Long> checkInCountMap = results.stream()
