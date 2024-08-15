@@ -10,6 +10,7 @@ public class ModeNotiDto {
 	private String senderMail;
 	private String passcode;
 	private String hostServer;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -83,6 +84,14 @@ public class ModeNotiDto {
 		this.hostServer = hostServer;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -97,7 +106,7 @@ public class ModeNotiDto {
 	public String toString() {
 		return "ModeNotiDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", description='" + description + '\''
 				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+				+ ", isDelete=" + isDelete + '}';
 	}
 
 }

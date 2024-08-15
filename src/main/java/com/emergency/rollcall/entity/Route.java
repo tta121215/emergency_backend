@@ -26,6 +26,7 @@ public class Route {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 	
 	@Lob
     @Column(name = "data", columnDefinition = "BLOB")
@@ -119,5 +120,14 @@ public class Route {
 	public void setAttachName(String attachName) {
 		this.attachName = attachName;
 	}
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+	
 
 }

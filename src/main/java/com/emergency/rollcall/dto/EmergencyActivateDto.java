@@ -25,6 +25,7 @@ public class EmergencyActivateDto {
 	private String endTime;
 	private String endDate;
 	private int activateStatus;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -200,6 +201,14 @@ public class EmergencyActivateDto {
 
 	public void setActivateStatus(int activateStatus) {
 		this.activateStatus = activateStatus;
+	}
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
 	}
 
 	@Override

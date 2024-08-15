@@ -147,10 +147,17 @@ public class ConditionServiceImpl implements ConditionService {
 		Condition condition = new Condition();
 		logger.info("Deleting condition entity: " + id);
 		try {
+			Long count = conditionDao.countEmergencyActivatesByConditionId(id);
+
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+			}
 			Optional<Condition> conditionOptional = conditionDao.findById(id);
 			if (conditionOptional.isPresent()) {
 				condition = conditionOptional.get();
-				conditionDao.delete(condition);
+				condition.setIsDelete(1);
+				conditionDao.save(condition);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully deleting entity: " + res.getMessage());

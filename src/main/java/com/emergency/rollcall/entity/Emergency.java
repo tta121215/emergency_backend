@@ -24,6 +24,7 @@ public class Emergency implements BaseEntity{
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 //
 //	@ManyToMany(mappedBy = "emergencyList")
 //	private List<Notification> notificationList = new ArrayList<>();
@@ -80,14 +81,12 @@ public class Emergency implements BaseEntity{
 		this.modifieddate = modifieddate;
 	}
 
-	
-	
-//	public EmergencyActivate getEmergencyActivate() {
-//		return emergencyActivate;
-//	}
-//
-//	public void setEmergencyActivate(EmergencyActivate emergencyActivate) {
-//		this.emergencyActivate = emergencyActivate;
-//	}
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
 
 }

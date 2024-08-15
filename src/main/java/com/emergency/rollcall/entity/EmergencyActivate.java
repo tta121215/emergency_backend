@@ -36,6 +36,7 @@ public class EmergencyActivate {
 	private String endTime;
 	private String endDate;
 	private int activateStatus;
+	private int isDelete;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
@@ -203,6 +204,14 @@ public class EmergencyActivate {
 
 	public void setActivateStatus(int activateStatus) {
 		this.activateStatus = activateStatus;
+	}
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
 	}
 
 }

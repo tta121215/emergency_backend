@@ -9,6 +9,7 @@ public class RouteDto {
 	private String modifieddate;
 	private byte[] data;
 	private String attachName;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -74,6 +75,14 @@ public class RouteDto {
 		this.attachName = attachName;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -88,6 +97,6 @@ public class RouteDto {
 	public String toString() {
 		return "RouteDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", description='" + description + '\''
 				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+				+ ", isDelete=" + isDelete + '}';
 	}
 }

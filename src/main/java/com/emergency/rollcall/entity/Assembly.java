@@ -28,14 +28,7 @@ public class Assembly {
 	private String accesstype;
 	private String createddate;
 	private String modifieddate;
-	
-	public List<EmergencyActivate> getEmergencyActivatesList() {
-		return emergencyActivatesList;
-	}
-
-	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
-		this.emergencyActivatesList = emergencyActivatesList;
-	}
+	private int isDelete;	
 
 	@ManyToMany(mappedBy = "assemblyList")
 	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
@@ -110,6 +103,22 @@ public class Assembly {
 
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+	
+	public List<EmergencyActivate> getEmergencyActivatesList() {
+		return emergencyActivatesList;
+	}
+
+	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
+		this.emergencyActivatesList = emergencyActivatesList;
 	}
 
 }

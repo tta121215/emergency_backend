@@ -10,6 +10,7 @@ public class AssemblyDto {
 	private String createddate;
 	private String modifieddate;
 	private String accesstype;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -83,6 +84,14 @@ public class AssemblyDto {
 		this.accesstype = accesstype;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -98,7 +107,7 @@ public class AssemblyDto {
 		return "AssemblyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", latitude='" + latitude + '\''
 				+ ", longtiude='" + longtiude + '\'' + ", ipaddress='" + ipaddress + '\'' + ", accesstype='"
 				+ accesstype + '\'' + ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate="
-				+ modifieddate + '}';
+				+ modifieddate + ", isDelete='" + isDelete + '}';
 	}
 
 }

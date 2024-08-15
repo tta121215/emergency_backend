@@ -28,6 +28,7 @@ public class LocEmergency {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "ERC_Loc_Route", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "route_syskey"))
@@ -98,6 +99,13 @@ public class LocEmergency {
 
 	public void setRouteList(List<Route> routeList) {
 		this.routeList = routeList;
+	}
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
 	}
 
 }

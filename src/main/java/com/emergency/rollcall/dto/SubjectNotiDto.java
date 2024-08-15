@@ -9,6 +9,7 @@ public class SubjectNotiDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -74,6 +75,14 @@ public class SubjectNotiDto {
 		this.modifieddate = modifieddate;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -88,7 +97,7 @@ public class SubjectNotiDto {
 	public String toString() {
 		return "ModeNotiDto{" + "id=" + id + ", name='" + name + '\'' + ", tableName='" + tableName + '\''
 				+ ", status='" + status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate
-				+ '}';
+				+ ", isDelete=" + isDelete + '}';
 	}
 
 }

@@ -25,4 +25,7 @@ public interface AssemblyDao extends JpaRepository<Assembly, Long> {
 
 	@Query("SELECT a FROM Assembly a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId")
     List<Assembly> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
+	
+	@Query("SELECT COUNT(e) FROM Assembly a JOIN a.emergencyActivatesList e WHERE a.syskey = :syskey")
+    Long countEmergencyActivatesByAssemblyId(@Param("syskey") Long syskey);
 }

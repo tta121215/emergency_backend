@@ -22,6 +22,7 @@ public class SubjectNoti {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 	
 	public long getSyskey() {
 		return syskey;
@@ -70,6 +71,12 @@ public class SubjectNoti {
 	}
 	public void setModifieddate(String modifieddate) {
 		this.modifieddate = modifieddate;
+	}
+	public int getIsDelete() {
+		return isDelete;
+	}
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
 	}
 
 	

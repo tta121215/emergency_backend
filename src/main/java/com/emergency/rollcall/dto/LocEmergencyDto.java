@@ -11,6 +11,7 @@ public class LocEmergencyDto {
 	private String createddate;
 	private String modifieddate;
 	private List<RouteDto> routeList;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -76,6 +77,13 @@ public class LocEmergencyDto {
 		this.routeList = routeList;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -90,7 +98,7 @@ public class LocEmergencyDto {
 	public String toString() {
 		return "LocEmergencyDto [syskey=" + syskey + ", locationId=" + locationId + ", locationName=" + locationName
 				+ ", description=" + description + ", status=" + status + ", createddate=" + createddate
-				+ ", modifieddate=" + modifieddate + ", routeList=" + routeList + "]";
+				+ ", modifieddate=" + modifieddate + ", routeList=" + routeList + ", isDelete=" + isDelete +"]";
 	}
 
 }

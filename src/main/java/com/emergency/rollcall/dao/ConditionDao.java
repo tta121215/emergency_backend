@@ -21,5 +21,8 @@ public interface ConditionDao extends JpaRepository<Condition, Long> {
 	Page<Condition> findByNameOrCode(Pageable pageable);
 	
 	List<Condition> findAllByStatus(int status);
+	
+	@Query("SELECT COUNT(ec) FROM EmergencyActivate ec WHERE ec.condition.syskey = :syskey")
+    Long countEmergencyActivatesByConditionId(@Param("syskey") Long syskey);
 
 }

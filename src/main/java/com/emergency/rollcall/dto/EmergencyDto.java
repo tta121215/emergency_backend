@@ -7,6 +7,7 @@ public class EmergencyDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -56,6 +57,14 @@ public class EmergencyDto {
 		this.modifieddate = modifieddate;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -69,7 +78,7 @@ public class EmergencyDto {
 	@Override
 	public String toString() {
 		return "EmergencyDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", code='" + code + '\'' + ", status='"
-				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + '}';
+				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + ", isDelete=" + isDelete +'}';
 	}
 
 }

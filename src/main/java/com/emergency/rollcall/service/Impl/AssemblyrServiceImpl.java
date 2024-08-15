@@ -149,10 +149,17 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		Assembly assembly = new Assembly();
 		logger.info("Received delete assembly data : " + id);
 		try {
+			Long count = assemblyDao.countEmergencyActivatesByAssemblyId(id);
+
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+			}
 			Optional<Assembly> assemblyOptional = assemblyDao.findById(id);
 			if (assemblyOptional.isPresent()) {
 				assembly = assemblyOptional.get();
-				assemblyDao.delete(assembly);
+				assembly.setIsDelete(1);
+				assemblyDao.save(assembly);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfuly deleted assembly data : " + res);

@@ -8,6 +8,7 @@ public class NotiTemplateDto {
 	private int status;
 	private String createddate;
 	private String modifieddate;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -65,6 +66,14 @@ public class NotiTemplateDto {
 		this.modifieddate = modifieddate;
 	}
 
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -77,9 +86,9 @@ public class NotiTemplateDto {
 
 	@Override
 	public String toString() {
-		return "NotiTemplateDto{" + "syskey=" + syskey + ", mode='" + noti_mode + '\'' + ", subject='" + noti_subject + '\''
-				+ ", content='" + noti_content + '\'' + ", status='" + status + '\'' + ", createddate=" + createddate
-				+ ", modifieddate=" + modifieddate + '}';
+		return "NotiTemplateDto{" + "syskey=" + syskey + ", mode='" + noti_mode + '\'' + ", subject='" + noti_subject
+				+ '\'' + ", content='" + noti_content + '\'' + ", status='" + status + '\'' + ", createddate="
+				+ createddate + ", modifieddate=" + modifieddate + ", isDelete=" + isDelete + '}';
 	}
 
 }

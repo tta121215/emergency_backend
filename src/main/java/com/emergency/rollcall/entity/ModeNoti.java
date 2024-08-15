@@ -23,6 +23,7 @@ public class ModeNoti {
 	private String senderMail;
 	private String passcode;
 	private String hostServer;
+	private int isDelete;
 
 	public long getSyskey() {
 		return syskey;
@@ -95,5 +96,14 @@ public class ModeNoti {
 	public void setHostServer(String hostServer) {
 		this.hostServer = hostServer;
 	}
+
+	public int getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(int isDelete) {
+		this.isDelete = isDelete;
+	}
+	
 
 }
