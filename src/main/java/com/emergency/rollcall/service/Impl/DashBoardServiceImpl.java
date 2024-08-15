@@ -195,10 +195,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "name");
 		} else if (sortBy.equals("username")) {
 			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("icnumber")) {
-			sort = Sort.by(sortDirection, "icnumber");
-		} else if (sortBy.equals("passportnumber")) {
-			sort = Sort.by(sortDirection, "passportnumber");
 		} else if (sortBy.equals("staffid")) {
 			sort = Sort.by(sortDirection, "staffid");
 		} else if (sortBy.equals("mobileno")) {
@@ -226,8 +222,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setUsername((String) staff.get("username"));
 					detailDto.setEmail((String) staff.get("email"));
 					detailDto.setMobileNo((String) staff.get("mobileno"));
-					detailDto.setIcnumber((String) staff.get("icnumber"));
-					detailDto.setPassportNumber((String) staff.get("passportnumber"));
+					if((String) staff.get("icnumber") != null) {
+						detailDto.setIcnumber((String) staff.get("icnumber"));
+					}else {
+						detailDto.setIcnumber((String) staff.get("passportnumber"));
+					}					
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -235,6 +234,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setAssemblyName((String) staff.get("assembly"));
 					return detailDto;
 				}).collect(Collectors.toList());
+			}
+			if ("icnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 			}
 
 		} catch (DataAccessException dae) {
@@ -258,10 +262,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "name");
 		} else if (sortBy.equals("username")) {
 			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("icnumber")) {
-			sort = Sort.by(sortDirection, "icnumber");
-		} else if (sortBy.equals("passportnumber")) {
-			sort = Sort.by(sortDirection, "passportnumber");
 		} else if (sortBy.equals("staffid")) {
 			sort = Sort.by(sortDirection, "staffid");
 		} else if (sortBy.equals("mobileno")) {
@@ -288,8 +288,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setUsername((String) staff.get("username"));
 					detailDto.setEmail((String) staff.get("email"));
 					detailDto.setMobileNo((String) staff.get("mobileno"));
-					detailDto.setIcnumber((String) staff.get("icnumber"));
-					detailDto.setPassportNumber((String) staff.get("passportnumber"));
+					if((String) staff.get("icnumber") != null) {
+						detailDto.setIcnumber((String) staff.get("icnumber"));
+					}else {
+						detailDto.setIcnumber((String) staff.get("passportnumber"));
+					}					
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -297,6 +300,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setAssemblyName((String) staff.get("assembly"));
 					return detailDto;
 				}).collect(Collectors.toList());
+			}
+			if ("icnumber".equalsIgnoreCase(sortBy)) {
+				dashboardDetailDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 			}
 
 		} catch (DataAccessException dae) {
@@ -320,10 +328,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "name");
 		} else if (sortBy.equals("username")) {
 			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("icnumber")) {
-			sort = Sort.by(sortDirection, "icnumber");
-		} else if (sortBy.equals("passportnumber")) {
-			sort = Sort.by(sortDirection, "passportnumber");
 		} else if (sortBy.equals("staffid")) {
 			sort = Sort.by(sortDirection, "staffid");
 		} else if (sortBy.equals("mobileno")) {
@@ -340,8 +344,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			if (params == null || params.isEmpty()) {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
 						pageRequest);
-			} else {
-				System.out.println("Params " + params);
+			} else {				
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
 						pageRequest, params);
 			}
@@ -353,11 +356,19 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setEmail((String) staff.get("email"));
 					staffDto.setMobileNo((String) staff.get("mobileNo"));
 					staffDto.setName((String) staff.get("name"));
-					staffDto.setIcnumber((String) staff.get("icnumber"));
-					staffDto.setPassportNumber((String) staff.get("passportnumber"));
+					if((String) staff.get("icnumber") != null) {
+						staffDto.setIcnumber((String) staff.get("icnumber"));
+					}else {
+						staffDto.setIcnumber((String) staff.get("passportnumber"));
+					}
 					staffDto.setStaffId((String) staff.get("staffid"));
 					return staffDto;
 				}).collect(Collectors.toList());
+			}
+			if ("icnumber".equalsIgnoreCase(sortBy)) {
+				staffDtoList
+						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 			}
 
 		} catch (DataAccessException dae) {
