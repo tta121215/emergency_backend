@@ -144,6 +144,13 @@ public class EmergencyServiceImpl implements EmergencyService {
 		Emergency emergency = new Emergency();
 		logger.info("Deleteing Emergency entity: " + id);
 		try {
+			Long count = emergencyDao.countEmergencyActivatesByEmergencyTypeId(id);
+
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the emergency type because it is associated with active emergencies.");
+			}
+			
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
 			if (emergencyOptional.isPresent()) {
 				emergency = emergencyOptional.get();

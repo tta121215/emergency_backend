@@ -36,6 +36,9 @@ public interface RouteDao extends JpaRepository<Route, Long> {
 	
 	@Query("SELECT r FROM Route r WHERE r.syskey NOT IN (SELECT e.syskey FROM Route e JOIN e.locEmergencyList le WHERE le.syskey IN :locEmergencyIds)")
 	List<Route> findAllExcludingLocEmergency(@Param("locEmergencyIds") List<Long> locEmergencyIds);
+	
+	@Query("SELECT COUNT(e) FROM Route r JOIN r.locEmergencyList e WHERE r.syskey = :syskey")
+    Long countEmergencyLocationsByRouteId(@Param("syskey") Long syskey);
 
 
 

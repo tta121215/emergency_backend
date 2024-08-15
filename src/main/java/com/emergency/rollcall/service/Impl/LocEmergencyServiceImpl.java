@@ -183,6 +183,13 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		LocEmergency locEmergency = new LocEmergency();
 		logger.info("Deleting location emergency entity: " + id);
 		try {
+			Long count = locEmergencyDao.countEmergencyActivatesByEmergencyLocationId(id);
+
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the emergency location because it is associated with active emergencies.");
+			}
+			
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(id);
 			if (LocEmergencyOptional.isPresent()) {
 				locEmergency = LocEmergencyOptional.get();

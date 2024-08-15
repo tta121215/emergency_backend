@@ -21,5 +21,8 @@ public interface EmergencyDao extends JpaRepository<Emergency, Long> {
 	Page<Emergency> findByNameOrCode(Pageable pageable);
 	
 	List<Emergency> findAllByStatus(int status);
+	
+	@Query("SELECT COUNT(e) FROM EmergencyActivate e WHERE e.emergency_syskey = :syskey")
+    Long countEmergencyActivatesByEmergencyTypeId(@Param("syskey") Long syskey);
 
 }

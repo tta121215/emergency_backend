@@ -196,6 +196,13 @@ public class RouteServiceImpl implements RouteService {
 		Route route = new Route();
 		logger.info("Deleting route entity: " + id);
 		try {
+			Long count = routeDao.countEmergencyLocationsByRouteId(id);
+
+			if (count > 0) {
+				res.setStatus_code(200);
+				res.setMessage("Cannot delete the assembly because it is associated with active emergencies.");
+			}
+			
 			Optional<Route> routeOptional = routeDao.findById(id);
 			if (routeOptional.isPresent()) {
 				route = routeOptional.get();
