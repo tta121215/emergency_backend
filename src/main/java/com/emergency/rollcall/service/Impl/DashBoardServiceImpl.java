@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -222,11 +223,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setUsername((String) staff.get("username"));
 					detailDto.setEmail((String) staff.get("email"));
 					detailDto.setMobileNo((String) staff.get("mobileno"));
-					if((String) staff.get("icnumber") != null) {
-						detailDto.setIcnumber((String) staff.get("icnumber"));
-					}else {
-						detailDto.setIcnumber((String) staff.get("passportnumber"));
-					}					
+					String icNumber = (String) staff.get("icnumber");
+					String passportNumber = (String) staff.get("passportnumber");
+					if (icNumber != null && !icNumber.isEmpty()) {
+						detailDto.setIcnumber(icNumber);
+					} else if (passportNumber != null && !passportNumber.isEmpty()) {
+						detailDto.setIcnumber(passportNumber);
+					} else {
+						detailDto.setIcnumber(" "); // Use space or another default value
+					}
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -236,9 +241,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 				}).collect(Collectors.toList());
 			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
-								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
+						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+
+				dashboardDetailDtoList.sort(comparator);
 			}
 
 		} catch (DataAccessException dae) {
@@ -288,11 +299,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setUsername((String) staff.get("username"));
 					detailDto.setEmail((String) staff.get("email"));
 					detailDto.setMobileNo((String) staff.get("mobileno"));
-					if((String) staff.get("icnumber") != null) {
-						detailDto.setIcnumber((String) staff.get("icnumber"));
-					}else {
-						detailDto.setIcnumber((String) staff.get("passportnumber"));
-					}					
+					String icNumber = (String) staff.get("icnumber");
+					String passportNumber = (String) staff.get("passportnumber");
+					if (icNumber != null && !icNumber.isEmpty()) {
+						detailDto.setIcnumber(icNumber);
+					} else if (passportNumber != null && !passportNumber.isEmpty()) {
+						detailDto.setIcnumber(passportNumber);
+					} else {
+						detailDto.setIcnumber(" ");
+					}
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -301,10 +316,22 @@ public class DashBoardServiceImpl implements DashBoardService {
 					return detailDto;
 				}).collect(Collectors.toList());
 			}
+//			if ("icnumber".equalsIgnoreCase(sortBy)) {
+//				dashboardDetailDtoList
+//						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
+//								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+//			}
+//			
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				dashboardDetailDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
-								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
+						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+
+				dashboardDetailDtoList.sort(comparator);
 			}
 
 		} catch (DataAccessException dae) {
@@ -344,7 +371,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			if (params == null || params.isEmpty()) {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
 						pageRequest);
-			} else {				
+			} else {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
 						pageRequest, params);
 			}
@@ -356,19 +383,28 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setEmail((String) staff.get("email"));
 					staffDto.setMobileNo((String) staff.get("mobileNo"));
 					staffDto.setName((String) staff.get("name"));
-					if((String) staff.get("icnumber") != null) {
-						staffDto.setIcnumber((String) staff.get("icnumber"));
-					}else {
-						staffDto.setIcnumber((String) staff.get("passportnumber"));
+					String icNumber = (String) staff.get("icnumber");
+					String passportNumber = (String) staff.get("passportnumber");
+					if (icNumber != null && !icNumber.isEmpty()) {
+						staffDto.setIcnumber(icNumber);
+					} else if (passportNumber != null && !passportNumber.isEmpty()) {
+						staffDto.setIcnumber(passportNumber);
+					} else {
+						staffDto.setIcnumber(" ");
 					}
 					staffDto.setStaffId((String) staff.get("staffid"));
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				staffDtoList
-						.sort((dto1, dto2) -> sortDirection.isAscending() ? dto1.getIcnumber().compareTo(dto2.getIcnumber())
-								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
 			}
 
 		} catch (DataAccessException dae) {
