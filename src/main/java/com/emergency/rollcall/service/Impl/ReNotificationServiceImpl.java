@@ -146,7 +146,8 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 			Optional<Renotification> renotiOptional = renotificationDao.findById(id);
 			if (renotiOptional.isPresent()) {
 				renotification = renotiOptional.get();
-				renotificationDao.delete(renotification);
+				renotification.setIsDelete(1);
+				renotificationDao.save(renotification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully deleting notification entity: " + res.getMessage());

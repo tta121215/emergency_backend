@@ -194,16 +194,15 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(id);
 			if (LocEmergencyOptional.isPresent()) {
 				locEmergency = LocEmergencyOptional.get();
-				locEmergency.setRouteList(new ArrayList<>());
+				locEmergency.setIsDelete(1);
 				locEmergencyDao.save(locEmergency);
-				locEmergencyDao.delete(locEmergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
-				logger.info("Successfully deleted location emergency entity: " + res.getMessage());
+				logger.info("Successfuly deleted emergency location data : " + res);
 			} else {
 				res.setStatus_code(401);
 				res.setMessage("No data found");
-				logger.info("No data found location emergency entity: " + res.getMessage());
+				logger.info("Does not found deleted emergency location data : " + res);
 			}
 		} catch (DataAccessException e) {
 			logger.info("Error deleting location emergency entity: " + e.getMessage());

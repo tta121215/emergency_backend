@@ -207,7 +207,8 @@ public class RouteServiceImpl implements RouteService {
 			Optional<Route> routeOptional = routeDao.findById(id);
 			if (routeOptional.isPresent()) {
 				route = routeOptional.get();
-				routeDao.delete(route);
+				route.setIsDelete(1);
+				routeDao.save(route);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Successfully deleting route entity: " + res.getMessage());
