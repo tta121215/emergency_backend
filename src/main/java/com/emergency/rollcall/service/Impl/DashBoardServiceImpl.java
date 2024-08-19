@@ -75,7 +75,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				Duration duration = Duration.between(startTime, maxCheckInDateTime);
 
 				long hours = duration.toHours();
-				long minutes = duration.toMinutesPart();
+				long minutes = duration.toMinutes();
 				long seconds = duration.toSecondsPart();
 				String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);

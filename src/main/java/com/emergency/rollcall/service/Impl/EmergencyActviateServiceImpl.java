@@ -3,6 +3,7 @@ package com.emergency.rollcall.service.Impl;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.ConditionDao;
@@ -57,12 +60,16 @@ import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.entity.SubjectNoti;
 import com.emergency.rollcall.service.EmergencyActivateService;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
+	//private static WebClient webClient = null;
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
@@ -102,6 +109,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+//	@Autowired
+//    public EmergencyActviateServiceImpl(WebClient.Builder webClientBuilder) {
+//        webClient = webClientBuilder.baseUrl("http://cenvirotrial.cenviro.com:8080").build();        
+//    }
 
 	@Override
 	public ResponseDto saveEmergencyActivate(EmergencyActivateDto eActivateDto) {
@@ -113,10 +125,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<Route> routeList = new ArrayList<>();
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
-
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String strCreatedDate = dateTime.format(formatter);
+		String strDatetime = malaysiaDateTime.format(timeformatter);
+		System.out.println("Time" + strDatetime);
 		try {
 			eActivate = modelMapper.map(eActivateDto, EmergencyActivate.class);
 
@@ -702,6 +718,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
+			//String email = getEmail();
+			//System.out.println("Email " + email);
 			return eActivationDto;
 		} catch (DataAccessException dae) {
 			logger.info("Error retrieving emergency activate entity: " + dae.getMessage());
@@ -1007,5 +1025,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			return minutes + " minutes " + seconds + " seconds";
 		}
 	}
+	
+//	public String getEmail() {
+//        Mono<String> response = webClient.get()
+//                .uri("api/email/sendEmergancyAlert")
+//                .retrieve()
+//                .bodyToMono(String.class);
+//
+//        return response.block();
+//    }
 
 }

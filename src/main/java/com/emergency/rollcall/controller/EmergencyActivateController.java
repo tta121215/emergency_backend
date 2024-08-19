@@ -54,7 +54,7 @@ public class EmergencyActivateController {
 		// UserAgent userAgent =
 		// UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
 		ResponseDto responseDto = new ResponseDto();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 		// String broswerVersion = userAgent.getBrowser().getName();
@@ -127,7 +127,7 @@ public class EmergencyActivateController {
 		Response<ResponseDto> response = new Response<>();
 		Message message = new Message();
 		ResponseDto responseDto = new ResponseDto();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to update emergency with data: {}", eActivateDto);
@@ -139,7 +139,7 @@ public class EmergencyActivateController {
 				message.setMessage(responseDto.getMessage());
 				logger.info("Data does not found update emergency activate with data: {}", eActivateDto);
 				auditLogService.saveAuditLog(username, "Update", responseDto.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			} else {
 				message.setState(true);
@@ -147,7 +147,7 @@ public class EmergencyActivateController {
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully update emergency activate with data: {}", eActivateDto);
 				auditLogService.saveAuditLog(username, "Update", responseDto.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			}
 		} else {
@@ -166,7 +166,7 @@ public class EmergencyActivateController {
 		Message message = new Message();
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to delete emergency activate with data: {}", id);
@@ -178,7 +178,7 @@ public class EmergencyActivateController {
 				message.setMessage(responseDto.getMessage());
 				logger.info("Data does not found to delete emergency activate with data: {}", responseDto);
 				auditLogService.saveAuditLog(username, "Delete", responseDto.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			} else {
 				message.setState(true);
@@ -186,7 +186,7 @@ public class EmergencyActivateController {
 				message.setMessage(responseDto.getMessage());
 				logger.info("Successfully to delete emergency activate with data: {}", id);
 				auditLogService.saveAuditLog(username, "Delete", responseDto.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			}
 		} else {
@@ -297,7 +297,7 @@ public class EmergencyActivateController {
 		EActivationDto eActivationDto = new EActivationDto();
 		Response<EActivationDto> response = new Response<>();
 		Message message = new Message();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to retrieve emergency with data: {}", id);
@@ -309,7 +309,7 @@ public class EmergencyActivateController {
 				message.setMessage("Data is successfully");
 				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "Activate", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			} else {
 				message.setState(false);
@@ -317,7 +317,7 @@ public class EmergencyActivateController {
 				message.setMessage("No Data found");
 				logger.info("Data does not found emergency  activate with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "Activate", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 			}
 		} else {
 			message.setState(false);
@@ -325,7 +325,7 @@ public class EmergencyActivateController {
 			message.setMessage("No Data found");
 			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
 			auditLogService.saveAuditLog(username, "Activate", message.getMessage(), ipAddress, browserVersion,
-					"Emergency Activate");
+					"Emergency Activation");
 		}
 		response.setMessage(message);
 		response.setData(eActivationDto);
@@ -340,7 +340,7 @@ public class EmergencyActivateController {
 		Response<ResponseDto> response = new Response<>();
 		ResponseDto responseDto = new ResponseDto();
 		Message message = new Message();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 
@@ -353,7 +353,7 @@ public class EmergencyActivateController {
 				message.setMessage("Data is successfully");
 				logger.info("Successfully emergency activate end with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "End", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			} else {
 				message.setState(false);
@@ -361,7 +361,7 @@ public class EmergencyActivateController {
 				message.setMessage("No Data found");
 				logger.info("Data does not found emergency activate with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "End", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 			}
 		} else {
 			message.setState(false);
@@ -369,7 +369,7 @@ public class EmergencyActivateController {
 			message.setMessage("No Data found");
 			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
 			auditLogService.saveAuditLog(username, "End", message.getMessage(), ipAddress, browserVersion,
-					"Emergency Activate");
+					"Emergency Activation");
 		}
 		response.setMessage(message);
 		response.setData(responseDto);
@@ -383,7 +383,7 @@ public class EmergencyActivateController {
 		EActivationDto eActivationDto = new EActivationDto();
 		Response<EActivationDto> response = new Response<>();
 		Message message = new Message();
-		String username = "kzc";
+		String username = "KZC";
 		String ipAddress = request.getRemoteAddr();
 		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to retrieve emergency with data: {}", id);
@@ -395,7 +395,7 @@ public class EmergencyActivateController {
 				message.setMessage("Data is successfully");
 				logger.info("Successfully retrieve emergency activate with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "Noti", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 
 			} else {
 				message.setState(false);
@@ -403,7 +403,7 @@ public class EmergencyActivateController {
 				message.setMessage("No Data found");
 				logger.info("Data does not found emergency  activate with data: {}", eActivationDto);
 				auditLogService.saveAuditLog(username, "Noti", message.getMessage(), ipAddress, browserVersion,
-						"Emergency Activate");
+						"Emergency Activation");
 			}
 		} else {
 			message.setState(false);
@@ -411,7 +411,7 @@ public class EmergencyActivateController {
 			message.setMessage("No Data found");
 			logger.info("Data does not found emergency activate with data: {}", eActivationDto);
 			auditLogService.saveAuditLog(username, "Noti", message.getMessage(), ipAddress, browserVersion,
-					"Emergency Activate");
+					"Emergency Activation");
 		}
 		response.setMessage(message);
 		response.setData(eActivationDto);
