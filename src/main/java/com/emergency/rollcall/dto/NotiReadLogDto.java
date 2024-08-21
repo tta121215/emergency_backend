@@ -6,6 +6,10 @@ public class NotiReadLogDto {
 	private String createdTime;
 	private String staffId;
 	private long emergencyId;
+	private String readNotiDate;
+	private String readNotiTiime;
+	private String userName;
+	private String emergencyName;
 	
 	public Long getSyskey() {
 		return syskey;
@@ -36,6 +40,30 @@ public class NotiReadLogDto {
 	}
 	public void setEmergencyId(long emergencyId) {
 		this.emergencyId = emergencyId;
+	}
+	public String getReadNotiDate() {
+		return readNotiDate;
+	}
+	public void setReadNotiDate(String readNotiDate) {
+		this.readNotiDate = readNotiDate;
+	}
+	public String getReadNotiTiime() {
+		return readNotiTiime;
+	}
+	public void setReadNotiTiime(String readNotiTiime) {
+		this.readNotiTiime = readNotiTiime;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getEmergencyName() {
+		return emergencyName;
+	}
+	public void setEmergencyName(String emergencyName) {
+		this.emergencyName = emergencyName;
 	}
 	
 }

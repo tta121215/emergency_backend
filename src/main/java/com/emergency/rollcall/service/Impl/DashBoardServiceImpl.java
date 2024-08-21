@@ -202,6 +202,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "mobileno");
 		} else if (sortBy.equals("assemblyname")) {
 			sort = Sort.by(sortDirection, "a.name");
+		} else if (sortBy.equals("type")) {
+			sort = Sort.by(sortDirection, "v.visitororvip");
+		} else if (sortBy.equals("department")) {
+			sort = Sort.by(sortDirection, "d.name");
 		} else {
 			sort = Sort.by(sortDirection, "name");
 		}
@@ -215,7 +219,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			} else {
 				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
 						pageRequest, params);
-			}
+			}			
 			if (!usersCheckedInPage.isEmpty()) {
 				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
@@ -234,12 +238,14 @@ public class DashBoardServiceImpl implements DashBoardService {
 					}
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
+					detailDto.setDepartment((String) staff.get("deptName"));
+					detailDto.setType((String) staff.get("visitor"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
 					detailDto.setCheckInTime((String) staff.get("currenttime"));
-					detailDto.setAssemblyName((String) staff.get("assembly"));
+					detailDto.setAssemblyName((String) staff.get("assembly"));					
 					return detailDto;
 				}).collect(Collectors.toList());
-			}
+			}			
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
@@ -279,6 +285,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "mobileno");
 		} else if (sortBy.equals("assemblyname")) {
 			sort = Sort.by(sortDirection, "a.name");
+		} else if (sortBy.equals("type")) {
+			sort = Sort.by(sortDirection, "v.visitororvip");
+		} else if (sortBy.equals("department")) {
+			sort = Sort.by(sortDirection, "d.name");
 		} else {
 			sort = Sort.by(sortDirection, "name");
 		}
@@ -310,6 +320,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 					}
 					detailDto.setStaffId((String) staff.get("staffid"));
 					detailDto.setName((String) staff.get("name"));
+					detailDto.setDepartment((String) staff.get("deptName"));
+					detailDto.setType((String) staff.get("visitor"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
 					detailDto.setCheckInTime((String) staff.get("currenttime"));
 					detailDto.setAssemblyName((String) staff.get("assembly"));
@@ -359,6 +371,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 			sort = Sort.by(sortDirection, "staffid");
 		} else if (sortBy.equals("mobileno")) {
 			sort = Sort.by(sortDirection, "mobileno");
+		} else if (sortBy.equals("type")) {
+			sort = Sort.by(sortDirection, "v.visitororvip");
+		} else if (sortBy.equals("department")) {
+			sort = Sort.by(sortDirection, "d.name");
 		} else {
 			sort = Sort.by(sortDirection, "name");
 		}
@@ -393,9 +409,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 						staffDto.setIcnumber(" ");
 					}
 					staffDto.setStaffId((String) staff.get("staffid"));
+					staffDto.setDepartment((String) staff.get("deptName"));
+					staffDto.setType((String) staff.get("visitor"));
 					return staffDto;
 				}).collect(Collectors.toList());
-			}
+			}			
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<StaffDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null

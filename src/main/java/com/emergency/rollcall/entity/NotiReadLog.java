@@ -17,6 +17,8 @@ public class NotiReadLog {
 	private long syskey;
 	private String createdDate;
 	private String createdTime;
+	private String readNotiDate;
+	private String readNotiTime;
 	private String staffId;
 	private long emergencyId;
 	
@@ -49,6 +51,18 @@ public class NotiReadLog {
 	}
 	public void setEmergencyId(long emergencyId) {
 		this.emergencyId = emergencyId;
-	}	
-
+	}
+	public String getReadNotiDate() {
+		return readNotiDate;
+	}
+	public void setReadNotiDate(String readNotiDate) {
+		this.readNotiDate = readNotiDate;
+	}
+	public String getReadNotiTime() {
+		return readNotiTime;
+	}
+	public void setReadNotiTime(String readNotiTime) {
+		this.readNotiTime = readNotiTime;
+	}
+	
 }

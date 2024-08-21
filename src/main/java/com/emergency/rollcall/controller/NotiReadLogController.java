@@ -2,7 +2,6 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.emergency.rollcall.dto.AuditLogDto;
-import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.NotiReadLogDto;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.ResponseList;
-import com.emergency.rollcall.service.AuditLogService;
 import com.emergency.rollcall.service.NotiReadLogService;
 
 
@@ -80,13 +76,13 @@ public class NotiReadLogController {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
-			logger.info("Successfully to search role with data: {}", auditLogDtoList);
+			logger.info("Successfully to search read noti log with data: {}", auditLogDtoList);
 
 		} else {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
-			logger.info("Data does not found to search role with data: {}", auditLogDtoList);
+			logger.info("Data does not found to search read noti log with data: {}", auditLogDtoList);
 		}
 
 		response.setMessage(message);

@@ -388,7 +388,7 @@ public class EmergencyActivateController {
 		String browserVersion = request.getHeader("User-Agent");
 		logger.info("Received request to retrieve emergency with data: {}", id);
 		if (id != 0) {
-			eActivationDto = emergencyActivateService.emergencyActivate(id);
+			eActivationDto = emergencyActivateService.emergencyActivateForNoti(id);
 			if (eActivationDto != null) {
 				message.setState(true);
 				message.setCode("200");

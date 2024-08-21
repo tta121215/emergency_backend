@@ -38,25 +38,39 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	List<Map<String, Object>> findCheckedInUsersByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId);
 
-	@Query(value = "SELECT u.* FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "AND ac.emergency_syskey = :emergencyActivateId "
-			+ "WHERE ac.staff_id IS NULL", countQuery = "SELECT COUNT(*) FROM PYM_User u "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+			+ "WHERE ac.staff_id IS NULL", 
+			countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "AND ac.emergency_syskey = :emergencyActivateId "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "WHERE ac.staff_id IS NULL", nativeQuery = true)
 	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable);
 
-	@Query(value = "SELECT u.* FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
-			+ "AND ac.emergency_syskey = :emergencyActivateId " + "WHERE ac.staff_id IS NULL "
+	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+			+ "AND ac.emergency_syskey = :emergencyActivateId " 
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+			+ "WHERE ac.staff_id IS NULL "
 			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
-			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') )", countQuery = "SELECT COUNT(*) FROM PYM_User u "
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
+			+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ",
+			countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
-					+ "AND ac.emergency_syskey = :emergencyActivateId " + "WHERE ac.staff_id IS NULL "
+					+ "AND ac.emergency_syskey = :emergencyActivateId " 
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+					+ "WHERE ac.staff_id IS NULL "
 					+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 					+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
-					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') )", nativeQuery = true)
+					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
+					+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ", nativeQuery = true)
 	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable, @Param("params") String params);
 
@@ -66,61 +80,91 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	@Query("SELECT ac.assemblyPoint, MAX(ac.currenttime) FROM AssemblyCheckIn ac WHERE ac.emergencySyskey = :emergencyActivateId GROUP BY ac.assemblyPoint")
 	List<Object[]> findMaxCheckInTimesByAssemblyPoint(@Param("emergencyActivateId") Long emergencyActivateId);
 
-	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly FROM PYM_User u "
+	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName "
+			+ "FROM PYM_User u "
 			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 			+ "AND ac.emergency_syskey = :emergencyActivateId "
 			+ "WHERE ac.emergency_syskey = :emergencyActivateId", countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "AND ac.emergency_syskey = :emergencyActivateId "
 					+ "WHERE ac.emergency_syskey = :emergencyActivateId", nativeQuery = true)
 	Page<Map<String, Object>> findUsersCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable);
 
-	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly FROM PYM_User u "
+	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName "
+			+ "FROM PYM_User u "
 			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 			+ "AND ac.emergency_syskey = :emergencyActivateId " + "WHERE  ac.emergency_syskey = :emergencyActivateId "
 			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
-			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') OR LOWER(a.name) LIKE LOWER('%' || :params || '%') )", countQuery = "SELECT COUNT(*) FROM PYM_User u "
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(a.name) LIKE LOWER('%' || :params || '%') OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(d.name) LIKE LOWER('%' || :params || '%') )", 
+			countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "AND ac.emergency_syskey = :emergencyActivateId "
 					+ "WHERE  ac.emergency_syskey = :emergencyActivateId "
 					+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 					+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
-					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') OR LOWER(a.name) LIKE LOWER('%' || :params || '%')  )", nativeQuery = true)
+					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(a.name) LIKE LOWER('%' || :params || '%') OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(d.name) LIKE LOWER('%' || :params || '%') )", nativeQuery = true)
 	Page<Map<String, Object>> findUsersCheckedInByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable, @Param("params") String params);
 	
-	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly FROM PYM_User u "
+	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName "
+			+ "FROM PYM_User u "
 			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 			+ "AND ac.emergency_syskey = :emergencyActivateId "
 			+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId", countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "AND ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId "
-					+ "WHERE ac.emergency_syskey = :emergencyActivateId", nativeQuery = true)
+					+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId", nativeQuery = true)
 	Page<Map<String, Object>> findUsersCheckedInByEmergencyAndAssembly(
 			@Param("emergencyActivateId") Long emergencyActivateId,@Param("assemblyId") Long assemblyId, Pageable pageable);
 
-	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly FROM PYM_User u "
+	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName  "
+			+ "FROM PYM_User u "
 			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 			+ "AND ac.emergency_syskey = :emergencyActivateId " + "WHERE  ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId "
 			+ "AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
-			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') OR LOWER(a.name) LIKE LOWER('%' || :params || '%') )", countQuery = "SELECT COUNT(*) FROM PYM_User u "
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(a.name) LIKE LOWER('%' || :params || '%') OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) "
+			, countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "AND ac.emergency_syskey = :emergencyActivateId "
 					+ "WHERE  ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId "
 					+ "AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
 					+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
-					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') OR LOWER(a.name) LIKE LOWER('%' || :params || '%')  )", nativeQuery = true)
+					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(a.name) LIKE LOWER('%' || :params || '%') OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(d.name) LIKE LOWER('%' || :params || '%') )", nativeQuery = true)
 	Page<Map<String, Object>> findUsersCheckedInByEmergencyAndAssembly(
 			@Param("emergencyActivateId") Long emergencyActivateId,@Param("assemblyId") Long assemblyId, Pageable pageable, @Param("params") String params);
 

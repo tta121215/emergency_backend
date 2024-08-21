@@ -682,7 +682,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 								if (subjectNoti.getTableName().equals("Others")) {
 									eactivateSubjectDto.setOthersDes(subjectNoti.getDescription());
 								}
-								Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
+								Object entities = findEntitiesByTableName(subjectNoti.getTableName());
+								System.out.println("Table name " + entities);
 								if (entities != null) {
 									eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
 								}
@@ -707,7 +708,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 								if (contentNoti.getTableName().equals("Others")) {
 									eactivateContentDto.setOthersDes(contentNoti.getDescription());
 								}
-								Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
+								Object entities = findEntitiesByTableName(contentNoti.getTableName());
 								if (entities != null) {
 									eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
 								}
@@ -789,56 +790,70 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<NotiTemplate> notiList = notitemplateDao.findAllByStatus(0);
 				if (!notiList.isEmpty()) {
 					NotiTemplate notiTemplate = notiList.get(0);
-
-					List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
-					List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
-					if (!modeNotiList.isEmpty()) {
-						for (ModeNoti modeNoti : modeNotiList) {
-							ModeNotiDto modenotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
-							modeNotiDtoList.add(modenotiDto);
+					if(notiTemplate.getNoti_mode() != null) {
+						List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
+						List<ModeNotiDto> modeNotiDtoList = new ArrayList<>();
+						if (!modeNotiList.isEmpty()) {
+							for (ModeNoti modeNoti : modeNotiList) {
+								ModeNotiDto modenotiDto = modelMapper.map(modeNoti, ModeNotiDto.class);
+								modeNotiDtoList.add(modenotiDto);
+							}
+							eActivationDto.setModeNotiDtoList(modeNotiDtoList);
 						}
-						eActivationDto.setModeNotiDtoList(modeNotiDtoList);
-					}
+					}					
 					// Subject List
-					List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
-					EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
-					if (!subjectNotiList.isEmpty()) {
-						for (SubjectNoti subjectNoti : subjectNotiList) {
-							if (subjectNoti.getTableName() == "Date") {
-								eactivateSubjectDto.setDate(eActivate.getStartDate());
-							} else if (subjectNoti.getTableName() == "Time") {
-								eactivateSubjectDto.setTime(eActivate.getStartTime());
+					if(notiTemplate.getNoti_subject() != null) {
+						List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
+						EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
+						if (!subjectNotiList.isEmpty()) {
+							for (SubjectNoti subjectNoti : subjectNotiList) {
+								if (subjectNoti.getTableName().equals("Date")) {
+									eactivateSubjectDto.setDate(eActivate.getStartDate());
+								}
+								if (subjectNoti.getTableName().equals("Time")) {
+									eactivateSubjectDto.setTime(eActivate.getStartTime());
+								}
+								if (subjectNoti.getTableName().equals("Others")) {
+									eactivateSubjectDto.setOthersDes(subjectNoti.getDescription());
+								}
+								Object entities = findEntitiesByTableName(subjectNoti.getTableName());
+								if (entities != null) {
+									eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
+								}
 							}
-							Object entities = findEntitiesByTableName(subjectNoti.getTableName(), null);
-							if (entities != null) {
-								eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
-							}
+							eActivationDto.setEsubjectDto(eactivateSubjectDto);
 						}
-						eActivationDto.setEsubjectDto(eactivateSubjectDto);
-					}
+					}					
 					// Content
-					List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
-					EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
-					if (!contentNotiList.isEmpty()) {
-						for (ContentNoti contentNoti : contentNotiList) {
-							if (contentNoti.getTableName().equals("Date")) {
-								eactivateContentDto.setDate(eActivate.getStartDate());
-							} else if (contentNoti.getTableName().equals("Time")) {
-								eactivateContentDto.setTime(eActivate.getStartTime());
+					if(notiTemplate.getNoti_content() != null) {
+						List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
+						EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
+						if (!contentNotiList.isEmpty()) {
+							for (ContentNoti contentNoti : contentNotiList) {
+								if (contentNoti.getTableName().equals("Date")) {
+									eactivateContentDto.setDate(eActivate.getStartDate());
+								}
+								if (contentNoti.getTableName().equals("Time")) {
+									eactivateContentDto.setTime(eActivate.getStartTime());
+								}
+								if (contentNoti.getTableName().equals("Others")) {
+									eactivateContentDto.setOthersDes(contentNoti.getDescription());
+								}
+								Object entities = findEntitiesByTableName(contentNoti.getTableName());
+								if (entities != null) {
+									eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
+								}
 							}
-							Object entities = findEntitiesByTableName(contentNoti.getTableName(), null);
-							if (entities != null) {
-								eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
-							}
+							eActivationDto.setEcontentDto(eactivateContentDto);
 						}
-						eActivationDto.setEcontentDto(eactivateContentDto);
 					}
+					
 				}
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
@@ -990,26 +1005,57 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 		return eActivateSubjectDto;
 	}
+//
+//	private Object findEntitiesByTableName(String repositoryName, String criteria) {
+//		try {
+//			String beanName = Character.toLowerCase(repositoryName.charAt(0)) + repositoryName.substring(1);
+//			JpaRepository<?, Long> repository = (JpaRepository<?, Long>) applicationContext.getBean(beanName);
+//			Pageable pageable = PageRequest.of(0, 1);
+//			Method findAllMethod = Arrays.stream(repository.getClass().getMethods())
+//					.filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 1).findFirst()
+//					.orElseThrow(() -> new NoSuchMethodException(
+//							"Method findAll without Pageable not found on repository: " + repositoryName));
+//			//Page<?> page = (Page<?>) findAllMethod.invoke(repository, pageable);
+//			//return (List<?>) findAllMethod.invoke(repository);
+//			//return page.hasContent() ? page.getContent().get(0) : null;
+//			
+//			Object criteriaObject = null;  // Placeholder for the criteria object (could be a Specification, Example, etc.)
+//	        Page<?> page = (Page<?>) findAllMethod.invoke(repository, criteriaObject, pageable);
+//	        return page.hasContent() ? page.getContent().get(0) : null;
+//
+//		} catch (Exception e) {
+//			logger.info("Error finding entities for repository: " + e.getMessage());
+//			// return Collections.emptyList();
+//			return null;
+//		}
+//	}
+	
+	private Object findEntitiesByTableName(String repositoryName) {
+	    try {
+	        String beanName = Character.toLowerCase(repositoryName.charAt(0)) + repositoryName.substring(1);
+	        JpaRepository<?, Long> repository = (JpaRepository<?, Long>) applicationContext.getBean(beanName);
+	        Pageable pageable = PageRequest.of(0, 1);
 
-	private Object findEntitiesByTableName(String repositoryName, String criteria) {
-		try {
-			String beanName = Character.toLowerCase(repositoryName.charAt(0)) + repositoryName.substring(1);
-			JpaRepository<?, Long> repository = (JpaRepository<?, Long>) applicationContext.getBean(beanName);
-			Pageable pageable = PageRequest.of(0, 1);
-			Method findAllMethod = Arrays.stream(repository.getClass().getMethods())
-					.filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 1).findFirst()
-					.orElseThrow(() -> new NoSuchMethodException(
-							"Method findAll without Pageable not found on repository: " + repositoryName));
-			Page<?> page = (Page<?>) findAllMethod.invoke(repository, pageable);
-			// return (List<?>) findAllMethod.invoke(repository);
-			return page.hasContent() ? page.getContent().get(0) : null;
+	        // Find the correct findAll(Pageable) method
+	        Method findAllMethod = Arrays.stream(repository.getClass().getMethods())
+	                .filter(method -> method.getName().equals("findAll") && method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(Pageable.class))
+	                .findFirst()
+	                .orElseThrow(() -> new NoSuchMethodException(
+	                        "Method findAll with Pageable not found on repository: " + repositoryName));
 
-		} catch (Exception e) {
-			logger.info("Error finding entities for repository: " + e.getMessage());
-			// return Collections.emptyList();
-			return null;
-		}
+	        // Invoke the findAll method with pageable
+	        Page<?> page = (Page<?>) findAllMethod.invoke(repository, pageable);
+
+	        return page.hasContent() ? page.getContent().get(0) : null;
+
+	    } catch (Exception e) {
+	        logger.info("Error finding entities for repository: " + e.getMessage());
+	        return null;
+	    }
 	}
+
+
+
 
 	private String formatDuration(Duration duration) {
 		long days = duration.toDays();

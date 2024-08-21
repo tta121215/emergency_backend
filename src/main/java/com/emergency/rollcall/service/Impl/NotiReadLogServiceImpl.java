@@ -1,10 +1,13 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +42,17 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String strCreatedDate = dateTime.format(formatter);
+		LocalDateTime startTime = LocalDateTime.now();
 
 		notiLog = modelMapper.map(notiReadLogDto, NotiReadLog.class);
 		logger.info("Saving notiRead entity: " + notiReadLogDto);
 		notiLog.setCreatedDate(this.yyyyMMddFormat(strCreatedDate));
+		notiLog.setCreatedTime(startTime.format(timeFormatter));
+		notiLog.setReadNotiDate(strCreatedDate);
+		notiLog.setReadNotiTime(startTime.format(timeFormatter));	
+		
 		try {
 			if (notiLog.getSyskey() == 0) {
 				NotiReadLog entityres = notiReadLogDao.save(notiLog);
@@ -78,25 +87,38 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 	public Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
 		// TODO Auto-generated method stub
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-		Page<NotiReadLog> auditLogList;
-		List<NotiReadLogDto> auditLogDtoList = new ArrayList<>();
-
-		logger.info("Searching audit log entity: ");
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "u.name");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "u.staffid");
+		} else if (sortBy.equals("ename")) {
+			sort = Sort.by(sortDirection, "ec.name");
+		} else {
+			sort = Sort.by(sortDirection, "u.name");
+		}
+		PageRequest pageRequest = PageRequest.of(page, size, sort);			
+		List<NotiReadLogDto> readNotiList = new ArrayList<>();
+		Page<Map<String, Object>> readNotiPage = null;
+		logger.info("Searching noti read log entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
-				auditLogList = notiReadLogDao.findByUserName(pageRequest);
+				readNotiPage = notiReadLogDao.findByUserName(pageRequest);
 			} else {
-				auditLogList = notiReadLogDao.findByUserName(pageRequest, params);
+				readNotiPage = notiReadLogDao.findByUserName(pageRequest,params);
 			}
-			if (auditLogList != null) {
-				for (NotiReadLog auditLog : auditLogList) {
-					NotiReadLogDto auditLogDto = new NotiReadLogDto();
-					auditLogDto = modelMapper.map(auditLog, NotiReadLogDto.class);
-					auditLogDtoList.add(auditLogDto);
-				}
-				logger.info("Successfully searching audit log entity: " + auditLogDtoList);
-			}
+			if (!readNotiPage.isEmpty()) {
+				readNotiList = readNotiPage.stream().map(readNoti -> {
+					NotiReadLogDto notiReadDto = new NotiReadLogDto();					
+					notiReadDto.setUserName((String) readNoti.get("username"));
+					notiReadDto.setEmergencyName((String) readNoti.get("ename"));
+					notiReadDto.setStaffId((String) readNoti.get("staffid"));
+					notiReadDto.setReadNotiDate((String) readNoti.get("notidate"));
+					notiReadDto.setReadNotiTiime((String) readNoti.get("notitime"));
+					return notiReadDto;
+				}).collect(Collectors.toList());
+			}			
+			
 		} catch (DataAccessException dae) {
 			logger.info("Error searching role entity: " + dae.getMessage());
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -106,8 +128,9 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 			System.err.println("An unexpected error occurred: " + e.getMessage());
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
+		
 
-		return new PageImpl<>(auditLogDtoList, pageRequest, auditLogList.getTotalElements());
+		return new PageImpl<>(readNotiList, pageRequest, readNotiPage.getTotalElements());
 	}
 
 	public String ddMMyyyFormat(String aDate) {
