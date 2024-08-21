@@ -21,7 +21,7 @@ public interface RouteDao extends JpaRepository<Route, Long> {
 	
 	List<Route> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
-	@Query("SELECT a FROM Route a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId AND a.isDelete = 0")
+	@Query("SELECT a FROM Route a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId AND a.isDelete = 0 AND a.status = 1")
     List<Route> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 	
 //	@Query("SELECT a FROM Route a JOIN Loc_Route" where route <> syskey)
@@ -34,7 +34,7 @@ public interface RouteDao extends JpaRepository<Route, Long> {
 //	@Query("SELECT r FROM Route r WHERE r.syskey NOT IN (SELECT e.syskey FROM Route e JOIN e.locEmergencyList le WHERE le.syskey = :locEmergencyId)")
 //	List<Route> findAllExcludingLocEmergency(@Param("locEmergencyId") Long locEmergencyId);
 	
-	@Query("SELECT r FROM Route r WHERE r.syskey NOT IN (SELECT e.syskey FROM Route e JOIN e.locEmergencyList le WHERE le.syskey IN :locEmergencyIds) AND r.isDelete = 0")
+	@Query("SELECT r FROM Route r WHERE r.syskey NOT IN (SELECT e.syskey FROM Route e JOIN e.locEmergencyList le WHERE le.syskey IN :locEmergencyIds) AND r.isDelete = 0 AND r.status = 1")
 	List<Route> findAllExcludingLocEmergency(@Param("locEmergencyIds") List<Long> locEmergencyIds);
 	
 	@Query("SELECT COUNT(e) FROM Route r JOIN r.locEmergencyList e WHERE r.syskey = :syskey AND e.isDelete = 0")
