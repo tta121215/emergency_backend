@@ -135,13 +135,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
-		ZonedDateTime dateTime = ZonedDateTime.now();
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		String strCreatedDate = dateTime.format(formatter);
-		String strDatetime = malaysiaDateTime.format(timeformatter);
-		System.out.println("Time" + strDatetime);
+		String strCreatedDate = malaysiaDateTime.format(formatter);
+		String strDatetime = malaysiaDateTime.format(timeformatter);		
 		try {
 			eActivate = modelMapper.map(eActivateDto, EmergencyActivate.class);
 
@@ -304,9 +302,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
 		EmergencyActivate eActivate = new EmergencyActivate();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		String strCreatedDate = malaysiaDateTime.format(formatter);
+		String strDatetime = malaysiaDateTime.format(timeformatter);	
 		logger.info("Updating emergency activate entity: " + eActivateDto);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(eActivateDto.getSyskey());
@@ -638,21 +639,19 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	public EActivationDto emergencyActivate(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
-		logger.info("Searching emergency activate entity: " + id);
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-		String strCreatedDate = dateTime.format(formatter);
-		// LocalTime strCreatedTime = dateTime.toLocalTime();
-
-		LocalDateTime startTime = LocalDateTime.now();
+		logger.info("Searching emergency activate entity: " + id);		
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String strCreatedDate = malaysiaDateTime.format(formatter);
+		String strCurrentTime = malaysiaDateTime.format(timeformatter);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setStartDate(strCreatedDate);
-				eActivate.setStartTime(startTime.format(formatter));
+				eActivate.setStartTime(strCurrentTime);
 				eActivate.setActivateStatus(1);
 				emergencyActivateDao.save(eActivate);
 				emergencyAcivateDto = modelMapper.map(eActivate, EmergencyActivateDto.class);
@@ -674,59 +673,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					}
 					Mono<String> response = sendEmergencyMessage(modeNotiMessage, eActivate.getSyskey());
 				}
-//
-//					// Subject List
-//					if (notiTemplate.getNoti_subject() != null) {
-//						List<Long> subjectIds = Arrays.stream(notiTemplate.getNoti_subject().split(","))
-//								.map(String::trim).map(Long::parseLong).collect(Collectors.toList());
-//						List<SubjectNoti> subjectNotiList = subjectNotiDao.findAllById(subjectIds);
-//						EActivateSubjectDto eactivateSubjectDto = new EActivateSubjectDto();
-//						if (!subjectNotiList.isEmpty()) {
-//							for (SubjectNoti subjectNoti : subjectNotiList) {
-//								if (subjectNoti.getTableName().equals("Date")) {
-//									eactivateSubjectDto.setDate(eActivate.getStartDate());
-//								}
-//								if (subjectNoti.getTableName().equals("Time")) {
-//									eactivateSubjectDto.setTime(eActivate.getStartTime());
-//								}
-//								if (subjectNoti.getTableName().equals("Others")) {
-//									eactivateSubjectDto.setOthersDes(subjectNoti.getDescription());
-//								}
-//								Object entities = findEntitiesByTableName(subjectNoti.getTableName());
-//								System.out.println("Table name " + entities);
-//								if (entities != null) {
-//									eactivateSubjectDto = processEntity(entities, eActivate, eactivateSubjectDto);
-//								}
-//							}
-//							eActivationDto.setEsubjectDto(eactivateSubjectDto);
-//						}
-//					}
-//					// Content
-//					if (notiTemplate.getNoti_content() != null) {
-//						List<Long> contentIds = Arrays.stream(notiTemplate.getNoti_content().split(","))
-//								.map(String::trim).map(Long::parseLong).collect(Collectors.toList());
-//						List<ContentNoti> contentNotiList = contentNotiDao.findAllById(contentIds);
-//						EActivateSubjectDto eactivateContentDto = new EActivateSubjectDto();
-//						if (!contentNotiList.isEmpty()) {
-//							for (ContentNoti contentNoti : contentNotiList) {
-//								if (contentNoti.getTableName().equals("Date")) {
-//									eactivateContentDto.setDate(eActivate.getStartDate());
-//								}
-//								if (contentNoti.getTableName().equals("Time")) {
-//									eactivateContentDto.setTime(eActivate.getStartTime());
-//								}
-//								if (contentNoti.getTableName().equals("Others")) {
-//									eactivateContentDto.setOthersDes(contentNoti.getDescription());
-//								}
-//								Object entities = findEntitiesByTableName(contentNoti.getTableName());
-//								if (entities != null) {
-//									eactivateContentDto = processEntity(entities, eActivate, eactivateContentDto);
-//								}
-//							}
-//							eActivationDto.setEcontentDto(eactivateContentDto);
-//						}
-				// }
-				// }
+
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			// String email = getEmail();
@@ -748,12 +695,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	public ResponseDto emergencyActivateManualEnd(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		ResponseDto responseDto = new ResponseDto();
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime startTime = LocalDateTime.now();
-		String strCreatedDate = dateTime.format(formatter);
-		// LocalTime strCreatedTime = dateTime.toLocalTime();
+
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String strCreatedDate = malaysiaDateTime.format(formatter);
+		String strCurrentTime = malaysiaDateTime.format(timeformatter);
 
 		logger.info("Searching emergency activate entity: " + id);
 		try {
@@ -761,7 +709,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			if (eActivateOptional.isPresent()) {
 				EmergencyActivate eActivate = eActivateOptional.get();
 				eActivate.setEndDate(strCreatedDate);
-				eActivate.setEndTime(startTime.format(formatter));
+				eActivate.setEndTime(strCurrentTime);
 				eActivate.setActivateStatus(2);
 				emergencyActivateDao.save(eActivate);
 				responseDto.setStatus_code(200);
@@ -787,10 +735,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
 		logger.info("Searching emergency activate entity: " + id);
-//		ZonedDateTime dateTime = ZonedDateTime.now();
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		// String strCreatedDate = dateTime.format(formatter);
-		// LocalTime strCreatedTime = dateTime.toLocalTime();
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(id);
 			if (eActivateOptional.isPresent()) {
@@ -899,8 +843,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			long totalCheckInCount = (long) checkedInUsers.size();
 			long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
 
-			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
-			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
+//			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+//			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
+			
+			ZonedDateTime startTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
+			ZonedDateTime endTime = ZonedDateTime.parse(emergencyActivate.getEndTime(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
 			Duration duration = Duration.between(startTime, endTime);
 			long totalTimeInMinutes = duration.toMinutes();
 
@@ -936,8 +885,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			dto.setSyskey(emergencySyskey);
 			dto.setName(emergencyActivate.getName());
 			dto.setRemark(emergencyActivate.getRemark());
-			dto.setActivateDate(emergencyActivate.getActivateDate());
-			dto.setActivateTime(emergencyActivate.getActivateTime());
+			dto.setActivateDate(emergencyActivate.getStartDate());
+			dto.setActivateTime(emergencyActivate.getStartTime());
 			dto.setTotalCheckIn(totalCheckInCount);
 			dto.setTotalNotCheckIn(totalUnCheckInCount);
 			dto.setTotalTime(formatDuration(duration));

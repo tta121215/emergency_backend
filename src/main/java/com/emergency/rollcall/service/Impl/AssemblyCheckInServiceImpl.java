@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,14 +34,15 @@ public class AssemblyCheckInServiceImpl implements AssemblyCheckInService {
 		ResponseDto res = new ResponseDto();
 		AssemblyCheckIn entity = new AssemblyCheckIn();
 
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String strCreatedDate = dateTime.format(formatter);
-		String strCurrentTime = dateTime.format(timeFormatter);
+		String strCurrentTime = malaysiaDateTime.format(timeformatter);
 		entity = modelMapper.map(data, AssemblyCheckIn.class);
-		entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
-		System.out.println("current date = " + strCreatedDate);
+		entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));		
 		entity.setCurrentdate(strCreatedDate);
 		entity.setCurrenttime(strCurrentTime);
 		logger.info("Saving assembly check in entity: " + entity);

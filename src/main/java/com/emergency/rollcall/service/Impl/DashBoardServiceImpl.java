@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -59,24 +61,24 @@ public class DashBoardServiceImpl implements DashBoardService {
 				.collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
 
 		List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
-		Map<Long, LocalTime> maxCheckInTimeMap = maxCheckInTimes.stream()
-				.collect(Collectors.toMap(result -> (Long) result[0],
-						result -> LocalTime.parse((String) result[1], DateTimeFormatter.ofPattern("HH:mm:ss"))));
+		Map<Long, ZonedDateTime> maxCheckInTimeMap = maxCheckInTimes.stream()
+				.collect(Collectors.toMap(result -> (Long) result[0], result -> ZonedDateTime.parse((String) result[1],
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
 
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
 		if (emergencyActivate.getStartTime() != null) {
-			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
+			ZonedDateTime emergencyStartTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
 			checkInCounts = allAssemblies.stream().map(assembly -> {
 				Long assemblyPointId = assembly.getSyskey();
 
-				LocalTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId, LocalTime.MIN);
-				LocalDateTime maxCheckInDateTime = LocalDateTime.of(startTime.toLocalDate(), maxCheckInTime);
+				ZonedDateTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId,
+						ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur")));
 
-				Duration duration = Duration.between(startTime, maxCheckInDateTime);
-
+				Duration duration = Duration.between(emergencyStartTime, maxCheckInTime);
 				long hours = duration.toHours();
 				long minutes = duration.toMinutes();
-				long seconds = duration.toSecondsPart();
+				long seconds = duration.toSeconds();
 				String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
 				if (checkInCount == 0) {
@@ -98,9 +100,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		if (emergencyActivate != null) {
 			if (emergencyActivate.getActivateStatus() == 2) {
-				LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
-				LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
-
+				ZonedDateTime startTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
+				ZonedDateTime endTime = ZonedDateTime.parse(emergencyActivate.getEndTime(),
+						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
 				Duration duration = Duration.between(startTime, endTime);
 				long totalTimeInMinutes = duration.toMinutes();
 				long days = duration.toDays();
@@ -132,11 +135,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				}
 				dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
 				long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
-				// double averageTimePerCheckInDouble = totalCheckInCount > 0 ?
-				// totalTimeInMinutes / totalCheckInCount : 0;
-				// long secondsTotal = (long) (averageTimePerCheckInDouble * 60);
-				// System.out.println(" Tot sec " + secondsTotal + " kh " +
-				// averageTimePerCheckInDouble);
+
 				Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
 
 				long totalTimeInSeconds = totalTimeInMinutes * 60;
@@ -149,13 +148,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 				long avgminutes = averageDuration1.toMinutesPart();
 				long avgseconds = averageDuration1.toSecondsPart();
 
-//				long avghours = averageDuration.toHours();
-//				long avgminutes = averageDuration.toMinutesPart();
-//				long avgseconds = averageDuration.toSecondsPart();
-				System.out.println("Total min " + totalTimeInMinutes + " : check in" + totalCheckInCount + " Mi"
-						+ emergencyActivate.getEndTime());
-				System.out.println("Hr " + avghours + " : min " + avgminutes + " : second " + avgseconds + " time pr "
-						+ averageTimeInSeconds);
 				String avghoursstr = "";
 				if (avghours < 10) {
 					avghoursstr = "0" + avghours;
@@ -219,7 +211,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			} else {
 				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
 						pageRequest, params);
-			}			
+			}
 			if (!usersCheckedInPage.isEmpty()) {
 				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
@@ -242,10 +234,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setType((String) staff.get("visitor"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
 					detailDto.setCheckInTime((String) staff.get("currenttime"));
-					detailDto.setAssemblyName((String) staff.get("assembly"));					
+					detailDto.setAssemblyName((String) staff.get("assembly"));
 					return detailDto;
 				}).collect(Collectors.toList());
-			}			
+			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
@@ -267,7 +259,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 
 		return new PageImpl<>(dashboardDetailDtoList, pageRequest, usersCheckedInPage.getTotalElements());
-
 	}
 
 	@Override
@@ -413,7 +404,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setType((String) staff.get("visitor"));
 					return staffDto;
 				}).collect(Collectors.toList());
-			}			
+			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<StaffDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null

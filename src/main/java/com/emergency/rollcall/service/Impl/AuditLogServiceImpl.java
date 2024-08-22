@@ -1,6 +1,7 @@
 package com.emergency.rollcall.service.Impl;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,14 +45,16 @@ public class AuditLogServiceImpl implements AuditLogService {
 	@Override
 	public void saveAuditLog(String username, String apiMethod, String details, String ipaddress,
 			String browserVersion, String menu) {
-		ZonedDateTime dateTime = ZonedDateTime.now();
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
-		LocalTime strCreatedTime = dateTime.toLocalTime();
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		String strCreatedDate = malaysiaDateTime.format(formatter);
+		String strCurrentTime = malaysiaDateTime.format(timeformatter);
 		
 		AuditLog auditLog = new AuditLog();
         auditLog.setCreatedDate(strCreatedDate);
-        auditLog.setCreatedTime(strCreatedTime.toString());
+        auditLog.setCreatedTime(strCurrentTime);
         auditLog.setUser(username);
         auditLog.setApiMethod(apiMethod);
         auditLog.setDetails(details);
