@@ -13,7 +13,7 @@ import com.emergency.rollcall.entity.Route;
 @Repository
 public interface RouteDao extends JpaRepository<Route, Long> {
 
-	@Query("SELECT c FROM Route c WHERE c.isDelete = 0 AND LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%'))")
+	@Query("SELECT c FROM Route c WHERE c.isDelete = 0 AND ( LOWER(c.name) LIKE LOWER(CONCAT('%', :param, '%')) OR LOWER(c.description) LIKE LOWER(CONCAT('%', :param, '%')) ) ")
 	Page<Route> findByNameOrCode(Pageable pageable, @Param("param") String param);
 
 	@Query("SELECT c FROM Route c WHERE c.isDelete = 0")
