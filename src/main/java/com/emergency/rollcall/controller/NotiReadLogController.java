@@ -63,6 +63,7 @@ public class NotiReadLogController {
 	@GetMapping("")
 	public ResponseEntity<ResponseList<NotiReadLogDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
+			@RequestParam("emergencyId") Long emergencyId,
 			@RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction) {
 
@@ -70,7 +71,7 @@ public class NotiReadLogController {
 		Message message = new Message();
 		List<NotiReadLogDto> auditLogDtoList = new ArrayList<>();
 		logger.info("Received request to search auditlog with data: {}", page,size,params,sortBy,direction);
-		Page<NotiReadLogDto> auditLogPage = notiReadLogService.searchByParams(page, size, params, sortBy, direction);
+		Page<NotiReadLogDto> auditLogPage = notiReadLogService.searchByParams(page, size, params, sortBy, direction,emergencyId);
 		auditLogDtoList = auditLogPage.getContent();
 		if (!auditLogDtoList.isEmpty()) {
 			message.setState(true);

@@ -84,7 +84,7 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 	}
 
 	@Override
-	public Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
+	public Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction, Long emergencyId) {
 		// TODO Auto-generated method stub
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(sortDirection, sortBy);
@@ -103,9 +103,9 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 		logger.info("Searching noti read log entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
-				readNotiPage = notiReadLogDao.findByUserName(pageRequest);
+				readNotiPage = notiReadLogDao.findByUserName(pageRequest,emergencyId);
 			} else {
-				readNotiPage = notiReadLogDao.findByUserName(pageRequest,params);
+				readNotiPage = notiReadLogDao.findByUserName(pageRequest,params,emergencyId);
 			}
 			if (!readNotiPage.isEmpty()) {
 				readNotiList = readNotiPage.stream().map(readNoti -> {

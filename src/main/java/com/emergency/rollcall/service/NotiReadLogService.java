@@ -9,7 +9,7 @@ public interface NotiReadLogService {
 
 	ResponseDto saveNotiReadLog(NotiReadLogDto notiReadLogDto);   	
 	
-	Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction);
+	Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction, Long emergencyId);
 	
 
 }
