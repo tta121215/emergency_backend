@@ -54,7 +54,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 
 	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 			+ "AND ac.emergency_syskey = :emergencyActivateId " 
-			+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
 			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 			+ "WHERE ac.staff_id IS NULL "
 			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
@@ -64,7 +64,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			countQuery = "SELECT COUNT(*) FROM PYM_User u "
 					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 					+ "AND ac.emergency_syskey = :emergencyActivateId " 
-					+ "LEFT JOIN PYM_vendor_pass v ON v.staffno = u.username "
+					+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
 					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
 					+ "WHERE ac.staff_id IS NULL "
 					+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "

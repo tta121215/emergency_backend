@@ -76,9 +76,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 						ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur")));
 
 				Duration duration = Duration.between(emergencyStartTime, maxCheckInTime);
-				long hours = duration.toHours();
-				long minutes = duration.toMinutes();
-				long seconds = duration.toSeconds();
+				long hours = duration.toHoursPart();
+				long minutes = duration.toMinutesPart();
+				long seconds = duration.toSecondsPart();
 				String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
 				if (checkInCount == 0) {
