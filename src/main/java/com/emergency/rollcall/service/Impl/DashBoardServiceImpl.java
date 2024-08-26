@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -79,7 +79,25 @@ public class DashBoardServiceImpl implements DashBoardService {
 				long hours = duration.toHoursPart();
 				long minutes = duration.toMinutesPart();
 				long seconds = duration.toSecondsPart();
-				String totalTimeTaken = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+//				long hoursNew = duration.toHours();
+//				long minutesNew = duration.toMinutes() % 60;
+//				long secondsNew = duration.toSeconds() % 60;
+
+				long days = ChronoUnit.DAYS.between(emergencyStartTime, maxCheckInTime);
+				long hoursNew = ChronoUnit.HOURS.between(emergencyStartTime, maxCheckInTime) % 24;
+				long minutesNew = ChronoUnit.MINUTES.between(emergencyStartTime, maxCheckInTime) % 60;
+				long secondsNew = ChronoUnit.SECONDS.between(emergencyStartTime, maxCheckInTime) % 60;
+				if (days > 0) {
+					hoursNew += days * 24;
+				}
+
+//				 long totalSeconds = duration.getSeconds();
+//			        long hoursNew = totalSeconds / 3600; // Calculate hours
+//			        long minutesNew = (totalSeconds % 3600) / 60; // Calculate minutes part
+//			        long secondsNew = totalSeconds % 60; // Calculate seconds part
+
+				String totalTimeTaken = String.format("%02d:%02d:%02d", hoursNew, minutesNew, secondsNew);
 				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
 				if (checkInCount == 0) {
 					totalTimeTaken = "00:00:00";
