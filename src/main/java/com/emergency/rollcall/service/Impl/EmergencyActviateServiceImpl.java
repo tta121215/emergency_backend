@@ -859,9 +859,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 			Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
 
-			long avghours = averageDuration1.toHours();
-			long avgminutes = averageDuration1.toMinutesPart();
-			long avgseconds = averageDuration1.toSecondsPart();
+//			long avghours = averageDuration1.toHours();
+//			long avgminutes = averageDuration1.toMinutesPart();
+//			long avgseconds = averageDuration1.toSecondsPart();
+			
+			long avghours = averageDuration1.toHours() % 24;
+			long avgminutes = averageDuration1.toMinutes() % 60;
+			long avgseconds = averageDuration1.getSeconds() % 60;
 
 			StringBuilder avgTimeString = new StringBuilder();
 
