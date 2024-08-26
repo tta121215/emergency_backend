@@ -161,10 +161,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 				long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
 
 				Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
-
-				long avghours = averageDuration1.toHours();
-				long avgminutes = averageDuration1.toMinutesPart();
-				long avgseconds = averageDuration1.toSecondsPart();
+	
+				long avghours = averageDuration1.toHours() % 24;
+				long avgminutes = averageDuration1.toMinutes() % 60;
+				long avgseconds = averageDuration1.getSeconds() % 60;
 
 				String avghoursstr = "";
 				if (avghours < 10) {
