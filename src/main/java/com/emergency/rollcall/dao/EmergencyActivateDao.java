@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import com.emergency.rollcall.entity.EmergencyActivate;
 
 @Repository
@@ -43,7 +45,10 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 			@Param("conditionSyskey") Long conditionSyskey, Pageable pageable);
 
 	@Query("SELECT ea FROM EmergencyActivate ea WHERE ea.isDelete = 0 AND " + "(:fromDate IS NULL OR ea.activateDate >= :fromDate) AND "
-			+ "(:toDate IS NULL OR ea.activateDate <= :toDate)")
+			+ "(:toDate IS NULL OR ea.activateDate <= :toDate) "
+			+ "ORDER BY ea.syskey DESC ")
 	List<EmergencyActivate> findAllByDateRange(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
+	
+	List<EmergencyActivate> findAll(Sort sort);
 
 }
