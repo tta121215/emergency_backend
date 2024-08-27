@@ -577,12 +577,12 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		logger.info("Searching emergency activate entity: ");
 		List<EmergencyActivate> emergencyActivateList = new ArrayList<>();
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
-
+		
 		try {
 			if (fromDate != null && toDate != null) {
 				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
 			} else {
-				emergencyActivateList = emergencyActivateDao.findAll();
+				emergencyActivateList = emergencyActivateDao.findAll(Sort.by(Sort.Direction.DESC, "syskey"));
 			}
 
 			if (!emergencyActivateList.isEmpty()) {
