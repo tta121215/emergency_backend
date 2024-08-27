@@ -27,6 +27,6 @@ public interface ContentNotiDao extends JpaRepository<ContentNoti, Long> {
 	@Query(value = "SELECT COUNT(*) FROM ERC_noti_template WHERE noti_content LIKE '%,' || :contentNotiId || ',%' "
 			+ "OR noti_content LIKE :contentNotiId || ',%' " + "OR noti_content LIKE '%,' || :contentNotiId "
 			+ "OR noti_content = :contentNotiId", nativeQuery = true)
-	Long findNotiTemplatesByContentNotiSyskey(@Param("contentNotiId") long contentNotiId);
+	Long findNotiTemplatesByContentNotiSyskey(@Param("contentNotiId") String contentNotiId);
 
 }

@@ -24,6 +24,6 @@ public interface ModeNotiDao extends JpaRepository<ModeNoti, Long> {
 	@Query(value = "SELECT COUNT(*) FROM ERC_noti_template WHERE noti_mode LIKE '%,' || :modeNotiId || ',%' "
 			+ "OR noti_mode LIKE :modeNotiId || ',%' " + "OR noti_mode LIKE '%,' || :modeNotiId "
 			+ "OR noti_mode = :modeNotiId", nativeQuery = true)
-	Long findNotiTemplatesByModeNotiSyskey(@Param("modeNotiId") long modeNotiId);
+	Long findNotiTemplatesByModeNotiSyskey(@Param("modeNotiId") String modeNotiId);
 
 }

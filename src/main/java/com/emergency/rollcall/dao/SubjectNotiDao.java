@@ -27,6 +27,6 @@ public interface SubjectNotiDao extends JpaRepository<SubjectNoti, Long> {
 	@Query(value = "SELECT COUNT(*) FROM ERC_noti_template WHERE noti_subject LIKE '%,' || :subjectNotiId || ',%' "
 			+ "OR noti_subject LIKE :subjectNotiId || ',%' " + "OR noti_subject LIKE '%,' || :subjectNotiId "
 			+ "OR noti_subject = :subjectNotiId", nativeQuery = true)
-	Long findNotiTemplatesBySubjectNotiSyskey(@Param("subjectNotiId") long subjectNotiId);
+	Long findNotiTemplatesBySubjectNotiSyskey(@Param("subjectNotiId") String subjectNotiId);
 
 }

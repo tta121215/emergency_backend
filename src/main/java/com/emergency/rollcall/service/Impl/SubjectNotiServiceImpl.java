@@ -137,7 +137,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		logger.info("Deleting subject noti entity: " + id);
 		try {
 
-			Long count = subjectNotiDao.findNotiTemplatesBySubjectNotiSyskey(id);
+			Long count = subjectNotiDao.findNotiTemplatesBySubjectNotiSyskey(String.valueOf(id));
 			if (count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the subject noti because it is associated with noti template.");

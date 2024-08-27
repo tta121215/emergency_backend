@@ -143,7 +143,7 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		ModeNoti modeNoti = new ModeNoti();
 		logger.info("Deleting mode noti entity: " + id);
 		try {
-			Long count = modeNotiDao.findNotiTemplatesByModeNotiSyskey(id);		
+			Long count = modeNotiDao.findNotiTemplatesByModeNotiSyskey(String.valueOf(id));		
 			if(count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the mode noti because it is associated with noti template.");

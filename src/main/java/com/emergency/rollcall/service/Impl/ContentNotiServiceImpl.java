@@ -137,7 +137,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		ContentNoti contentNoti = new ContentNoti();
 		logger.info("Deleting content noti entity: " + id);
 		try {
-			Long count = contentNotiDao.findNotiTemplatesByContentNotiSyskey(id);		
+			Long count = contentNotiDao.findNotiTemplatesByContentNotiSyskey(String.valueOf(id));		
 			if(count > 0) {
 				res.setStatus_code(200);
 				res.setMessage("Cannot delete the content noti because it is associated with noti template.");
