@@ -5,6 +5,7 @@ public class ConditionDto {
 	private String name;
 	private String code;
 	private int status;
+	private int isDefault;
 	private String createddate;
 	private String modifieddate;
 	private int isDelete;
@@ -39,6 +40,14 @@ public class ConditionDto {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public int getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(int isDefault) {
+		this.isDefault = isDefault;
 	}
 
 	public String getCreateddate() {
@@ -77,8 +86,8 @@ public class ConditionDto {
 
 	@Override
 	public String toString() {
-		return "ConditionDto{" + "syskey=" + syskey + ", name='" + name + '\'' + ", code='" + code + '\'' + ", status='"
-				+ status + '\'' + ", createddate=" + createddate + ", modifieddate=" + modifieddate + ", isDelete=" + isDelete +'}';
+		return "ConditionDto [syskey=" + syskey + ", name=" + name + ", code=" + code + ", status=" + status
+				+ ", isDefault=" + isDefault + ", createddate=" + createddate + ", modifieddate=" + modifieddate
+				+ ", isDelete=" + isDelete + "]";
 	}
-
 }

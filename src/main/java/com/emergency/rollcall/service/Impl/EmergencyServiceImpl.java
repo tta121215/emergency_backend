@@ -44,6 +44,12 @@ public class EmergencyServiceImpl implements EmergencyService {
 		String strCreatedDate = dateTime.format(formatter);
 
 		emergency.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		
+		if(emergency.getIsDefault() == 1) {
+			emergencyDao.updateEmergencyDefault(0);
+			logger.info("Succesfully updating Emergency entity: " + "update default emergency to not default.");
+		}
+		
 		try {
 			if (emergency.getSyskey() == 0) {
 				Emergency entityres = emergencyDao.save(emergency);
@@ -106,15 +112,20 @@ public class EmergencyServiceImpl implements EmergencyService {
 		ZonedDateTime dateTime = ZonedDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		String strCreatedDate = dateTime.format(formatter);
-		logger.info("Updaing Emergency entity: " + emergencyDto);
+		logger.info("Updating Emergency entity: " + emergencyDto);
 		try {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
-			if (emergencyOptional.isPresent()) {
+			if (emergencyOptional.isPresent()) {				
 				emergency = emergencyOptional.get();
 				createdDate = emergency.getCreateddate();
 				emergency = modelMapper.map(emergencyDto, Emergency.class);
 				emergency.setCreateddate(createdDate);
-				emergency.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				emergency.setModifieddate(this.yyyyMMddFormat(strCreatedDate));		
+				
+				if(emergency.getIsDefault() == 1) {
+					emergencyDao.updateEmergencyDefault(0);
+				}
+				
 				emergencyDao.save(emergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");
@@ -155,7 +166,8 @@ public class EmergencyServiceImpl implements EmergencyService {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(id);
 			if (emergencyOptional.isPresent()) {
 				emergency = emergencyOptional.get();
-				emergencyDao.delete(emergency);
+				emergency.setIsDelete(1);
+				emergencyDao.save(emergency);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Deleted");
 				logger.info("Succesfully deleting Emergency entity: " + res.getMessage());

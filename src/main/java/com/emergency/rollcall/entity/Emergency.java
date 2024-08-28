@@ -22,6 +22,7 @@ public class Emergency implements BaseEntity{
 	private String name;
 	private String code;
 	private int status;
+	private int isDefault;
 	private String createddate;
 	private String modifieddate;
 	private int isDelete;
@@ -63,6 +64,14 @@ public class Emergency implements BaseEntity{
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public int getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(int isDefault) {
+		this.isDefault = isDefault;
 	}
 
 	public String getCreateddate() {

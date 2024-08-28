@@ -46,6 +46,12 @@ public class ConditionServiceImpl implements ConditionService {
 		condition = modelMapper.map(conditionDto, Condition.class);
 		logger.info("Saving condition entity: " + conditionDto);
 		condition.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		
+		if(condition.getIsDefault() == 1) {
+			conditionDao.updateConditionDefault(0);
+			logger.info("Succesfully updating condition entity: " + "update default condition to not default.");
+		}
+		
 		try {
 			if (condition.getSyskey() == 0) {
 				Condition entityres = conditionDao.save(condition);
@@ -111,13 +117,17 @@ public class ConditionServiceImpl implements ConditionService {
 		logger.info("Updating condition entity: " + conditionDto);
 		try {
 			Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
-			if (conditionOptional.isPresent()) {
-
+			if (conditionOptional.isPresent()) {				
 				condition = conditionOptional.get();
 				createdDate = condition.getCreateddate();
 				condition = modelMapper.map(conditionDto, Condition.class);
 				condition.setCreateddate(createdDate);
 				condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				
+				if(condition.getIsDefault() == 1) {
+					conditionDao.updateConditionDefault(0);
+				}
+				
 				conditionDao.save(condition);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");

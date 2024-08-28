@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.emergency.rollcall.entity.Condition;
 
@@ -25,4 +27,8 @@ public interface ConditionDao extends JpaRepository<Condition, Long> {
 	@Query("SELECT COUNT(ec) FROM EmergencyActivate ec WHERE ec.condition.syskey = :syskey and ec.isDelete = 0")
     Long countEmergencyActivatesByConditionId(@Param("syskey") Long syskey);
 
+	@Modifying
+	@Transactional
+	@Query("UPDATE Condition c SET c.isDefault = :isDefault")
+	void updateConditionDefault(@Param("isDefault") int isDefault);
 }
