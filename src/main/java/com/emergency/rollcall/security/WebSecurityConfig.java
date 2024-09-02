@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/dashboard").permitAll().antMatchers("/dashboard/**").permitAll()
 				.antMatchers("/notireadlog").permitAll().antMatchers("/notireadlog/**").permitAll()
 				.antMatchers("/mainbuilding").permitAll().antMatchers("/mainbuilding/**").permitAll()
+				.antMatchers("/report").permitAll().antMatchers("/report/**").permitAll()
 
 				// Disallow everything else..
 				.anyRequest().authenticated();

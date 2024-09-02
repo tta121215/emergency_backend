@@ -15,4 +15,6 @@ public interface ReportService {
 	Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy, String direction, String params);
 
 	Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction, String params);
+	
+	byte[] exportUnCheckInListToExcelAsByteArray(Long activateId, int page, int size, String sortBy, String direction, String params);
 }

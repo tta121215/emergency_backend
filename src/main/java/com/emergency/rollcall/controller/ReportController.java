@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -126,35 +128,24 @@ public class ReportController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/notcheckinlist")
-	public ResponseEntity<ResponseList<StaffDto>> getAllNotCheckInList(@RequestParam("activateId") Long activateId,
+	@GetMapping("/notcheckin/excel")
+	public ResponseEntity<byte[]> getAllNotCheckInList(@RequestParam("activateId") Long activateId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction,@RequestParam("params") String params) {
-		ResponseList<StaffDto> response = new ResponseList<>();
-		Message message = new Message();
-		List<StaffDto> staffDtoList = new ArrayList<>();
+		
+		
 		logger.info("Received request to get not check in count by activation id " + activateId);
+		
+		byte[] excelContent = reportService.exportUnCheckInListToExcelAsByteArray(activateId, page, size, sortBy, direction, params);
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UnCheckInList.xlsx");
 
-		Page<StaffDto> staffDtoPage = reportService.getAllUnCheckInList(activateId, page, size,sortBy,direction,params);
-		staffDtoList = staffDtoPage.getContent();
-		if (!staffDtoList.isEmpty()) {
-			message.setState(true);
-			message.setCode("200");
-			message.setMessage("Data is successfully");
-			logger.info("Successfully to get not check in count by activation id " + activateId);
-
-		} else {
-			message.setState(false);
-			message.setCode("401");
-			message.setMessage("No Data found");
-			logger.info("No data found to get not check in count by activation id " + activateId);
-		}
-
-		response.setMessage(message);
-		response.setData(staffDtoList);
-		response.setTotalItems(staffDtoPage.getTotalElements());
-		response.setTotalPages(staffDtoPage.getTotalPages());
-		response.setCurrentPage(page);
-		return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(excelContent.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(excelContent);
+		
 	}
 }

@@ -22,9 +22,6 @@ public interface MainBuildingDao extends JpaRepository<MainBuilding, Long> {
 	@Query("SELECT c FROM MainBuilding c WHERE c.isDelete = 0")
 	Page<MainBuilding> findByNameOrCode(Pageable pageable);
 	
-	@EntityGraph(attributePaths = {"routeList"})
-    Optional<MainBuilding> findById(Long id);
-	
 	List<MainBuilding> findAllByStatusAndIsDelete(int status, int deleteStatus);
 	
 	

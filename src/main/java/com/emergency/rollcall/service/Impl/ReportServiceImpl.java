@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZoneId;
@@ -12,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -441,6 +447,96 @@ public class ReportServiceImpl implements ReportService {
 
 		return new PageImpl<>(staffDtoList, pageRequest, usersNotCheckedInPage.getTotalElements());
 	}
+	
+	 public byte[] exportUnCheckInListToExcelAsByteArray(Long activateId, int page, int size, String sortBy, String direction, String params) {
+	        // Fetch the data using your existing method
+		 PageRequest pageRequest = PageRequest.of(page, size);
+			List<StaffDto> staffDtoList = new ArrayList<>();
+
+			Page<Map<String, Object>> usersNotCheckedInPage;
+			
+			try {
+				if (params == null || params.isEmpty()) {
+					usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+							pageRequest);
+				} else {
+					usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+							pageRequest, params);
+				}
+				if (!usersNotCheckedInPage.isEmpty()) {
+					staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
+						StaffDto staffDto = new StaffDto();
+						staffDto.setId((BigDecimal) staff.get("id"));
+						staffDto.setUsername((String) staff.get("username"));
+						staffDto.setEmail((String) staff.get("email"));
+						staffDto.setMobileNo((String) staff.get("mobileNo"));
+						staffDto.setName((String) staff.get("name"));
+						String icNumber = (String) staff.get("icnumber");
+						String passportNumber = (String) staff.get("passportnumber");
+						if (icNumber != null && !icNumber.isEmpty()) {
+							staffDto.setIcnumber(icNumber);
+						} else if (passportNumber != null && !passportNumber.isEmpty()) {
+							staffDto.setIcnumber(passportNumber);
+						} else {
+							staffDto.setIcnumber(" ");
+						}
+						staffDto.setStaffId((String) staff.get("staffid"));
+						staffDto.setDepartment((String) staff.get("deptName"));
+						staffDto.setType((String) staff.get("visitor"));
+						return staffDto;
+					}).collect(Collectors.toList());
+				}
+				
+				Workbook workbook = new XSSFWorkbook();
+		        Sheet sheet = workbook.createSheet("UnCheckInList");
+
+		        // Create header row
+		        Row headerRow = sheet.createRow(0);
+		        headerRow.createCell(0).setCellValue("ID");
+		        headerRow.createCell(1).setCellValue("Username");
+		        headerRow.createCell(2).setCellValue("Email");
+		        headerRow.createCell(3).setCellValue("Mobile No");
+		        headerRow.createCell(4).setCellValue("Name");
+		        headerRow.createCell(5).setCellValue("IC/Passport Number");
+		        headerRow.createCell(6).setCellValue("Staff ID");
+		        headerRow.createCell(7).setCellValue("Department");
+		        headerRow.createCell(8).setCellValue("Type");
+
+		        // Populate the sheet with data
+		        int rowNum = 1;
+		        for (StaffDto staffDto : staffDtoList) {
+		            Row row = sheet.createRow(rowNum++);
+		            row.createCell(0).setCellValue(staffDto.getId().toString());
+		            row.createCell(1).setCellValue(staffDto.getUsername());
+		            row.createCell(2).setCellValue(staffDto.getEmail());
+		            row.createCell(3).setCellValue(staffDto.getMobileNo());
+		            row.createCell(4).setCellValue(staffDto.getName());
+		            row.createCell(5).setCellValue(staffDto.getIcnumber());
+		            row.createCell(6).setCellValue(staffDto.getStaffId());
+		            row.createCell(7).setCellValue(staffDto.getDepartment());
+		            row.createCell(8).setCellValue(staffDto.getType());
+		        }
+
+		        // Adjust column widths
+		        for (int i = 0; i < 9; i++) {
+		            sheet.autoSizeColumn(i);
+		        }
+
+		        // Write the output to a byte array
+		        ByteArrayOutputStream out = new ByteArrayOutputStream();
+		        workbook.write(out);
+		        workbook.close();
+		        return out.toByteArray();
+
+			} catch (DataAccessException dae) {
+				System.err.println("Database error occurred: " + dae.getMessage());
+				throw new RuntimeException("Database error occurred, please try again later.", dae);
+			} catch (Exception e) {
+				System.err.println("An unexpected error occurred: " + e.getMessage());
+				throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+			}       
+	        
+	    }
 
 	public String yyyyMMddFormat(String aDate) {
 		String l_Date = "";
