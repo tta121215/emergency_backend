@@ -1,15 +1,11 @@
 package com.emergency.rollcall.service.Impl;
 
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -19,17 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AuditLogDao;
-
-
 import com.emergency.rollcall.dto.AuditLogDto;
-
-import com.emergency.rollcall.dto.ResponseDto;
-
 import com.emergency.rollcall.entity.AuditLog;
-
 import com.emergency.rollcall.service.AuditLogService;
-
-
 
 @Service
 public class AuditLogServiceImpl implements AuditLogService {
@@ -38,32 +26,31 @@ public class AuditLogServiceImpl implements AuditLogService {
 
 	@Autowired
 	private AuditLogDao auditLogDao;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Override
-	public void saveAuditLog(String username, String apiMethod, String details, String ipaddress,
-			String browserVersion, String menu) {
+	public void saveAuditLog(String username, String apiMethod, String details, String ipaddress, String browserVersion,
+			String menu) {
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String strCreatedDate = malaysiaDateTime.format(formatter);
 		String strCurrentTime = malaysiaDateTime.format(timeformatter);
-		
+
 		AuditLog auditLog = new AuditLog();
-        auditLog.setCreatedDate(strCreatedDate);
-        auditLog.setCreatedTime(strCurrentTime);
-        auditLog.setUser(username);
-        auditLog.setApiMethod(apiMethod);
-        auditLog.setDetails(details);
-        auditLog.setBrowserVersion(browserVersion);
-        auditLog.setIpaddress(ipaddress);
-        auditLog.setMenu(menu);
-        auditLogDao.save(auditLog);
+		auditLog.setCreatedDate(strCreatedDate);
+		auditLog.setCreatedTime(strCurrentTime);
+		auditLog.setUser(username);
+		auditLog.setApiMethod(apiMethod);
+		auditLog.setDetails(details);
+		auditLog.setBrowserVersion(browserVersion);
+		auditLog.setIpaddress(ipaddress);
+		auditLog.setMenu(menu);
+		auditLogDao.save(auditLog);
 	}
-	
 
 	@Override
 	public Page<AuditLogDto> searchByParams(int page, int size, String params, String sortBy, String direction) {
@@ -72,7 +59,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<AuditLog> auditLogList;
 		List<AuditLogDto> auditLogDtoList = new ArrayList<>();
-		
+
 		logger.info("Searching audit log entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
@@ -101,9 +88,6 @@ public class AuditLogServiceImpl implements AuditLogService {
 		return new PageImpl<>(auditLogDtoList, pageRequest, auditLogList.getTotalElements());
 	}
 
-
-
-
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -120,8 +104,4 @@ public class AuditLogServiceImpl implements AuditLogService {
 		return l_Date;
 	}
 
-
-
-
-	
 }

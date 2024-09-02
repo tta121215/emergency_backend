@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,14 +38,16 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 		ResponseDto res = new ResponseDto();
 		Renotification renotification = new Renotification();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		renotification = modelMapper.map(notiDto, Renotification.class);
 		logger.info("Saving re-notification entity: " + notiDto);
 
-		renotification.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		renotification.setCreateddate(strCreatedDate);
 		try {
 			if (renotification.getSyskey() == 0) {
 				Renotification entityres = renotificationDao.save(renotification);
@@ -104,9 +107,11 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 		ResponseDto res = new ResponseDto();
 		Renotification renotification = new Renotification();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating notification entity: " + notiDto);
 		try {
 			Optional<Renotification> notiOptional = renotificationDao.findById(notiDto.getSyskey());
@@ -115,7 +120,7 @@ public class ReNotificationServiceImpl implements ReNotificationService {
 				createdDate = renotification.getCreateddate();
 				renotification = modelMapper.map(notiDto, Renotification.class);
 				renotification.setCreateddate(createdDate);
-				renotification.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				renotification.setModifieddate(strCreatedDate);
 				renotificationDao.save(renotification);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");

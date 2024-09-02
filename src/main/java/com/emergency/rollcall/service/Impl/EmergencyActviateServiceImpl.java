@@ -72,8 +72,7 @@ import reactor.core.publisher.Mono;
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
-
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
 
 	private static WebClient webClient = null;
 

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -50,14 +51,16 @@ public class RoleServiceImpl implements RoleService {
 		Role role = new Role();
 		List<Menu> menuList = new ArrayList<>();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		role = modelMapper.map(roleDto, Role.class);
 		logger.info("Saving role entity: " + roleDto);
 
-		role.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		role.setCreateddate(strCreatedDate);
 		if(!roleDto.getMenu().isEmpty()) {
 			for (MenuDto menuDto : roleDto.getMenu()) {
 				Menu menuData = new Menu();				
@@ -143,9 +146,11 @@ public class RoleServiceImpl implements RoleService {
 		List<Menu> menuList = new ArrayList<>();
 		Role role = new Role();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating role entity: " + roleDto);
 		try {
 			Optional<Role> RoleOptional = roleDao.findById(roleDto.getSyskey());
@@ -154,7 +159,7 @@ public class RoleServiceImpl implements RoleService {
 				createdDate = role.getCreateddate();
 				role = modelMapper.map(roleDto, Role.class);
 				role.setCreateddate(createdDate);
-				role.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				role.setModifieddate(strCreatedDate);
 				if(!roleDto.getMenu().isEmpty()) {
 					role.getMenus().clear();
 					roleDao.save(role);

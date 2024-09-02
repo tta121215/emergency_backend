@@ -1,6 +1,7 @@
 package com.emergency.rollcall.service.Impl;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,9 +43,11 @@ public class RouteServiceImpl implements RouteService {
 		ResponseDto res = new ResponseDto();
 		Route route = new Route();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		route = modelMapper.map(routeDto, Route.class);
 		logger.info("Saving route entity: " + routeDto);
@@ -146,9 +149,11 @@ public class RouteServiceImpl implements RouteService {
 		ResponseDto res = new ResponseDto();
 		Route route = new Route();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating route entity: " + id);
 		try {
 			Optional<Route> routeOptional = routeDao.findById(id);
@@ -156,7 +161,7 @@ public class RouteServiceImpl implements RouteService {
 				route = routeOptional.get();
 				createdDate = route.getCreateddate();				
 				route.setCreateddate(createdDate);
-				route.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				route.setModifieddate(strCreatedDate);
 				route.setName(name);
 				route.setDescription(description);
 				route.setStatus(status);				

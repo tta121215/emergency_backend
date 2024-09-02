@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,14 +38,16 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		ResponseDto res = new ResponseDto();
 		ContentNoti contentNoti = new ContentNoti();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		contentNoti = modelMapper.map(contentNotiDto, ContentNoti.class);
 		logger.info("Saving conent noti entity: " + contentNotiDto);
 
-		contentNoti.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		contentNoti.setCreateddate(strCreatedDate);
 		try {
 
 			ContentNoti entityres = contentNotiDao.save(contentNoti);
@@ -98,9 +101,11 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 		ResponseDto res = new ResponseDto();
 		ContentNoti contentNoti = new ContentNoti();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating content noti entity: " + contentNotiDto);
 		try {
 			Optional<ContentNoti> contentNotiOptional = contentNotiDao.findById(contentNotiDto.getSyskey());
@@ -109,7 +114,7 @@ public class ContentNotiServiceImpl implements ContentNotiService {
 				createdDate = contentNoti.getCreateddate();
 				contentNoti = modelMapper.map(contentNotiDto, ContentNoti.class);
 				contentNoti.setCreateddate(createdDate);
-				contentNoti.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				contentNoti.setModifieddate(strCreatedDate);
 				contentNotiDao.save(contentNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,14 +38,16 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		ResponseDto res = new ResponseDto();
 		ModeNoti modeNoti = new ModeNoti();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		modeNoti = modelMapper.map(modeNotiDto, ModeNoti.class);
 		logger.info("Saving mode noti entity: " + modeNotiDto);
 
-		modeNoti.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		modeNoti.setCreateddate(strCreatedDate);
 		try {
 			if (modeNoti.getSyskey() == 0) {
 				ModeNoti entityres = modeNotiDao.save(modeNoti);
@@ -104,9 +107,11 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 		ResponseDto res = new ResponseDto();
 		ModeNoti modeNoti = new ModeNoti();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating mode noti entity: " + modeNotiDto);
 		try {
 			Optional<ModeNoti> ModeNotiOptional = modeNotiDao.findById(modeNotiDto.getSyskey());
@@ -115,7 +120,7 @@ public class ModeNotiServiceImpl implements ModeNotiService {
 				createdDate = modeNoti.getCreateddate();
 				modeNoti = modelMapper.map(modeNotiDto, ModeNoti.class);
 				modeNoti.setCreateddate(createdDate);
-				modeNoti.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				modeNoti.setModifieddate(strCreatedDate);
 				modeNotiDao.save(modeNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");

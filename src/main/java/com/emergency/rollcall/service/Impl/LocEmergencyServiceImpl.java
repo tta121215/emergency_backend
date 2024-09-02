@@ -1,6 +1,7 @@
 package com.emergency.rollcall.service.Impl;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -47,12 +48,14 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		LocEmergency locEmergency = new LocEmergency();
 		List<Route> routeList = new ArrayList<>();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		locEmergency = modelMapper.map(locEmergencyDto, LocEmergency.class);
 
-		locEmergency.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		locEmergency.setCreateddate(strCreatedDate);
 		logger.info("Saving location emergency entity: " + locEmergencyDto);
 		try {
 			if (locEmergencyDto.getRouteList() != null) {
@@ -128,9 +131,11 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		LocEmergency locEmergency = new LocEmergency();
 		List<Route> routeList = new ArrayList<>();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updaing location emergency entity: " + locEmergencyDto);
 		try {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(locEmergencyDto.getSyskey());
@@ -139,7 +144,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 				createdDate = locEmergency.getCreateddate();
 				locEmergency = modelMapper.map(locEmergencyDto, LocEmergency.class);
 				locEmergency.setCreateddate(createdDate);
-				locEmergency.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				locEmergency.setModifieddate(strCreatedDate);
 				if (locEmergencyDto != null) {
 					for (RouteDto routeData : locEmergencyDto.getRouteList()) {
 						Optional<Route> routeOptional = routeDao.findById(routeData.getSyskey());

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,11 +39,12 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		ResponseDto res = new ResponseDto();
 		Assembly entity = new Assembly();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		entity = modelMapper.map(data, Assembly.class);
-		entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		entity.setCreateddate(strCreatedDate);
 		logger.info("Saving assembly entity: " + entity);
 		try {
 			if (entity.getSyskey() == 0) {
@@ -107,9 +109,11 @@ public class AssemblyrServiceImpl implements AssemblyService {
 		ResponseDto res = new ResponseDto();
 		Assembly assembly = new Assembly();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Received update assembly data : " + data);
 		try {
 			Optional<Assembly> assemblyOptional = assemblyDao.findById(data.getSyskey());
@@ -119,7 +123,8 @@ public class AssemblyrServiceImpl implements AssemblyService {
 				assembly = modelMapper.map(data, Assembly.class);
 				logger.info("Updating assembly data : " + data);
 				assembly.setCreateddate(assembly.getCreateddate());
-				assembly.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				//assembly.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				assembly.setModifieddate(strCreatedDate);
 				assembly.setCreateddate(createdDate);
 				assemblyDao.save(assembly);
 				res.setStatus_code(200);

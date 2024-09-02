@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,11 +40,13 @@ public class EmergencyServiceImpl implements EmergencyService {
 		Emergency emergency = new Emergency();
 		emergency = modelMapper.map(emergencyDto, Emergency.class);
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
-		emergency.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		emergency.setCreateddate(strCreatedDate);
 		
 		if(emergency.getIsDefault() == 1) {
 			emergencyDao.updateEmergencyDefault(0);
@@ -109,9 +112,11 @@ public class EmergencyServiceImpl implements EmergencyService {
 		ResponseDto res = new ResponseDto();
 		Emergency emergency = new Emergency();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating Emergency entity: " + emergencyDto);
 		try {
 			Optional<Emergency> emergencyOptional = emergencyDao.findById(emergencyDto.getSyskey());
@@ -120,7 +125,7 @@ public class EmergencyServiceImpl implements EmergencyService {
 				createdDate = emergency.getCreateddate();
 				emergency = modelMapper.map(emergencyDto, Emergency.class);
 				emergency.setCreateddate(createdDate);
-				emergency.setModifieddate(this.yyyyMMddFormat(strCreatedDate));		
+				emergency.setModifieddate(strCreatedDate);		
 				
 				if(emergency.getIsDefault() == 1) {
 					emergencyDao.updateEmergencyDefault(0);

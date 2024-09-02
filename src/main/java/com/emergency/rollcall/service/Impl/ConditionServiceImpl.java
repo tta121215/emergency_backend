@@ -21,6 +21,8 @@ import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.service.ConditionService;
+
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Service
@@ -39,13 +41,15 @@ public class ConditionServiceImpl implements ConditionService {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		condition = modelMapper.map(conditionDto, Condition.class);
 		logger.info("Saving condition entity: " + conditionDto);
-		condition.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		condition.setCreateddate(strCreatedDate);
 		
 		if(condition.getIsDefault() == 1) {
 			conditionDao.updateConditionDefault(0);
@@ -111,9 +115,11 @@ public class ConditionServiceImpl implements ConditionService {
 		ResponseDto res = new ResponseDto();
 		Condition condition = new Condition();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating condition entity: " + conditionDto);
 		try {
 			Optional<Condition> conditionOptional = conditionDao.findById(conditionDto.getSyskey());
@@ -122,7 +128,7 @@ public class ConditionServiceImpl implements ConditionService {
 				createdDate = condition.getCreateddate();
 				condition = modelMapper.map(conditionDto, Condition.class);
 				condition.setCreateddate(createdDate);
-				condition.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				condition.setModifieddate(strCreatedDate);
 				
 				if(condition.getIsDefault() == 1) {
 					conditionDao.updateConditionDefault(0);

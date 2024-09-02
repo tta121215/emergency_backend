@@ -1,6 +1,7 @@
 package com.emergency.rollcall.service.Impl;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,19 +40,22 @@ public class NotiReadLogServiceImpl implements NotiReadLogService {
 	public ResponseDto saveNotiReadLog(NotiReadLogDto notiReadLogDto) {
 		ResponseDto res = new ResponseDto();
 		NotiReadLog notiLog = new NotiReadLog();
-
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		String strCreatedDate = dateTime.format(formatter);
-		LocalDateTime startTime = LocalDateTime.now();
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		DateTimeFormatter timeOnlyFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
+		
+		
+		String startTime = malaysiaDateTime.format(timeOnlyFormat);
 
 		notiLog = modelMapper.map(notiReadLogDto, NotiReadLog.class);
 		logger.info("Saving notiRead entity: " + notiReadLogDto);
 		notiLog.setCreatedDate(this.yyyyMMddFormat(strCreatedDate));
-		notiLog.setCreatedTime(startTime.format(timeFormatter));
+		notiLog.setCreatedTime(startTime);
 		notiLog.setReadNotiDate(strCreatedDate);
-		notiLog.setReadNotiTime(startTime.format(timeFormatter));	
+		notiLog.setReadNotiTime(startTime);	
 		
 		try {
 			if (notiLog.getSyskey() == 0) {

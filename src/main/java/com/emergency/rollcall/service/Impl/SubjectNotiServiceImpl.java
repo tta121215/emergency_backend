@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,14 +39,16 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		ResponseDto res = new ResponseDto();
 		SubjectNoti subjectNoti = new SubjectNoti();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 
 		subjectNoti = modelMapper.map(subjectNotiDto, SubjectNoti.class);
 		logger.info("Saving subject noti entity: " + subjectNotiDto);
 
-		subjectNoti.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+		subjectNoti.setCreateddate(strCreatedDate);
 		try {
 
 			SubjectNoti entityres = subjectNotiDao.save(subjectNoti);
@@ -97,9 +100,11 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 		ResponseDto res = new ResponseDto();
 		SubjectNoti subjectNoti = new SubjectNoti();
 		String createdDate;
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating subject noti entity: " + subjectNotiDto);
 		try {
 			Optional<SubjectNoti> subjectNotiOptional = subjectNotiDao.findById(subjectNotiDto.getSyskey());
@@ -108,7 +113,7 @@ public class SubjectNotiServiceImpl implements SubjectNotiService {
 				createdDate = subjectNoti.getCreateddate();
 				subjectNoti = modelMapper.map(subjectNotiDto, SubjectNoti.class);
 				subjectNoti.setCreateddate(createdDate);
-				subjectNoti.setModifieddate(this.yyyyMMddFormat(strCreatedDate));
+				subjectNoti.setModifieddate(strCreatedDate);
 				subjectNotiDao.save(subjectNoti);
 				res.setStatus_code(200);
 				res.setMessage("Successfully Updated");

@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,14 +50,16 @@ public class NotificationServiceImpl implements NotificationService {
 		//List<ModeNoti> modeNoti = new ArrayList<>();
 		Emergency emergency = new Emergency();
 
-		ZonedDateTime dateTime = ZonedDateTime.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String strCreatedDate = dateTime.format(formatter);
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		String strCreatedDate = malaysiaDateTime.format(timeformatter);
 		logger.info("Saving notification entity: " + notiDto);
 		try {
 			notification = modelMapper.map(notiDto, Notification.class);
 
-			notification.setCreateddate(this.yyyyMMddFormat(strCreatedDate));
+			notification.setCreateddate(strCreatedDate);
 //			if (notiDto.getModeNotiDto() != null) {
 //				for (ModeNotiDto modeNotiData : notiDto.getModeNotiDto()) {
 //					Optional<ModeNoti> modeNotiOptional = modeNotiDao.findById(modeNotiData.getSyskey());
