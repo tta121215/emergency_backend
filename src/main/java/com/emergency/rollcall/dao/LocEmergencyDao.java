@@ -22,7 +22,7 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 	@Query("SELECT c FROM LocEmergency c WHERE c.isDelete = 0")
 	Page<LocEmergency> findByNameOrCode(Pageable pageable);
 	
-	@EntityGraph(attributePaths = {"routeList", "assemblyList"})
+	@EntityGraph(attributePaths = {"routeList"})
     Optional<LocEmergency> findById(Long id);
 	
 	List<LocEmergency> findAllByStatusAndIsDelete(int status, int deleteStatus);

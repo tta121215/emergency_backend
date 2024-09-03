@@ -130,6 +130,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 			if (LocEmergencyOptional.isPresent()) {
 				locEmergency = LocEmergencyOptional.get();
 				locEmergencyDto = modelMapper.map(locEmergency, LocEmergencyDto.class);
+				
 				logger.info("Successfully retrived location emergency entity: " + locEmergencyDto);
 			}
 
@@ -158,41 +159,49 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
 		String strCreatedDate = malaysiaDateTime.format(timeformatter);
-		logger.info("Updaing location emergency entity: " + locEmergencyDto);
+		logger.info("Updating location emergency entity: " + locEmergencyDto);
 		try {
 			Optional<LocEmergency> LocEmergencyOptional = locEmergencyDao.findById(locEmergencyDto.getSyskey());
 			if (LocEmergencyOptional.isPresent()) {
 				locEmergency = LocEmergencyOptional.get();
+				System.out.println("hi" + locEmergency);
 				createdDate = locEmergency.getCreateddate();
 				locEmergency = modelMapper.map(locEmergencyDto, LocEmergency.class);
 				locEmergency.setCreateddate(createdDate);
 				locEmergency.setModifieddate(strCreatedDate);
 				if (locEmergencyDto != null) {
-					for (RouteDto routeData : locEmergencyDto.getRouteList()) {
-						Optional<Route> routeOptional = routeDao.findById(routeData.getSyskey());
-						if (routeOptional.isPresent() && routeOptional.get().getSyskey() != 0) {
-							routeList.add(routeOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Route data is invalid.");
-							return res;
+					if(locEmergencyDto.getRouteList() != null) {
+						for (RouteDto routeData : locEmergencyDto.getRouteList()) {
+							Optional<Route> routeOptional = routeDao.findById(routeData.getSyskey());
+							if (routeOptional.isPresent() && routeOptional.get().getSyskey() != 0) {
+								routeList.add(routeOptional.get());
+							} else {
+								res.setStatus_code(401);
+								res.setMessage("Route data is invalid.");
+								return res;
+							}
 						}
-					}
-					locEmergency.setRouteList(routeList);
+						locEmergency.setRouteList(routeList);
+					}					
 				}
 				
 				if (locEmergencyDto != null) {
-					for (AssemblyDto assemblyData : locEmergencyDto.getAssemblyList()) {
-						Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyData.getSyskey());
-						if (assemblyOptional.isPresent() && assemblyOptional.get().getSyskey() != 0) {
-							assemblyList.add(assemblyOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Assembly data is invalid.");
-							return res;
+					System.out.println("Assem" + locEmergencyDto.getAssemblyList());
+					if(locEmergencyDto.getAssemblyList() != null) {
+						for (AssemblyDto assemblyData : locEmergencyDto.getAssemblyList()) {
+							System.out.println("assembly " + assemblyData.getSyskey());
+							Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyData.getSyskey());
+							if (assemblyOptional.isPresent() && assemblyOptional.get().getSyskey() != 0) {
+								assemblyList.add(assemblyOptional.get());
+							} else {
+								res.setStatus_code(401);
+								res.setMessage("Assembly data is invalid.");
+								return res;
+							}
 						}
+						locEmergency.setAssemblyList(assemblyList);
 					}
-					locEmergency.setAssemblyList(assemblyList);
+					
 				}
 
 				locEmergencyDao.save(locEmergency);

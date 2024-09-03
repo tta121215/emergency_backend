@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dao;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,5 +29,11 @@ public interface NotiReadLogDao extends JpaRepository<NotiReadLog, Long> {
 					+ "LEFT JOIN ERC_Emergency_ACTIVATE ec ON ec.syskey = n.emergency_id "
 					+ "WHERE ec.syskey = :emergencyId ", nativeQuery = true)
 	Page<Map<String, Object>> findByUserName(Pageable pageable, @Param("emergencyId") Long emergencyId);
+	
+	@Query(value = "SELECT u.name AS username,u.staffid AS staffid,n.read_noti_date AS notidate, n.read_noti_time AS notitime,ec.name AS ename "
+			+ " FROM ERC_NOTI_READ_LOG n LEFT JOIN PYM_User u ON u.staffid = n.staff_id "
+			+ "LEFT JOIN ERC_Emergency_ACTIVATE ec ON ec.syskey = n.emergency_id "
+			+ "WHERE ec.syskey = :emergencyId ", nativeQuery = true)
+	List<Map<String, Object>> findByUserNameExcel(@Param("emergencyId") Long emergencyId);
 
 }
