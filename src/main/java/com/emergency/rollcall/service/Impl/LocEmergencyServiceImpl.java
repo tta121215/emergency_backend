@@ -185,8 +185,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 					}					
 				}
 				
-				if (locEmergencyDto != null) {
-					System.out.println("Assem" + locEmergencyDto.getAssemblyList());
+				if (locEmergencyDto != null) {					
 					if(locEmergencyDto.getAssemblyList() != null) {
 						for (AssemblyDto assemblyData : locEmergencyDto.getAssemblyList()) {
 							System.out.println("assembly " + assemblyData.getSyskey());

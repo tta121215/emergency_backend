@@ -12,11 +12,11 @@ public interface ReportService {
 
 	Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction, String params);
 	
-	byte[] exportUnCheckInListToExcelAsByteArray(Long activateId);
+	byte[] exportUnCheckInListToExcelAsByteArray(Long activateId, String params);
 	
-	byte[] exportCheckInListToExcelAsByteArray(Long activateId);
+	byte[] exportCheckInListToExcelAsByteArray(Long activateId, String params);
 	
 	Page<NotiReadLogDto> searchByParams(int page, int size, String params, String sortBy, String direction, Long emergencyId);
 	
-	byte[] getAllNotiReadLog(Long activateId);
+	byte[] getAllNotiReadLog(Long activateId, String params);
 }

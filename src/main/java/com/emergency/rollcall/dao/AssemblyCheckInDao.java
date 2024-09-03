@@ -176,6 +176,18 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	List<Map<String, Object>> findUsersNotCheckedInByExcel(
 			@Param("emergencyActivateId") Long emergencyActivateId);
 	
+	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+			+ "AND ac.emergency_syskey = :emergencyActivateId " 
+			+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+			+ "WHERE ac.staff_id IS NULL "
+			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
+			+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ", nativeQuery = true)
+	List<Map<String, Object>> findUsersNotCheckedInByExcel(
+			@Param("emergencyActivateId") Long emergencyActivateId, @Param("params") String params);
+	
 	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName "
 			+ "FROM PYM_User u "
 			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
@@ -186,5 +198,21 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			+ "WHERE ac.emergency_syskey = :emergencyActivateId", nativeQuery = true)
 	List<Map<String, Object>> findUsersCheckedInByExcel(
 			@Param("emergencyActivateId") Long emergencyActivateId);
+	
+	@Query(value = "SELECT u.*,ac.currenttime AS currenttime,ac.currentdate AS currentdate,a.name AS assembly,v.visitororvip AS visitor,d.name AS deptName "
+			+ "FROM PYM_User u "
+			+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
+			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+			+ "AND ac.emergency_syskey = :emergencyActivateId " + "WHERE  ac.emergency_syskey = :emergencyActivateId "
+			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
+			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(a.name) LIKE LOWER('%' || :params || '%') OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(d.name) LIKE LOWER('%' || :params || '%') )", 
+			nativeQuery = true)
+	List<Map<String, Object>> findUsersCheckedInByExcel(
+			@Param("emergencyActivateId") Long emergencyActivateId, @Param("params") String params);
 
 }

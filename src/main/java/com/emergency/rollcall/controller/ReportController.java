@@ -35,21 +35,22 @@ public class ReportController {
 	@GetMapping("/checkinlist")
 	public ResponseEntity<ResponseList<DashboardDetailDto>> getAllCheckInList(
 			@RequestParam("activateId") Long activateId, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction,@RequestParam("params") String params) {
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam(defaultValue = "asc") String direction, @RequestParam("params") String params) {
 		ResponseList<DashboardDetailDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 
 		logger.info("Received request to get check in count by activation id " + activateId);
 
-		Page<DashboardDetailDto> dashboardDetailPage = reportService.getAllCheckInList(activateId, page, size,sortBy,direction,params);
+		Page<DashboardDetailDto> dashboardDetailPage = reportService.getAllCheckInList(activateId, page, size, sortBy,
+				direction, params);
 		dashboardDetailDtoList = dashboardDetailPage.getContent();
 		if (!dashboardDetailDtoList.isEmpty()) {
 			message.setState(true);
 			message.setCode("200");
 			message.setMessage("Data is successfully");
-			logger.info("Successfully data for check in count by activation id" + activateId );
+			logger.info("Successfully data for check in count by activation id" + activateId);
 
 		} else {
 			message.setState(false);
@@ -65,17 +66,19 @@ public class ReportController {
 		response.setCurrentPage(page);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/notcheckinlist")
 	public ResponseEntity<ResponseList<StaffDto>> getAllNotCheckInList(@RequestParam("activateId") Long activateId,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,@RequestParam(defaultValue = "syskey") String sortBy,
-			@RequestParam(defaultValue = "asc") String direction,@RequestParam("params") String params) {
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "syskey") String sortBy, @RequestParam(defaultValue = "asc") String direction,
+			@RequestParam("params") String params) {
 		ResponseList<StaffDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<StaffDto> staffDtoList = new ArrayList<>();
 		logger.info("Received request to get not check in count by activation id " + activateId);
 
-		Page<StaffDto> staffDtoPage = reportService.getAllUnCheckInList(activateId, page, size,sortBy,direction,params);
+		Page<StaffDto> staffDtoPage = reportService.getAllUnCheckInList(activateId, page, size, sortBy, direction,
+				params);
 		staffDtoList = staffDtoPage.getContent();
 		if (!staffDtoList.isEmpty()) {
 			message.setState(true);
@@ -99,54 +102,49 @@ public class ReportController {
 	}
 
 	@GetMapping("/notcheckin/excel")
-	public ResponseEntity<byte[]> getAllNotCheckInList(@RequestParam("activateId") Long activateId) {
-		
-		
+	public ResponseEntity<byte[]> getAllNotCheckInList(@RequestParam("activateId") Long activateId,
+			@RequestParam("params") String params) {
+
 		logger.info("Received request to get not check in count by activation id " + activateId);
-		
-		byte[] excelContent = reportService.exportUnCheckInListToExcelAsByteArray(activateId);
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UnCheckInList.xlsx");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(excelContent.length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(excelContent);
-		
+		byte[] excelContent = reportService.exportUnCheckInListToExcelAsByteArray(activateId, params);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UnCheckInList.xlsx");
+
+		return ResponseEntity.ok().headers(headers).contentLength(excelContent.length)
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(excelContent);
+
 	}
-	
+
 	@GetMapping("/checkin/excel")
-	public ResponseEntity<byte[]> getAllCheckInList(@RequestParam("activateId") Long activateId) {
-		
-		logger.info("Received request to get check in count by activation id " + activateId);
-		
-		byte[] excelContent = reportService.exportCheckInListToExcelAsByteArray(activateId);
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=CheckInList.xlsx");
+	public ResponseEntity<byte[]> getAllCheckInList(@RequestParam("activateId") Long activateId,
+			@RequestParam("params") String params) {
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(excelContent.length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(excelContent);
-		
+		logger.info("Received request to get check in count by activation id " + activateId);
+
+		byte[] excelContent = reportService.exportCheckInListToExcelAsByteArray(activateId, params);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=CheckInList.xlsx");
+
+		return ResponseEntity.ok().headers(headers).contentLength(excelContent.length)
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(excelContent);
+
 	}
-	
+
 	@GetMapping("/notireadlog")
 	public ResponseEntity<ResponseList<NotiReadLogDto>> searchByParams(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, @RequestParam("params") String params,
-			@RequestParam("emergencyId") Long emergencyId,
-			@RequestParam(defaultValue = "syskey") String sortBy,
+			@RequestParam("emergencyId") Long emergencyId, @RequestParam(defaultValue = "syskey") String sortBy,
 			@RequestParam(defaultValue = "asc") String direction) {
 
 		ResponseList<NotiReadLogDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<NotiReadLogDto> auditLogDtoList = new ArrayList<>();
-		logger.info("Received request to search auditlog with data: {}", page,size,params,sortBy,direction);
-		Page<NotiReadLogDto> auditLogPage = reportService.searchByParams(page, size, params, sortBy, direction,emergencyId);
+		logger.info("Received request to search auditlog with data: {}", page, size, params, sortBy, direction);
+		Page<NotiReadLogDto> auditLogPage = reportService.searchByParams(page, size, params, sortBy, direction,
+				emergencyId);
 		auditLogDtoList = auditLogPage.getContent();
 		if (!auditLogDtoList.isEmpty()) {
 			message.setState(true);
@@ -169,22 +167,19 @@ public class ReportController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
-	
-	@GetMapping("/notireadlog/excel")
-	public ResponseEntity<byte[]> getAllNotiReadLog(@RequestParam("activateId") Long activateId) {
-		
-		logger.info("Received request to get noti read log by activation id " + activateId);
-		
-		byte[] excelContent = reportService.exportCheckInListToExcelAsByteArray(activateId);
-		
-		HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=NotiReadLogList.xlsx");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(excelContent.length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(excelContent);
-		
+	@GetMapping("/notireadlog/excel")
+	public ResponseEntity<byte[]> getAllNotiReadLog(@RequestParam("activateId") Long activateId,@RequestParam("params") String params) {
+
+		logger.info("Received request to get noti read log by activation id " + activateId);
+
+		byte[] excelContent = reportService.getAllNotiReadLog(activateId,params);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=NotiReadLogList.xlsx");
+
+		return ResponseEntity.ok().headers(headers).contentLength(excelContent.length)
+				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(excelContent);
+
 	}
 }

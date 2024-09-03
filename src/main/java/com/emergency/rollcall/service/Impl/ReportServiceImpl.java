@@ -198,13 +198,18 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public byte[] exportUnCheckInListToExcelAsByteArray(Long activateId) {
+	public byte[] exportUnCheckInListToExcelAsByteArray(Long activateId, String params) {
 
 		List<StaffDto> staffDtoList = new ArrayList<>();
 		List<Map<String, Object>> usersNotChekedInList;
 
 		try {
-			usersNotChekedInList = assemblyCheckInDao.findUsersNotCheckedInByExcel(activateId);
+			if (params == null || params.isEmpty()) {
+				usersNotChekedInList = assemblyCheckInDao.findUsersNotCheckedInByExcel(activateId);
+			} else {
+				usersNotChekedInList = assemblyCheckInDao.findUsersNotCheckedInByExcel(activateId, params);
+			}
+
 			if (!usersNotChekedInList.isEmpty()) {
 				staffDtoList = usersNotChekedInList.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();
@@ -277,14 +282,17 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public byte[] exportCheckInListToExcelAsByteArray(Long activateId) {
+	public byte[] exportCheckInListToExcelAsByteArray(Long activateId, String params) {
 		// TODO Auto-generated method stub
 
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		List<Map<String, Object>> usersCheckedInList;
 		try {
-
-			usersCheckedInList = assemblyCheckInDao.findUsersCheckedInByExcel(activateId);
+			if (params == null || params.isEmpty()) {
+				usersCheckedInList = assemblyCheckInDao.findUsersCheckedInByExcel(activateId);
+			} else {
+				usersCheckedInList = assemblyCheckInDao.findUsersCheckedInByExcel(activateId, params);
+			}
 
 			if (!usersCheckedInList.isEmpty()) {
 				dashboardDetailDtoList = usersCheckedInList.stream().map(staff -> {
@@ -411,14 +419,19 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public byte[] getAllNotiReadLog(Long activateId) {
+	public byte[] getAllNotiReadLog(Long activateId, String params) {
 		// TODO Auto-generated method stub
 
 		List<NotiReadLogDto> readNotiList = new ArrayList<>();
 		List<Map<String, Object>> readNotiAllList;
 		logger.info("Searching noti read log entity: ");
 		try {
-			readNotiAllList = notiReadLogDao.findByUserNameExcel(activateId);
+			if(params == null || params.isEmpty()) {
+				readNotiAllList = notiReadLogDao.findByUserNameExcel(activateId);
+			}else {
+				readNotiAllList = notiReadLogDao.findByUserNameExcel(activateId, params);
+			}
+			
 
 			if (!readNotiAllList.isEmpty()) {
 				readNotiList = readNotiAllList.stream().map(readNoti -> {
