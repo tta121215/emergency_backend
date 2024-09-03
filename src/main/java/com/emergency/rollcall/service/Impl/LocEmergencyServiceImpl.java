@@ -18,12 +18,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
+import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.dto.LocationDto;
+import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.LocEmergencyService;
@@ -38,6 +42,9 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 
 	@Autowired
 	private RouteDao routeDao;
+	
+	@Autowired
+	private AssemblyDao assemblyDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -47,6 +54,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		ResponseDto res = new ResponseDto();
 		LocEmergency locEmergency = new LocEmergency();
 		List<Route> routeList = new ArrayList<>();
+		List<Assembly> assemblyList = new ArrayList<>();
 
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
@@ -70,6 +78,19 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 					}
 				}
 				locEmergency.setRouteList(routeList);
+			}
+			if(locEmergencyDto.getAssemblyList() != null) {
+				for(AssemblyDto assemblyData : locEmergencyDto.getAssemblyList()) {
+					Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyData.getSyskey());
+					if(assemblyOptional.isPresent() &&  assemblyOptional.get().getSyskey() != 0) {
+						assemblyList.add(assemblyOptional.get());
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Assembly data is invalid");
+						return res;
+					}
+				}
+				locEmergency.setAssemblyList(assemblyList);
 			}
 
 			if (locEmergency.getSyskey() == 0) {
@@ -130,6 +151,7 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		ResponseDto res = new ResponseDto();
 		LocEmergency locEmergency = new LocEmergency();
 		List<Route> routeList = new ArrayList<>();
+		List<Assembly> assemblyList = new ArrayList<>();
 		String createdDate;
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
@@ -152,11 +174,25 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 							routeList.add(routeOptional.get());
 						} else {
 							res.setStatus_code(401);
-							res.setMessage("Mode Noti data is invalid.");
+							res.setMessage("Route data is invalid.");
 							return res;
 						}
 					}
 					locEmergency.setRouteList(routeList);
+				}
+				
+				if (locEmergencyDto != null) {
+					for (AssemblyDto assemblyData : locEmergencyDto.getAssemblyList()) {
+						Optional<Assembly> assemblyOptional = assemblyDao.findById(assemblyData.getSyskey());
+						if (assemblyOptional.isPresent() && assemblyOptional.get().getSyskey() != 0) {
+							assemblyList.add(assemblyOptional.get());
+						} else {
+							res.setStatus_code(401);
+							res.setMessage("Assembly data is invalid.");
+							return res;
+						}
+					}
+					locEmergency.setAssemblyList(assemblyList);
 				}
 
 				locEmergencyDao.save(locEmergency);
@@ -229,7 +265,9 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		Page<LocEmergency> locEmergencyList;
 		List<LocEmergencyDto> locEmergencyDtoList = new ArrayList<>();
 		List<RouteDto> routeDtoList = new ArrayList<>();
+		List<AssemblyDto> assemblyDtoList = new ArrayList<>();
 		RouteDto routeDto = new RouteDto();
+		AssemblyDto assemblyDto = new AssemblyDto();
 		logger.info("Searching location emergency entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
@@ -249,6 +287,15 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 						}
 						locEmergencyDto.setRouteList(routeDtoList);
 						routeDtoList = new ArrayList<>();
+					}
+					if (locEmergency.getAssemblyList() != null) {
+						for (Assembly assembly : locEmergency.getAssemblyList()) {
+							assemblyDto = new AssemblyDto();
+							assemblyDto = modelMapper.map(assembly, AssemblyDto.class);
+							assemblyDtoList.add(assemblyDto);
+						}
+						locEmergencyDto.setAssemblyList(assemblyDtoList);
+						assemblyDtoList = new ArrayList<>();
 					}
 					locEmergencyDtoList.add(locEmergencyDto);
 					logger.info("Successfully searching location emergency entity: " + locEmergencyDtoList);

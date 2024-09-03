@@ -28,10 +28,13 @@ public class Assembly {
 	private String accesstype;
 	private String createddate;
 	private String modifieddate;
-	private int isDelete;	
+	private int isDelete;
 
 	@ManyToMany(mappedBy = "assemblyList")
 	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "assemblyList")
+	private List<LocEmergency> locEmergencyList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -112,13 +115,21 @@ public class Assembly {
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
 	}
-	
+
 	public List<EmergencyActivate> getEmergencyActivatesList() {
 		return emergencyActivatesList;
 	}
 
 	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
 		this.emergencyActivatesList = emergencyActivatesList;
+	}
+
+	public List<LocEmergency> getLocEmergencyList() {
+		return locEmergencyList;
+	}
+
+	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
+		this.locEmergencyList = locEmergencyList;
 	}
 
 }

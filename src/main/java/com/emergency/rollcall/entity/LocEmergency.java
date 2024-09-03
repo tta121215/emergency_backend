@@ -36,6 +36,10 @@ public class LocEmergency {
 
 	@ManyToMany(mappedBy = "locEmergencyList")
 	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "ERC_Loc_Assembly", joinColumns = @JoinColumn(name = "Loc_Emergency_syskey"), inverseJoinColumns = @JoinColumn(name = "assembly_syskey"))
+	private List<Assembly> assemblyList = new ArrayList<>();
 
 	public long getSyskey() {
 		return syskey;
@@ -106,6 +110,22 @@ public class LocEmergency {
 
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
+	}
+
+	public List<EmergencyActivate> getEmergencyActivatesList() {
+		return emergencyActivatesList;
+	}
+
+	public void setEmergencyActivatesList(List<EmergencyActivate> emergencyActivatesList) {
+		this.emergencyActivatesList = emergencyActivatesList;
+	}
+
+	public List<Assembly> getAssemblyList() {
+		return assemblyList;
+	}
+
+	public void setAssemblyList(List<Assembly> assemblyList) {
+		this.assemblyList = assemblyList;
 	}
 
 }

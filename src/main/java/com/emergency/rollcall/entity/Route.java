@@ -128,6 +128,5 @@ public class Route {
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
 	}
-	
 
 }

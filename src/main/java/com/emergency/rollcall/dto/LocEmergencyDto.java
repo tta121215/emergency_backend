@@ -12,6 +12,7 @@ public class LocEmergencyDto {
 	private String modifieddate;
 	private List<RouteDto> routeList;
 	private int isDelete;
+	private List<AssemblyDto> assemblyList;
 
 	public long getSyskey() {
 		return syskey;
@@ -84,6 +85,15 @@ public class LocEmergencyDto {
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
 	}
+
+	public List<AssemblyDto> getAssemblyList() {
+		return assemblyList;
+	}
+
+	public void setAssemblyList(List<AssemblyDto> assemblyList) {
+		this.assemblyList = assemblyList;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
@@ -98,7 +108,7 @@ public class LocEmergencyDto {
 	public String toString() {
 		return "LocEmergencyDto [syskey=" + syskey + ", locationId=" + locationId + ", locationName=" + locationName
 				+ ", description=" + description + ", status=" + status + ", createddate=" + createddate
-				+ ", modifieddate=" + modifieddate + ", routeList=" + routeList + ", isDelete=" + isDelete +"]";
+				+ ", modifieddate=" + modifieddate + ", routeList=" + routeList + ", isDelete=" + isDelete + "]";
 	}
 
 }
