@@ -1,5 +1,6 @@
 package com.emergency.rollcall.service.Impl;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,6 +17,14 @@ import java.util.stream.Collectors;
 
 import javax.management.modelmbean.ModelMBeanInfoSupport;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +36,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
@@ -46,6 +60,7 @@ import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.EActivateSubjectDto;
 import com.emergency.rollcall.dto.EActivationDto;
+import com.emergency.rollcall.dto.EmailResponse;
 import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.EmergencyRollCallDto;
@@ -65,6 +80,7 @@ import com.emergency.rollcall.entity.NotiTemplate;
 import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.entity.SubjectNoti;
 import com.emergency.rollcall.service.EmergencyActivateService;
+import com.google.gson.Gson;
 
 import reactor.core.publisher.Mono;
 
@@ -114,6 +130,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	
 
 	@Value("${emergency.message.url}")
 	private String emergencyMessageUrl;
@@ -667,10 +685,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 							modeNotiMessage = modeNotiList.stream()
 			                           .map(ModeNoti::getName)
 			                           .collect(Collectors.joining(","));
-						}
-						System.out.println("Mode noti" + modeNotiMessage);
+						}						
 					}
-					Mono<String> response = sendEmergencyMessage(modeNotiMessage, eActivate.getSyskey());
+					JSONObject response = sendEmergencyMessage(modeNotiMessage, eActivate.getSyskey());
 				}
 
 			}
@@ -1030,21 +1047,49 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		}
 	}
 
-	public Mono<String> sendEmergencyMessage(String modeMessage, Long activateSyskey) {
+	public JSONObject sendEmergencyMessage(String modeMessage, Long activateSyskey) {
 		
 		MessageRequestDto request = new MessageRequestDto();
-		request.setMessage("Dear All, there is an emergency now. Please click on the link below to see the detail");
-		request.setMode(modeMessage);
+		request.setSubject(modeMessage);
+		request.setContent(Arrays.asList("Dear All, there is an emergency now. Please click on the link below to see the detail"));		
 		request.setLink(emergencyMessageUrl + "?eActivate=" + activateSyskey);
-
+		request.setEmergancyId(activateSyskey);
+		System.out.println("Success");
+		JSONObject obj = null;
 		
-		return webClient.post().uri("http://cenvirotrial.cenviro.com:8080/api/email/sendEmergencyAlert")
-				.body(Mono.just(request), MessageRequestDto.class).retrieve().bodyToMono(String.class)
-				.doOnSuccess(response -> {
-					System.out.println("Request was successful: " + response);
-				}).doOnError(error -> {
-					System.err.println("Request failed: " + error.getMessage());
-				});
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost("http://cenvirotrial.cenviro.com:8080/api/email/sendEmergancyAlert");
+        String resultMap = new Gson().toJson(request, MessageRequestDto.class);
+        StringEntity stringEntity = new StringEntity(resultMap,ContentType.APPLICATION_JSON);
+        httpPost.setEntity(stringEntity);
+        CloseableHttpResponse httpResponse;
+        try {
+            httpResponse = httpClient.execute(httpPost);
+            //System.out.println("POST Response Status:: "+ httpResponse.getStatusLine().getStatusCode());
+            
+            org.apache.http.HttpEntity responseBodyentity = httpResponse.getEntity();
+            
+            String responseBodyString = EntityUtils.toString(responseBodyentity);
+            
+            obj=new JSONObject(responseBodyString);
+            System.out.println("Response " + obj.get("status"));
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+		return obj;
+
+//		return webClient.post()
+//	            .uri("http://cenvirotrial.cenviro.com:8080/api/email/sendEmergencyAlert")
+//	            .body(Mono.just(request), MessageRequestDto.class)
+//	            .retrieve()
+//	            .bodyToMono(EmailResponse.class)  // Map the response to ApiResponseDto
+//	            .doOnSuccess(response -> {
+//	                System.out.println("Request was successful: " + response.getStatus() + ", " + response.getMessage());
+//	            })
+//	            .doOnError(error -> {
+//	                System.err.println("Request failed: " + error.getMessage());
+//	            });		
+
 	}
 //	public String getEmail() {
 //        Mono<String> response = webClient.get()
@@ -1053,6 +1098,36 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //                .bodyToMono(String.class);
 //
 //        return response.block();
+//    }
+	
+//	public EmailResponse sendEmergencyMessageUpdate(String modeMessage, Long activateSyskey) {
+//
+//        MessageRequestDto request = new MessageRequestDto();
+//        request.setSubject(modeMessage);
+//        request.setContent(Arrays.asList("Dear All, there is an emergency now. Please click on the link below to see the detail"));
+//        request.setLink(emergencyMessageUrl + "?eActivate=" + activateSyskey);
+//        request.setEmergencyId(activateSyskey);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Content-Type", "application/json");
+//
+//        HttpEntity<MessageRequestDto> entity = new HttpEntity<>(request, headers);
+//
+//        ResponseEntity<EmailResponse> responseEntity = restTemplate.exchange(
+//                "http://cenvirotrial.cenviro.com:8080/api/email/sendEmergencyAlert",
+//                HttpMethod.POST,
+//                entity,
+//                EmailResponse.class
+//        );
+//
+//        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+//            EmailResponse response = responseEntity.getBody();
+//            System.out.println("Request was successful: " + response.getStatus() + ", " + response.getMessage());
+//            return response;
+//        } else {
+//            System.err.println("Request failed with status: " + responseEntity.getStatusCode());
+//            return null;
+//        }
 //    }
 
 }
