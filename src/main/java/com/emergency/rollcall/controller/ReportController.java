@@ -21,6 +21,7 @@ import com.emergency.rollcall.dto.NotiReadLogDto;
 import com.emergency.rollcall.dto.ResponseList;
 import com.emergency.rollcall.dto.StaffDto;
 import com.emergency.rollcall.service.ReportService;
+import com.itextpdf.text.pdf.qrcode.ByteArray;
 
 @RestController
 @CrossOrigin
@@ -75,22 +76,32 @@ public class ReportController {
 		ResponseList<StaffDto> response = new ResponseList<>();
 		Message message = new Message();
 		List<StaffDto> staffDtoList = new ArrayList<>();
+		Page<StaffDto> staffDtoPage = null;
 		logger.info("Received request to get not check in count by activation id " + activateId);
 
-		Page<StaffDto> staffDtoPage = reportService.getAllUnCheckInList(activateId, page, size, sortBy, direction,
-				params);
-		staffDtoList = staffDtoPage.getContent();
-		if (!staffDtoList.isEmpty()) {
-			message.setState(true);
-			message.setCode("200");
-			message.setMessage("Data is successfully");
-			logger.info("Successfully to get not check in count by activation id " + activateId);
-
-		} else {
+		if(activateId == 0 || activateId == null) {
 			message.setState(false);
 			message.setCode("401");
 			message.setMessage("No Data found");
 			logger.info("No data found to get not check in count by activation id " + activateId);
+			response.setMessage(message);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			staffDtoPage = reportService.getAllUnCheckInList(activateId, page, size, sortBy, direction,
+					params);
+			staffDtoList = staffDtoPage.getContent();
+			if (!staffDtoList.isEmpty()) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully to get not check in count by activation id " + activateId);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("No data found to get not check in count by activation id " + activateId);
+			}
 		}
 
 		response.setMessage(message);
@@ -106,8 +117,11 @@ public class ReportController {
 			@RequestParam("params") String params) {
 
 		logger.info("Received request to get not check in count by activation id " + activateId);
+		byte[] excelContent = new byte[0];
 
-		byte[] excelContent = reportService.exportUnCheckInListToExcelAsByteArray(activateId, params);
+		if(activateId != null && activateId != 0) {
+			excelContent = reportService.exportUnCheckInListToExcelAsByteArray(activateId, params);
+		}		
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=UnCheckInList.xlsx");
