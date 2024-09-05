@@ -25,6 +25,6 @@ public interface MainBuildingDao extends JpaRepository<MainBuilding, Long> {
 //	@Query("SELECT r FROM MainBuilding r WHERE r.syskey IN (SELECT e.syskey FROM MainBuilding e JOIN e.locEmergencyList le WHERE le.syskey IN :locEmergencyIds) AND r.isDelete = 0 AND r.status = 1")
 //	List<MainBuilding> findAllLocEmergency(@Param("locEmergencyIds") List<Long> locEmergencyIds);
 //	
-	@Query("SELECT m FROM MainBuilding m WHERE m.syskey IN :mainBuildingIds AND m.isDelete = 0 AND m.status = 1")
+	@Query("SELECT m FROM MainBuilding m WHERE m.locationId IN :mainBuildingIds AND m.isDelete = 0 AND m.status = 1")
 	List<MainBuilding> findAllLocEmergency(@Param("mainBuildingIds") List<Long> mainBuildingIds);
 }

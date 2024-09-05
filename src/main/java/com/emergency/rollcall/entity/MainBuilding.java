@@ -22,7 +22,7 @@ public class MainBuilding {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "example_seq_gen")
 	@SequenceGenerator(name = "example_seq_gen", sequenceName = "example_seq", allocationSize = 1)
 	private long syskey;
-	private String locationId;
+	private long locationId;
 	private String locationName;
 	private String description;
 	private int status;
@@ -44,11 +44,11 @@ public class MainBuilding {
 		this.syskey = syskey;
 	}
 
-	public String getLocationId() {
+	public long getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(long locationId) {
 		this.locationId = locationId;
 	}
 
