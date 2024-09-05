@@ -22,6 +22,6 @@ public interface MainBuildingService {
 	
 	List<MainBuildingDto> getAllList();
 	
-	
+	List<MainBuildingDto> getByMainBuildingIds(String id);
 
 }

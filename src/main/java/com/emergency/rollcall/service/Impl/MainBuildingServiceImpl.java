@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -315,6 +316,42 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 		return mainBuildingDtoList;
 	}
 	
+	@Override
+	public List<MainBuildingDto> getByMainBuildingIds(String id) {
+		// TODO Auto-generated method stub
+		
+		//MainBuildingDto mainBuildingDto = new MainBuildingDto();
+		
+		List<MainBuildingDto> mainBuildingDtoList = new ArrayList<>();
+		List<MainBuilding> mainBuildingList = new ArrayList<>();
+		logger.info("Retrieving main building entity: ");
+		
+		List<Long> mainBuildingIds = Arrays.stream(id.split(","))
+                .map(String::trim)
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+		try {			
+			mainBuildingList = mainBuildingDao.findAllLocEmergency(mainBuildingIds);			
+			if(mainBuildingList != null) {
+				for(MainBuilding mainBuilding : mainBuildingList) {
+					MainBuildingDto mainBuildingDto = new MainBuildingDto();
+					mainBuildingDto = modelMapper.map(mainBuilding, MainBuildingDto.class);
+					mainBuildingDtoList.add(mainBuildingDto);
+				}
+			}
+			
+
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving main building entity: " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error main building entity: " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+		return mainBuildingDtoList;
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
@@ -331,4 +368,6 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 
 		return l_Date;
 	}
+
+	
 }

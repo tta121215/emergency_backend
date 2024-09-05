@@ -216,5 +216,38 @@ public class MainBuildingController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/mainBuildingId")
+	public ResponseEntity<ResponseList<MainBuildingDto>> getByLocEmergencyId(@RequestParam("id") String id) {
+		MainBuildingDto mainBuildingDto = new MainBuildingDto();
+		ResponseList<MainBuildingDto> response = new ResponseList<>();
+		List<MainBuildingDto> mainBuildingDtoList = new ArrayList<>();
+		Message message = new Message();
+		logger.info("Received request to retrieve main building with data: {}", id);
+		if (id != null) {
+			mainBuildingDtoList = mainBuildingService.getByMainBuildingIds(id);
+			if (!mainBuildingDtoList.isEmpty()) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully to retrieve main building with data: {}", mainBuildingDto);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve main building with data: {}", mainBuildingDto);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found to retrieve main building with data: {}", mainBuildingDto);
+		}
+		response.setMessage(message);
+		response.setData(mainBuildingDtoList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 
 }
