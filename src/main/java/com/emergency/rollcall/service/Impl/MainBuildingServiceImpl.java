@@ -18,11 +18,19 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dao.MainBuildingDao;
 import com.emergency.rollcall.dto.ResponseDto;
+import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.dto.MainBuildingDto;
+import com.emergency.rollcall.dto.AssemblyDto;
+import com.emergency.rollcall.dto.LocEmergencyDto;
 import com.emergency.rollcall.dto.LocationDto;
+import com.emergency.rollcall.entity.Assembly;
+import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.MainBuilding;
+import com.emergency.rollcall.entity.Route;
 import com.emergency.rollcall.service.MainBuildingService;
 
 
@@ -33,6 +41,9 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 
 	@Autowired
 	private MainBuildingDao mainBuildingDao;
+	
+	@Autowired
+	private LocEmergencyDao locEmerDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -41,6 +52,7 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 	public ResponseDto saveMainBuilding(MainBuildingDto mainBuildingDto) {
 		ResponseDto res = new ResponseDto();
 		MainBuilding mainBuilding = new MainBuilding();
+		List<LocEmergency> locEmerList = new ArrayList<>();
 
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
@@ -50,8 +62,23 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 		
 		mainBuilding = modelMapper.map(mainBuildingDto, MainBuilding.class);
 		mainBuilding.setCreateddate(strCreatedDate);
+		
 		logger.info("Saving main building entity: " + mainBuildingDto);
 		try {	
+			
+			if (mainBuildingDto.getLocEmergencyList() != null) {
+				for (LocEmergencyDto locEmergencyData : mainBuildingDto.getLocEmergencyList()) {
+					Optional<LocEmergency> locEmergencyOptional = locEmerDao.findById(locEmergencyData.getSyskey());
+					if (locEmergencyOptional.isPresent() && locEmergencyOptional.get().getSyskey() != 0) {
+						locEmerList.add(locEmergencyOptional.get());
+					} else {
+						res.setStatus_code(401);
+						res.setMessage("Route data is invalid.");
+						return res;
+					}
+				}
+				mainBuilding.setLocEmergencyList(locEmerList);				
+			}
 			if (mainBuilding.getSyskey() == 0) {
 				MainBuilding entityres = mainBuildingDao.save(mainBuilding);
 				if (entityres.getSyskey() > 0) {
@@ -109,6 +136,7 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 	public ResponseDto updateMainBuilding(MainBuildingDto mainBuildingDto) {
 		ResponseDto res = new ResponseDto();
 		MainBuilding mainBuilding = new MainBuilding();
+		List<LocEmergency> locEmerList = new ArrayList<>();
 		
 		String createdDate;
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
@@ -124,7 +152,23 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 				createdDate = mainBuilding.getCreateddate();
 				mainBuilding = modelMapper.map(mainBuildingDto, MainBuilding.class);
 				mainBuilding.setCreateddate(createdDate);
-				mainBuilding.setModifieddate(strCreatedDate);				
+				mainBuilding.setModifieddate(strCreatedDate);	
+				
+				if (mainBuildingDto != null) {
+					if(mainBuildingDto.getLocEmergencyList() != null) {
+						for (LocEmergencyDto locEmerData : mainBuildingDto.getLocEmergencyList()) {
+							Optional<LocEmergency> locEmerOptional = locEmerDao.findById(locEmerData.getSyskey());
+							if (locEmerOptional.isPresent() && locEmerOptional.get().getSyskey() != 0) {
+								locEmerList.add(locEmerOptional.get());
+							} else {
+								res.setStatus_code(401);
+								res.setMessage("Loc Emergency data is invalid.");
+								return res;
+							}
+						}
+						mainBuilding.setLocEmergencyList(locEmerList);
+					}					
+				}
 
 				mainBuildingDao.save(mainBuilding);
 				res.setStatus_code(200);
@@ -194,7 +238,9 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
 		Page<MainBuilding> mainBuildingList;
-		List<MainBuildingDto> mainBuildingDtoList = new ArrayList<>();		
+		List<MainBuildingDto> mainBuildingDtoList = new ArrayList<>();	
+		List<LocEmergencyDto> locEmerDtoList = new ArrayList<>();
+		LocEmergencyDto locEmerDto = new LocEmergencyDto();
 		logger.info("Searching main building entity: ");
 		try {
 			if (params == null || params.isEmpty()) {
@@ -207,6 +253,16 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 					MainBuildingDto mainBuildingDto = new MainBuildingDto();
 					mainBuildingDto = modelMapper.map(mainBuilding, MainBuildingDto.class);					
 					mainBuildingDtoList.add(mainBuildingDto);
+					
+					if (mainBuilding.getLocEmergencyList() != null) {
+						for (LocEmergency locEmer : mainBuilding.getLocEmergencyList()) {
+							locEmerDto = new LocEmergencyDto();
+							locEmerDto = modelMapper.map(locEmer, LocEmergencyDto.class);
+							locEmerDtoList.add(locEmerDto);
+						}
+						mainBuildingDto.setLocEmergencyList(locEmerDtoList);
+						locEmerDtoList = new ArrayList<>();
+					}
 					logger.info("Successfully searching main building entity: " + mainBuildingDtoList);
 				}
 			}
@@ -227,6 +283,8 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 
 		List<MainBuildingDto> mainBuildingDtoList = new ArrayList<>();
 		List<MainBuilding> mainBuildingList = new ArrayList<>();
+		LocEmergencyDto locEmerDto = new LocEmergencyDto();
+		List<LocEmergencyDto> locEmerDtoList = new ArrayList<>();
 		try {
 			mainBuildingList = mainBuildingDao.findAllByStatusAndIsDelete(1, 0);
 			if (mainBuildingList != null) {
@@ -234,6 +292,15 @@ public class MainBuildingServiceImpl implements MainBuildingService{
 					MainBuildingDto mainBuildingDto = new MainBuildingDto();
 					mainBuildingDto = modelMapper.map(mainBuilding, MainBuildingDto.class);
 					mainBuildingDtoList.add(mainBuildingDto);
+					if (mainBuilding.getLocEmergencyList() != null) {
+						for (LocEmergency locEmer : mainBuilding.getLocEmergencyList()) {
+							locEmerDto = new LocEmergencyDto();
+							locEmerDto = modelMapper.map(locEmer, LocEmergencyDto.class);
+							locEmerDtoList.add(locEmerDto);
+						}
+						mainBuildingDto.setLocEmergencyList(locEmerDtoList);
+						locEmerDtoList = new ArrayList<>();
+					}
 				}
 			}
 

@@ -1,10 +1,16 @@
 package com.emergency.rollcall.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -23,6 +29,11 @@ public class MainBuilding {
 	private String createddate;
 	private String modifieddate;
 	private int isDelete;
+	private int isDefault;
+	
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+	@JoinTable(name = "ERC_Main_Loc", joinColumns = @JoinColumn(name = "Main_Buildiing_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
+	private List<LocEmergency> locEmergencyList = new ArrayList<>();
 
 
 	public long getSyskey() {
@@ -87,6 +98,22 @@ public class MainBuilding {
 
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
+	}
+
+	public List<LocEmergency> getLocEmergencyList() {
+		return locEmergencyList;
+	}
+
+	public void setLocEmergencyList(List<LocEmergency> locEmergencyList) {
+		this.locEmergencyList = locEmergencyList;
+	}
+
+	public int getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(int isDefault) {
+		this.isDefault = isDefault;
 	}
 
 }

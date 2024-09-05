@@ -1,5 +1,7 @@
 package com.emergency.rollcall.dto;
 
+import java.util.List;
+
 public class MainBuildingDto {
 	private long syskey;
 	private long locationId;
@@ -9,6 +11,8 @@ public class MainBuildingDto {
 	private String createddate;
 	private String modifieddate;	
 	private int isDelete;
+	private List<LocEmergencyDto> locEmergencyList;
+	private int isDefault;
 
 	public long getSyskey() {
 		return syskey;
@@ -73,6 +77,22 @@ public class MainBuildingDto {
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
 	}
+	public List<LocEmergencyDto> getLocEmergencyList() {
+		return locEmergencyList;
+	}
+
+	public void setLocEmergencyList(List<LocEmergencyDto> locEmergencyList) {
+		this.locEmergencyList = locEmergencyList;
+	}
+
+	public int getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(int isDefault) {
+		this.isDefault = isDefault;
+	}
+
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
 		if (!aDate.equals("") && aDate != null)
