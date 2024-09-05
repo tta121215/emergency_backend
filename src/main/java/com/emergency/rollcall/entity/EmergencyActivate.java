@@ -225,5 +225,4 @@ public class EmergencyActivate {
 		this.mainBuilding = mainBuilding;
 	}
 
-
 }
