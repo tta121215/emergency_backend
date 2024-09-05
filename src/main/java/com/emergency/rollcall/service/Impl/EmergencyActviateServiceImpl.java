@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -209,19 +210,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				eActivate.setLocEmergencyList(locEmergencyList);
 			}
 			
-			if (eActivateDto.getMainBuildingDtoList() != null) {
-				for (MainBuildingDto mainBuildingDto : eActivateDto.getMainBuildingDtoList()) {
-					Optional<MainBuilding> mainOptional = mainBuildingDao.findById(eActivateDto.getSyskey());
-					if (mainOptional.isPresent() && mainOptional.get().getSyskey() != 0) {
-						mainBuildingList.add(mainOptional.get());
-					} else {
-						res.setStatus_code(401);
-						res.setMessage("Main Building of emergency data is invalid.");
-						return res;
-					}
-				}
-				eActivate.setMainBuildingList(mainBuildingList);
-			}
 			if (eActivateDto.getEmergency_syskey() != 0) {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 				if (emergencyOptional.isPresent()) {
@@ -301,7 +289,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<LocEmergency> locEmergency = locEmergencyDao.findByEmergencyActivateId(eActivate.getSyskey());
-				List<MainBuilding> mainBuilding = mainBuildingDao.findByEmergencyActivateId(eActivate.getSyskey())
+				
 
 				List<AssemblyDto> assemblyDtos = assemblies.stream()
 						.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
@@ -312,18 +300,27 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						.map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
 						.collect(Collectors.toList());
 				
-				List<MainBuildingDto> mainBuildingDtos = mainBuilding.stream()
-						.map(mainBuilding -> modelMapper.map(mainBuilding, MainBuildingDto.class))
-						.collect(Collectors.toList());
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 				emergencyAcivateDto.setLocEmergencyDtoList(locEmergencyDtos);
-				emergencyAcivateDto.setMainBuildingDtoList(mainBuildingDtos);
+				
 				List<Long> locemergency = new ArrayList<>();
 				for (LocEmergencyDto loce : locEmergencyDtos) {
 					locemergency.add(loce.getSyskey());
 				}
 				emergencyAcivateDto.setLocemrgency_syskey(locemergency);
+				
+				List<Long> mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
+						.map(Long::parseLong).collect(Collectors.toList());
+				List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+				emergencyAcivateDto.setMainBuildingIds(mainIds);
+//				for (Object[] row : mainBuilding) {
+//				    BigDecimal ids = (BigDecimal) row[0];  
+//				    String name = (String) row[1];  
+//				    System.out.println("Id , name" + ids + name);
+//				}				    
+				    
+				
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return emergencyAcivateDto;
@@ -403,20 +400,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					}
 					eActivate.setLocEmergencyList(locEmergencyList);
 				}
-				if (eActivateDto.getMainBuildingDtoList() != null) {
-					for (MainBuildingDto mainDto : eActivateDto.getMainBuildingDtoList()) {
-						Optional<MainBuilding> mainOptional = mainBuildingDao
-								.findById(mainDto.getSyskey());
-						if (mainOptional.isPresent() && mainOptional.get().getSyskey() != 0) {
-							mainBuildingList.add(mainOptional.get());
-						} else {
-							res.setStatus_code(401);
-							res.setMessage("Main Building data is invalid.");
-							return res;
-						}
-					}
-					eActivate.setMainBuildingList(mainBuildingList);
-				}
+				
 				if (eActivateDto.getEmergency_syskey() != 0) {
 					Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 					if (emergencyOptional.isPresent()) {
@@ -556,11 +540,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					if (!eActivate.getMainBuildingList().isEmpty()) {
-						List<MainBuildingDto> mainDtoList = eActivate.getMainBuildingList().stream()
-								.map(mainBuilding -> modelMapper.map(mainBuilding, MainBuildingDto.class)).collect(Collectors.toList());
-						eActivateDto.setMainBuildingDtoList(mainDtoList);
-					}
 					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
@@ -621,12 +600,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					if (!eActivate.getMainBuildingList().isEmpty()) {
-						List<MainBuildingDto> mainDtoList = eActivate.getMainBuildingList().stream()
-								.map(mainBuilding -> modelMapper.map(mainBuilding, MainBuildingDto.class)).collect(Collectors.toList());
-						eActivateDto.setMainBuildingDtoList(mainDtoList);
-					}
-
+					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
@@ -690,11 +664,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					if (!eActivate.getMainBuildingList().isEmpty()) {
-						List<MainBuildingDto> mainDtoList = eActivate.getMainBuildingList().stream()
-								.map(mainBuilding -> modelMapper.map(mainBuilding, MainBuildingDto.class)).collect(Collectors.toList());
-						eActivateDto.setMainBuildingDtoList(mainDtoList);
-					}
+					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}

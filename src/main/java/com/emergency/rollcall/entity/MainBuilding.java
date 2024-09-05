@@ -34,9 +34,6 @@ public class MainBuilding {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "ERC_Main_Loc", joinColumns = @JoinColumn(name = "Main_Buildiing_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
 	private List<LocEmergency> locEmergencyList = new ArrayList<>();
-	
-	@ManyToMany(mappedBy = "mainBuildingList")
-	private List<EmergencyActivate> emergencyActivatesList = new ArrayList<>();
 
 
 	public long getSyskey() {
