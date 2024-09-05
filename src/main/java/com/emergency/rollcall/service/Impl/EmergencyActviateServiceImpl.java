@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -24,6 +25,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.aspectj.weaver.ArrayAnnotationValue;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,7 @@ import com.emergency.rollcall.dao.ContentNotiDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
 import com.emergency.rollcall.dao.EmergencyDao;
 import com.emergency.rollcall.dao.LocEmergencyDao;
+import com.emergency.rollcall.dao.MainBuildingDao;
 import com.emergency.rollcall.dao.ModeNotiDao;
 import com.emergency.rollcall.dao.NotiTemplateDao;
 import com.emergency.rollcall.dao.RouteDao;
@@ -65,6 +68,7 @@ import com.emergency.rollcall.dto.EmergencyActivateDto;
 import com.emergency.rollcall.dto.EmergencyDto;
 import com.emergency.rollcall.dto.EmergencyRollCallDto;
 import com.emergency.rollcall.dto.LocEmergencyDto;
+import com.emergency.rollcall.dto.MainBuildingDto;
 import com.emergency.rollcall.dto.MessageRequestDto;
 import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.ResponseDto;
@@ -75,6 +79,7 @@ import com.emergency.rollcall.entity.ContentNoti;
 import com.emergency.rollcall.entity.Emergency;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.entity.LocEmergency;
+import com.emergency.rollcall.entity.MainBuilding;
 import com.emergency.rollcall.entity.ModeNoti;
 import com.emergency.rollcall.entity.NotiTemplate;
 import com.emergency.rollcall.entity.Route;
@@ -124,6 +129,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private AssemblyCheckInDao assemblyCheckInDao;
+	
+	@Autowired
+	private MainBuildingDao mainBuildingDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -150,6 +158,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
+		List<MainBuilding> mainBuildingList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
@@ -200,6 +209,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 				eActivate.setLocEmergencyList(locEmergencyList);
 			}
+			
 			if (eActivateDto.getEmergency_syskey() != 0) {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 				if (emergencyOptional.isPresent()) {
@@ -279,6 +289,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<LocEmergency> locEmergency = locEmergencyDao.findByEmergencyActivateId(eActivate.getSyskey());
+				
 
 				List<AssemblyDto> assemblyDtos = assemblies.stream()
 						.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
@@ -288,14 +299,28 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream()
 						.map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
 						.collect(Collectors.toList());
+				
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 				emergencyAcivateDto.setLocEmergencyDtoList(locEmergencyDtos);
+				
 				List<Long> locemergency = new ArrayList<>();
 				for (LocEmergencyDto loce : locEmergencyDtos) {
 					locemergency.add(loce.getSyskey());
 				}
 				emergencyAcivateDto.setLocemrgency_syskey(locemergency);
+				
+				List<Long> mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
+						.map(Long::parseLong).collect(Collectors.toList());
+				List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+				emergencyAcivateDto.setMainBuildingIds(mainIds);
+//				for (Object[] row : mainBuilding) {
+//				    BigDecimal ids = (BigDecimal) row[0];  
+//				    String name = (String) row[1];  
+//				    System.out.println("Id , name" + ids + name);
+//				}				    
+				    
+				
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return emergencyAcivateDto;
@@ -317,6 +342,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<Assembly> assemblyList = new ArrayList<>();
 		List<Route> routeList = new ArrayList<>();
 		List<LocEmergency> locEmergencyList = new ArrayList<>();
+		List<MainBuilding> mainBuildingList = new ArrayList<>();
 		EmergencyActivate eActivate = new EmergencyActivate();
 		String createdDate;
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
@@ -374,6 +400,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					}
 					eActivate.setLocEmergencyList(locEmergencyList);
 				}
+				
 				if (eActivateDto.getEmergency_syskey() != 0) {
 					Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 					if (emergencyOptional.isPresent()) {
@@ -513,6 +540,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
+					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
@@ -572,6 +600,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
+					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
@@ -635,6 +664,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
+					
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}

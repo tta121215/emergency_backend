@@ -26,6 +26,8 @@ public class EmergencyActivateDto {
 	private String endDate;
 	private int activateStatus;
 	private int isDelete;
+	private String mainBuilding;
+	private List<Long> mainBuildingIds;
 
 	public long getSyskey() {
 		return syskey;
@@ -209,6 +211,22 @@ public class EmergencyActivateDto {
 
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
+	}
+
+	public String getMainBuilding() {
+		return mainBuilding;
+	}
+
+	public void setMainBuilding(String mainBuilding) {
+		this.mainBuilding = mainBuilding;
+	}
+
+	public List<Long> getMainBuildingIds() {
+		return mainBuildingIds;
+	}
+
+	public void setMainBuildingIds(List<Long> mainBuildingIds) {
+		this.mainBuildingIds = mainBuildingIds;
 	}
 
 	@Override

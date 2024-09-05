@@ -37,6 +37,7 @@ public class EmergencyActivate {
 	private String endDate;
 	private int activateStatus;
 	private int isDelete;
+	private String mainBuilding;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "emergency_syskey", referencedColumnName = "syskey")
@@ -61,6 +62,8 @@ public class EmergencyActivate {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
 	@JoinTable(name = "ERC_Activate_Locemergency", joinColumns = @JoinColumn(name = "emergency_activate_syskey"), inverseJoinColumns = @JoinColumn(name = "Loc_Emergency_syskey"))
 	private List<LocEmergency> locEmergencyList = new ArrayList<>();
+	
+
 
 	public long getSyskey() {
 		return syskey;
@@ -213,5 +216,14 @@ public class EmergencyActivate {
 	public void setIsDelete(int isDelete) {
 		this.isDelete = isDelete;
 	}
+
+	public String getMainBuilding() {
+		return mainBuilding;
+	}
+
+	public void setMainBuilding(String mainBuilding) {
+		this.mainBuilding = mainBuilding;
+	}
+
 
 }
