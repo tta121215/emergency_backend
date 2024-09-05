@@ -541,6 +541,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
 					
+					List<Long> mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
+							.map(Long::parseLong).collect(Collectors.toList());
+					List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+					String mainString = "";
+					for (Object[] row : mainBuilding) {
+						mainString += (String) row[1] + ",";
+					}		
+					eActivateDto.setMainBuilding(mainString.substring(0, mainString.length() -1));
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
