@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.emergency.rollcall.entity.LocEmergency;
 import com.emergency.rollcall.entity.MainBuilding;
 import com.emergency.rollcall.entity.Route;
 
@@ -27,4 +29,7 @@ public interface MainBuildingDao extends JpaRepository<MainBuilding, Long> {
 //	
 	@Query("SELECT m FROM MainBuilding m WHERE m.syskey IN :mainBuildingIds AND m.isDelete = 0 AND m.status = 1")
 	List<MainBuilding> findAllLocEmergency(@Param("mainBuildingIds") List<Long> mainBuildingIds);
+	
+	@Query("SELECT a FROM MainBuilding a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId and a.isDelete = 0")
+    List<MainBuilding> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 }
