@@ -244,5 +244,30 @@ public class LocEmergencyController {
 		response.setData(locationList);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("allmainbuilding")
+	public ResponseEntity<ResponseList<LocationDto>> getAllMainBuilding() {
+
+		ResponseList<LocationDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<LocationDto> locationList = new ArrayList<>();
+		logger.info("Received request to search locations : ");
+		locationList = locEmergencyService.getAllMainBuilding();
+
+		if (!locationList.isEmpty()) {
+			message.setState(true);
+			message.setCode("200");
+			message.setMessage("Data is successfully");
+			logger.info("Successfully location of emergency with data: {}", locationList);
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found location of emergency with data: {}", locationList);
+		}
+		response.setMessage(message);
+		response.setData(locationList);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
 }

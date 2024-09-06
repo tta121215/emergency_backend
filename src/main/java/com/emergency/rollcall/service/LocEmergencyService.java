@@ -23,5 +23,7 @@ public interface LocEmergencyService {
 	List<LocEmergencyDto> getAllList();
 	
 	List<LocationDto> getAllLocationList();
+	
+	List<LocationDto> getAllMainBuilding();
 
 }

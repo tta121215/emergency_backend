@@ -369,6 +369,30 @@ public class LocEmergencyServiceImpl implements LocEmergencyService {
 		}
 		return locationList;
 	}
+	
+	@Override
+	public List<LocationDto> getAllMainBuilding() {
+		List<LocationDto> locationList = new ArrayList<>();
+		try {
+			
+			List<Object[]> results = locEmergencyDao.findAllMainBuildingList();
+			
+			locationList = results.stream()
+            .map(result -> new LocationDto(
+            		((BigDecimal) result[0]).longValue(), 
+            		(String) result[1])
+            	)
+            .collect(Collectors.toList());
+			
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+		return locationList;
+	}
 
 	public String ddMMyyyFormat(String aDate) {
 		String l_Date = "";
