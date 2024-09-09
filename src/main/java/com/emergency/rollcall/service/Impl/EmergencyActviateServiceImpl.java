@@ -640,7 +640,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			if (fromDate != null && toDate != null) {
 				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
 			} else {
-				emergencyActivateList = emergencyActivateDao.findAllByActivateStatus(1,Sort.by(Sort.Direction.DESC, "syskey"));
+				//emergencyActivateList = emergencyActivateDao.findAllByActivateStatus(1,Sort.by(Sort.Direction.DESC, "syskey"));
+				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
 			}
 
 			if (!emergencyActivateList.isEmpty()) {
