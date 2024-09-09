@@ -194,6 +194,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
 		dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
 		dashboardDto.setTotalHeadCount((long) allUsers.size());
+		dashboardDto.setStartTime(emergencyActivate.getStartTime());
 		return dashboardDto;
 	}
 

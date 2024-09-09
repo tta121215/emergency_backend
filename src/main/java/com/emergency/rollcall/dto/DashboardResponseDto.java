@@ -11,6 +11,7 @@ public class DashboardResponseDto {
 	private String totalTime;
 	private String averageTime;
 	private Long totalHeadCount;
+	private String startTime;
 
 	
 	// Getters and Setters
@@ -60,6 +61,14 @@ public class DashboardResponseDto {
 
 	public void setTotalHeadCount(Long totalHeadCount) {
 		this.totalHeadCount = totalHeadCount;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
 	}
 	
 }
