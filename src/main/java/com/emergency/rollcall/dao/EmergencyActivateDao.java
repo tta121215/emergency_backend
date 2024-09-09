@@ -49,6 +49,6 @@ public interface EmergencyActivateDao extends JpaRepository<EmergencyActivate, L
 			+ "ORDER BY ea.syskey DESC ")
 	List<EmergencyActivate> findAllByDateRange(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 	
-	List<EmergencyActivate> findAllByActivateStatus(int activateStatus,Sort sort);
+	List<EmergencyActivate> findAllByActivateStatusNot(int activateStatus,Sort sort);
 
 }
