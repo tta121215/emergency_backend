@@ -280,5 +280,34 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	
 	@Query(value = "SELECT icnumber FROM PYM_User where staffid =:staffid", nativeQuery = true)
 	String findICByUser(@Param("staffid") String staffid );
+	
+	@Query(value = "SELECT distinct pwa.CHECKIN , pwa.CHECKOUT , pdl.NAME , PVP.DEPARTMENT , pvpc.COLLECT_DATE , pvpc.RETURNCARDDATE,pvp.NAMEOFPERSONVISITED ,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO  ,pvp.COMPANYNAME,pvp.STAFFNO,pvp.REASON ,pvp.ID,pwa.DOOR_NAME "
+			+ ",LISTAGG(PLAL.NAME, ', ') WITHIN GROUP (ORDER BY PLAL.NAME) as locName,pwa.current_location FROM PYM_VENDOR_PASS pvp "
+			+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
+			+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
+			+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
+			+ "LEFT JOIN PYM_STATUS ps ON pvp.STATUSID = ps.STATUSID "
+			+ "LEFT JOIN PYM_DEPARTMENT_LOOKUP pdl ON pvp.DEPARTMENT = pdl.ID "
+			+ "LEFT JOIN PYM_VENDOR_PASS_LA pvpl ON pvp.id=PVPL.VP_ID AND pvp.VISITORORVIP LIKE '%VISITOR%' "
+			+ "LEFT JOIN (SELECT DISTINCT pvp1.id  FROM PYM_VENDOR_PASS_LA pvpl1 "
+			+ "JOIN PYM_LOCATION_ACCESS_LOOKUP plal1 ON PVPL1.LOCATION_ACCESS_ID =PLAL1.ID "
+			+ "JOIN PYM_VENDOR_PASS pvp1 ON pvp1.id=PVPL1.VP_ID AND pvp1.VISITORORVIP LIKE '%STAFF%'  "
+			+ "LEFT JOIN PYM_USER pu ON pu.USERNAME = pvp1.STAFFNO  "
+			+ "LEFT JOIN PYM_USER_ROLE pur ON pur.USER_ID  = pu.ID  "
+			+ "where (plal1.NAME LIKE '%KKIP%' or plal1.NAMe LIKE '%MERCU%' or plal1.NAME LIKE '%WMC%' or plal1.NAME LIKE '%EPIC%') "
+			+ "OR pur.ROLE_ID = 10) mobstaff ON mobstaff.id = pvp.ID AND pvp.VISITORORVIP LIKE '%STAFF%' "
+			+ "LEFT JOIN PYM_LOCATION_ACCESS_LOOKUP plal ON PVPL.LOCATION_ACCESS_ID =PLAL.ID "
+			+ "WHERE ("
+			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
+			+ "    OR "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1) "
+			+ " OR "
+			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
+			+ " ) "
+			+ "AND ps.NAME <> 'Rejected' AND pwa.current_location IN (:params) "
+			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location "
+			
+			,nativeQuery = true)
+	List<Map<String, Object>> findHeadCount(@Param("params") List<String> params);
 
 }
