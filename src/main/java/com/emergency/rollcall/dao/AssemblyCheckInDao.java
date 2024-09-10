@@ -14,6 +14,11 @@ import com.emergency.rollcall.entity.AssemblyCheckIn;
 
 @Repository
 public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long> {
+	
+	@Query("SELECT  plal1.name  FROM PYM_VENDOR_PASS_LA pvpl1 "
+			+ "JOIN PYM_LOCATION_ACCESS_LOOKUP plal1 ON PVPL1.LOCATION_ACCESS_ID =PLAL1.ID "
+			+ "JOIN PYM_VENDOR_PASS pvp1 ON pvp1.id=PVPL1.VP_ID  where pvp1.STAFFNO=:staffid")
+	String getlocationVisited(@Param("staffid") String staffid);
 
 	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
 	List<AssemblyCheckIn> getAllListByActivationId(@Param("id") Long id);

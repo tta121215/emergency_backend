@@ -421,6 +421,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setStaffId((String) staff.get("staffid"));
 					staffDto.setDepartment((String) staff.get("deptName"));
 					staffDto.setType((String) staff.get("visitor"));
+					staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
