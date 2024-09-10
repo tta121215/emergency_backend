@@ -1,19 +1,20 @@
 package com.emergency.rollcall.service.Impl;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
@@ -453,6 +455,34 @@ public class DashBoardServiceImpl implements DashBoardService {
 			l_Date = aDate.replaceAll("-", "");
 		}
 		return l_Date;
+	}
+
+	@Override
+	public String getStaffPhoto(String staffNo) {
+		String base64String = null;
+		logger.info("Retrieving photo: " + staffNo);
+		try {
+			Blob blob = assemblyCheckInDao.findStaffPhoto(staffNo);
+			
+			if(blob != null) {
+				byte[] blobBytes = blob.getBytes(1, (int) blob.length());
+	            // Encode byte array to Base64 string
+	            base64String = Base64.getEncoder().encodeToString(blobBytes);	            
+	         // Output the Base64 string
+	            System.out.println("Base64 Encoded String: " + base64String);
+	            logger.info("Successfully retrieving photo : " + base64String);
+			}
+		} catch (DataAccessException dae) {
+			logger.info("Error retrieving photo : " + dae.getMessage());
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			logger.info("Error retrieving photo : " + e.getMessage());
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		return base64String;
 	}
 
 }
