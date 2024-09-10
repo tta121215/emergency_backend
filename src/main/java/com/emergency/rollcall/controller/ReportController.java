@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.emergency.rollcall.dto.DashboardDetailDto;
+import com.emergency.rollcall.dto.HeadCountDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.NotiReadLogDto;
 import com.emergency.rollcall.dto.ResponseList;
@@ -195,5 +196,49 @@ public class ReportController {
 		return ResponseEntity.ok().headers(headers).contentLength(excelContent.length)
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(excelContent);
 
+	}
+	
+	@GetMapping("totalheadcountreport")
+	public ResponseEntity<ResponseList<HeadCountDto>> getTotalHeadCountReport(@RequestParam("activateId") Long activateId,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "syskey") String sortBy, @RequestParam(defaultValue = "asc") String direction,
+			@RequestParam("params") String params) {
+		ResponseList<HeadCountDto> response = new ResponseList<>();
+		Message message = new Message();
+		List<HeadCountDto> staffDtoList = new ArrayList<>();
+		Page<HeadCountDto> staffDtoPage = null;
+		logger.info("Received request to get total head count by activation id " + activateId);
+
+		if(activateId == 0 || activateId == null) {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("No data found to get total head count by activation id " + activateId);
+			response.setMessage(message);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} else {
+			staffDtoPage = reportService.getTotalHeadCountReport(activateId, page, size, sortBy, direction,
+					params);
+			staffDtoList = staffDtoPage.getContent();
+			if (!staffDtoList.isEmpty()) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully to get not check in count by activation id " + activateId);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("No data found to get not check in count by activation id " + activateId);
+			}
+		}
+
+		response.setMessage(message);
+		response.setData(staffDtoList);
+		response.setTotalItems(staffDtoPage.getTotalElements());
+		response.setTotalPages(staffDtoPage.getTotalPages());
+		response.setCurrentPage(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

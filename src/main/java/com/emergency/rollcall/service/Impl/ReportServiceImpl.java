@@ -3,9 +3,11 @@ package com.emergency.rollcall.service.Impl;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,10 +22,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
+import com.emergency.rollcall.dao.EmergencyActivateDao;
+import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dao.NotiReadLogDao;
 import com.emergency.rollcall.dto.DashboardDetailDto;
+import com.emergency.rollcall.dto.HeadCountDto;
 import com.emergency.rollcall.dto.NotiReadLogDto;
 import com.emergency.rollcall.dto.StaffDto;
+import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.service.ReportService;
 
 @Service
@@ -36,6 +42,12 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	private NotiReadLogDao notiReadLogDao;
+	
+	@Autowired
+	private EmergencyActivateDao emergencyActivateDao;
+	
+	@Autowired
+	private LocEmergencyDao locEmergencyDao;
 
 	@Override
 	public Page<DashboardDetailDto> getAllCheckInList(Long activateId, int page, int size, String sortBy,
@@ -487,5 +499,96 @@ public class ReportServiceImpl implements ReportService {
 		}
 
 	}
+	
+	@Override
+	public Page<HeadCountDto> getTotalHeadCountReport(Long activateId, int page, int size, String sortBy, String direction,
+			String params) {
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Sort sort = Sort.by(sortDirection, sortBy);
+//		if (sortBy.equals("name")) {
+//			sort = Sort.by(sortDirection, "name");
+//		} else if (sortBy.equals("username")) {
+//			sort = Sort.by(sortDirection, "username");
+//		} else if (sortBy.equals("staffid")) {
+//			sort = Sort.by(sortDirection, "staffid");
+//		} else if (sortBy.equals("mobileno")) {
+//			sort = Sort.by(sortDirection, "mobileno");
+//		} else if (sortBy.equals("type")) {
+//			sort = Sort.by(sortDirection, "v.visitororvip");
+//		} else if (sortBy.equals("department")) {
+//			sort = Sort.by(sortDirection, "d.name");
+//		} else {
+//			sort = Sort.by(sortDirection, "name");
+//		}
+		PageRequest pageRequest = PageRequest.of(page, size);
+		List<HeadCountDto> headCountList = new ArrayList<>();
+		EmergencyActivate eActivate = new EmergencyActivate();
+		Page<Map<String, Object>> usersNotCheckedInPage;
+		String mainString = "";
+		List<String> buildingNames = new ArrayList<>();
+		//List<Map<String, Object>> usersNotCheckedInPage;
+//		Calendar dateFromCalMinusOne = Calendar.getInstance();
+//		dateFromCalMinusOne.add(Calendar.DAY_OF_MONTH, -1);
+//		dateFromCalMinusOne.set(Calendar.HOUR_OF_DAY, 0);
+//		dateFromCalMinusOne.set(Calendar.MINUTE, 0);
+//		dateFromCalMinusOne.set(Calendar.SECOND, 0);
+//		dateFromCalMinusOne.set(Calendar.MILLISECOND, 0);
+//		System.out.println("Date Minus ONe " + dateFromCalMinusOne);
+//		Date dateFromMinusOne = dateFromCalMinusOne.getTime();
+
+		try {
+				Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
+				if(emergencyOptional.isPresent()) {
+					eActivate = emergencyOptional.get();
+					List<Long> mainIds =new ArrayList<>();
+					if(eActivate.getMainBuilding()!=null && eActivate.getMainBuilding()!="") {
+						mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
+								.map(Long::parseLong).collect(Collectors.toList());
+						List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+						
+						for (Object[] row : mainBuilding) {
+						    buildingNames.add((String) row[1]);
+						}
+					}
+				}
+				
+				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest,buildingNames);
+			
+			if (!usersNotCheckedInPage.isEmpty()) {
+				headCountList = usersNotCheckedInPage.stream().map(headCount -> {
+					HeadCountDto headCountDto = new HeadCountDto();		
+					headCountDto.setDepartment((String) headCount.get("NAME"));
+					headCountDto.setUsername((String) headCount.get("FULLNAME"));
+					headCountDto.setType((String) headCount.get("VISITORORVIP"));
+					headCountDto.setMobileNo((String) headCount.get("CONTACTNO"));
+					headCountDto.setCompany((String) headCount.get("COMPANYNAME"));
+					headCountDto.setStaffId((String) headCount.get("STAFFNO"));
+					headCountDto.setIcnumber(assemblyCheckInDao.findICByUser(headCountDto.getStaffId()));
+					return headCountDto;
+				}).collect(Collectors.toList());
+			}
+//			if ("icnumber".equalsIgnoreCase(sortBy)) {
+//				Comparator<StaffDto> comparator = Comparator.comparing(
+//						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+//						Comparator.nullsLast(String::compareTo));
+//
+//				if (sortDirection.isDescending()) {
+//					comparator = comparator.reversed();
+//				}
+//				staffDtoList.sort(comparator);
+//			}
+
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
+		}
+
+		//return staffDtoList;
+		return new PageImpl<>(headCountList, pageRequest, usersNotCheckedInPage.getTotalElements());
+	}
+	
 
 }
