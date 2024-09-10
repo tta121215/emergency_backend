@@ -2,6 +2,7 @@ package com.emergency.rollcall.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
 import com.emergency.rollcall.dto.Message;
@@ -154,6 +156,38 @@ public class DashBoardController {
 		response.setTotalItems(staffDtoPage.getTotalElements());
 		response.setTotalPages(staffDtoPage.getTotalPages());
 		response.setCurrentPage(page);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/staffphoto")
+	public ResponseEntity<Response<String>> getStaffPhoto(@RequestParam("staffno") String staffNo) {
+		Response<String> response = new Response<>();
+		Message message = new Message();
+		String staffPhoto = null;
+		logger.info("Received request to get photo by staff no " + staffNo);
+		
+		if (staffNo != null) {
+			staffPhoto = dashboardService.getStaffPhoto(staffNo);
+			if (staffPhoto != null) {
+				message.setState(true);
+				message.setCode("200");
+				message.setMessage("Data is successfully");
+				logger.info("Successfully to retrieve staff photo with data: {}", staffPhoto);
+
+			} else {
+				message.setState(false);
+				message.setCode("401");
+				message.setMessage("No Data found");
+				logger.info("Data does not found to retrieve staff photo with data: {}", staffPhoto);
+			}
+		} else {
+			message.setState(false);
+			message.setCode("401");
+			message.setMessage("No Data found");
+			logger.info("Data does not found to retrieve staff photo with data: {}", staffPhoto);
+		}
+		response.setMessage(message);
+		response.setData(staffPhoto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

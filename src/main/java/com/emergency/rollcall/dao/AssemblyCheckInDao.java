@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dao;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,11 @@ import com.emergency.rollcall.entity.AssemblyCheckIn;
 
 @Repository
 public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long> {
+	
+	@Query(value="SELECT plal1.name  FROM PYM_VENDOR_PASS_LA pvpl1 "
+			+ "JOIN PYM_LOCATION_ACCESS_LOOKUP plal1 ON PVPL1.LOCATION_ACCESS_ID =PLAL1.ID "
+			+ "JOIN PYM_VENDOR_PASS pvp1 ON pvp1.id=PVPL1.VP_ID  where pvp1.STAFFNO=:staffid",nativeQuery=true)
+	String getlocationVisited(@Param("staffid") String staffid);
 
 	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
 	List<AssemblyCheckIn> getAllListByActivationId(@Param("id") Long id);
@@ -214,5 +220,8 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			nativeQuery = true)
 	List<Map<String, Object>> findUsersCheckedInByExcel(
 			@Param("emergencyActivateId") Long emergencyActivateId, @Param("params") String params);
+	
+	@Query(value = "SELECT photo from PYM_VENDOR_PASS WHERE STAFFNO=:staffNo AND PHOTO IS NOT NULL",nativeQuery = true)
+	Blob findStaffPhoto(@Param("staffNo") String staffNo);
 
 }
