@@ -394,6 +394,18 @@ public class DashBoardServiceImpl implements DashBoardService {
 	@Override
 	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction,
 			String params) {
+		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(activateId).orElse(null);
+		List<String> buildingNames=new ArrayList<>();
+		List<Long> mainIds =new ArrayList<>();
+		if(emergencyActivate.getMainBuilding()!=null && emergencyActivate.getMainBuilding()!="") {
+			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
+					.map(Long::parseLong).collect(Collectors.toList());
+			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+			
+			for (Object[] row : mainBuilding) {
+			    buildingNames.add((String) row[1]);
+			}
+		}
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(sortDirection, sortBy);
 		if (sortBy.equals("name")) {
@@ -418,7 +430,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		try {
 			if (params == null || params.isEmpty()) {
-				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
+				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,buildingNames,
 						pageRequest);
 			} else {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
