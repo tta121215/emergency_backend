@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
@@ -26,9 +27,11 @@ import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
+import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
+import com.emergency.rollcall.dto.HeadCountDto;
 import com.emergency.rollcall.dto.StaffDto;
 import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.EmergencyActivate;
@@ -47,6 +50,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
+	
+	@Autowired
+	private LocEmergencyDao locEmergencyDao;
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -56,6 +62,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
+		List<Map<String, Object>> headCountList = new ArrayList<>();
+		
+		List<String> buildingNames = new ArrayList<>();
 		List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 
 		List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
@@ -68,6 +77,18 @@ public class DashBoardServiceImpl implements DashBoardService {
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
 
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+		
+		List<Long> mainIds =new ArrayList<>();
+		if(emergencyActivate.getMainBuilding()!=null && emergencyActivate.getMainBuilding()!="") {
+			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
+					.map(Long::parseLong).collect(Collectors.toList());
+			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+			
+			for (Object[] row : mainBuilding) {
+			    buildingNames.add((String) row[1]);
+			}
+			headCountList = assemblyCheckInDao.findHeadCount(buildingNames);
+		}
 		if (emergencyActivate.getStartTime() != null) {
 			ZonedDateTime emergencyStartTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
@@ -195,7 +216,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		dashboardDto.setCheckInCounts(checkInCounts);
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
 		dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
-		dashboardDto.setTotalHeadCount((long) allUsers.size());
+		dashboardDto.setTotalHeadCount((long) headCountList.size());
 		dashboardDto.setStartTime(emergencyActivate.getStartTime());
 		return dashboardDto;
 	}
