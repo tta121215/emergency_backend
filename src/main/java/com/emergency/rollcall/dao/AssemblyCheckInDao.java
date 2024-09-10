@@ -1,5 +1,6 @@
 package com.emergency.rollcall.dao;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 
@@ -214,5 +215,9 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			nativeQuery = true)
 	List<Map<String, Object>> findUsersCheckedInByExcel(
 			@Param("emergencyActivateId") Long emergencyActivateId, @Param("params") String params);
+	
+	@Query(value = " SELECT photo from PYM_VENDOR_PASS where STAFFNO = :staffNo ", 
+			nativeQuery = true)
+	Blob findStaffPhoto(@Param("staffNo") String staffNo);
 
 }
