@@ -211,7 +211,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			}
 		}
 
-		long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
+		long totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
 
 		dashboardDto.setCheckInCounts(checkInCounts);
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
@@ -408,34 +408,37 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(sortDirection, sortBy);
-		if (sortBy.equals("name")) {
-			sort = Sort.by(sortDirection, "name");
-		} else if (sortBy.equals("username")) {
-			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffid");
-		} else if (sortBy.equals("mobileno")) {
-			sort = Sort.by(sortDirection, "mobileno");
-		} else if (sortBy.equals("type")) {
-			sort = Sort.by(sortDirection, "v.visitororvip");
-		} else if (sortBy.equals("department")) {
-			sort = Sort.by(sortDirection, "d.name");
-		} else {
-			sort = Sort.by(sortDirection, "name");
-		}
-		PageRequest pageRequest = PageRequest.of(page, size, sort);
+//		if (sortBy.equals("name")) {
+//			sort = Sort.by(sortDirection, "name");
+//		} else if (sortBy.equals("username")) {
+//			sort = Sort.by(sortDirection, "username");
+//		} else if (sortBy.equals("staffid")) {
+//			sort = Sort.by(sortDirection, "staffid");
+//		} else if (sortBy.equals("mobileno")) {
+//			sort = Sort.by(sortDirection, "mobileno");
+//		} else if (sortBy.equals("type")) {
+//			sort = Sort.by(sortDirection, "v.visitororvip");
+//		} else if (sortBy.equals("department")) {
+//			sort = Sort.by(sortDirection, "d.name");
+//		} else {
+//			sort = Sort.by(sortDirection, "name");
+//		}
+		PageRequest pageRequest = PageRequest.of(page, size);
 		List<StaffDto> staffDtoList = new ArrayList<>();
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
+		System.out.println("ID " + activateId);
 
 		try {
 			if (params == null || params.isEmpty()) {
+			
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,buildingNames,
 						pageRequest);
-			} else {
+			}	else {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						pageRequest, params);
+						pageRequest,buildingNames);
 			}
+			System.out.println("user not check " + usersNotCheckedInPage);
 			if (!usersNotCheckedInPage.isEmpty()) {
 				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();

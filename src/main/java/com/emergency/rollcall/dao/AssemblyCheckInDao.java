@@ -58,8 +58,8 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 //	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 //			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable);
 	
-	@Query(value = "SELECT distinct pdl.NAME ,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO ,pvp.COMPANYNAME,pvp.STAFFNO,pvp.ICNO"
-			+ " FROM PYM_VENDOR_PASS pvp "
+	@Query(value = "SELECT distinct pdl.NAME AS deptName ,pvp.FULLNAME AS username, pvp.VISITORORVIP AS visitor,pvp.CONTACTNO AS mobileNo ,pvp.COMPANYNAME,pvp.STAFFNO AS staffid,pvp.ICNO AS icnumber, pvp.ID,pvp.email AS Email "
+			+ "FROM PYM_VENDOR_PASS pvp "
 			+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
 			+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
 			+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
@@ -81,10 +81,10 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
-			+ "AND ps.NAME <> 'Rejected' AND pvp.staffno not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:params) "
-			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO "
+			+ "AND ps.NAME <> 'Rejected' AND pvp.id not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:params) "
+			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO,pvp.ID,pvp.email  "
 			
-			,countQuery = "SELECT COUNT(pvp.id) FROM PYM_VENDOR_PASS pvp "
+			,countQuery = "SELECT COUNT(*) FROM PYM_VENDOR_PASS pvp "
 					+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
 					+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
 					+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
@@ -106,35 +106,91 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
-					+ "AND ps.NAME <> 'Rejected' AND pvp.staffno not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:params) "
-					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO "
+					+ "AND ps.NAME <> 'Rejected' AND pvp.id not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:params) "
+					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO,pvp.ID,pvp.email  "
 					
 					,nativeQuery = true)
 Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 	@Param("emergencyActivateId") Long emergencyActivateId,@Param("params") List<String> params, Pageable pageable);
-
-	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
-			+ "AND ac.emergency_syskey = :emergencyActivateId " 
-			+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
-			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
-			+ "WHERE ac.staff_id IS NULL "
-			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
-			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
-			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
-			+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ",
-			countQuery = "SELECT COUNT(*) FROM PYM_User u "
-					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
-					+ "AND ac.emergency_syskey = :emergencyActivateId " 
-					+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
-					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
-					+ "WHERE ac.staff_id IS NULL "
-					+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
-					+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
-					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
-					+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ", nativeQuery = true)
+	
+	@Query(value = "SELECT distinct pdl.NAME,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO,pvp.COMPANYNAME,pvp.STAFFNO,pvp.ICNO, pvp.ID,pvp.email "
+			+ "FROM PYM_VENDOR_PASS pvp "
+			+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
+			+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
+			+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
+			+ "LEFT JOIN PYM_STATUS ps ON pvp.STATUSID = ps.STATUSID "
+			+ "LEFT JOIN PYM_DEPARTMENT_LOOKUP pdl ON pvp.DEPARTMENT = pdl.ID "
+			+ "LEFT JOIN PYM_VENDOR_PASS_LA pvpl ON pvp.id=PVPL.VP_ID AND pvp.VISITORORVIP LIKE '%VISITOR%' "
+			+ "LEFT JOIN (SELECT DISTINCT pvp1.id  FROM PYM_VENDOR_PASS_LA pvpl1 "
+			+ "JOIN PYM_LOCATION_ACCESS_LOOKUP plal1 ON PVPL1.LOCATION_ACCESS_ID =PLAL1.ID "
+			+ "JOIN PYM_VENDOR_PASS pvp1 ON pvp1.id=PVPL1.VP_ID AND pvp1.VISITORORVIP LIKE '%STAFF%'  "
+			+ "LEFT JOIN PYM_USER pu ON pu.USERNAME = pvp1.STAFFNO  "
+			+ "LEFT JOIN PYM_USER_ROLE pur ON pur.USER_ID  = pu.ID  "
+			+ "where (plal1.NAME LIKE '%KKIP%' or plal1.NAMe LIKE '%MERCU%' or plal1.NAME LIKE '%WMC%' or plal1.NAME LIKE '%EPIC%') "
+			+ "OR pur.ROLE_ID = 10) mobstaff ON mobstaff.id = pvp.ID AND pvp.VISITORORVIP LIKE '%STAFF%' "
+			+ "LEFT JOIN PYM_LOCATION_ACCESS_LOOKUP plal ON PVPL.LOCATION_ACCESS_ID =PLAL.ID "
+			+ "WHERE ("
+			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
+			+ "    OR "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1) "
+			+ " OR "
+			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
+			+ " ) "
+			+ "AND ps.NAME <> 'Rejected' AND pvp.staffno not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:mainBuilding) "
+			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO,pvp.ID,pvp.email  "
+			
+			,countQuery = "SELECT COUNT(*) FROM PYM_VENDOR_PASS pvp "
+					+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
+					+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
+					+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
+					+ "LEFT JOIN PYM_STATUS ps ON pvp.STATUSID = ps.STATUSID "
+					+ "LEFT JOIN PYM_DEPARTMENT_LOOKUP pdl ON pvp.DEPARTMENT = pdl.ID "
+					+ "LEFT JOIN PYM_VENDOR_PASS_LA pvpl ON pvp.id=PVPL.VP_ID AND pvp.VISITORORVIP LIKE '%VISITOR%' "
+					+ "LEFT JOIN (SELECT DISTINCT pvp1.id  FROM PYM_VENDOR_PASS_LA pvpl1 "
+					+ "JOIN PYM_LOCATION_ACCESS_LOOKUP plal1 ON PVPL1.LOCATION_ACCESS_ID =PLAL1.ID "
+					+ "JOIN PYM_VENDOR_PASS pvp1 ON pvp1.id=PVPL1.VP_ID AND pvp1.VISITORORVIP LIKE '%STAFF%'  "
+					+ "LEFT JOIN PYM_USER pu ON pu.USERNAME = pvp1.STAFFNO  "
+					+ "LEFT JOIN PYM_USER_ROLE pur ON pur.USER_ID  = pu.ID  "
+					+ "where (plal1.NAME LIKE '%KKIP%' or plal1.NAMe LIKE '%MERCU%' or plal1.NAME LIKE '%WMC%' or plal1.NAME LIKE '%EPIC%' or plal1.NAME LIKE '%LOK KAWI%') "
+					+ "OR pur.ROLE_ID = 10) mobstaff ON mobstaff.id = pvp.ID AND pvp.VISITORORVIP LIKE '%STAFF%' "
+					+ "LEFT JOIN PYM_LOCATION_ACCESS_LOOKUP plal ON PVPL.LOCATION_ACCESS_ID =PLAL.ID "
+					+ "WHERE ("
+					+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
+					+ "    OR "
+					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1) "
+					+ " OR "
+					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
+					+ " ) "
+					+ "AND ps.NAME <> 'Rejected' AND pvp.staffno not in (select staff_id from erc_assembly_check_in where emergency_syskey=:emergencyActivateId ) AND pwa.current_location IN (:mainBuilding) "
+					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO,pvp.ID,pvp.email   "
+					
+					,nativeQuery = true)
 	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
-			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable, @Param("params") String params);
+			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable,@Param("mainBuilding") List<String> mainBuilding);
 
+//	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+//			+ "AND ac.emergency_syskey = :emergencyActivateId " 
+//			+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
+//			+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+//			+ "WHERE ac.staff_id IS NULL "
+//			+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+//			+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%')"
+//			+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
+//			+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ",
+//			countQuery = "SELECT COUNT(*) FROM PYM_User u "
+//					+ "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
+//					+ "AND ac.emergency_syskey = :emergencyActivateId " 
+//					+ "LEFT JOIN PYM_vendor_pass v ON v.icno = u.icnumber AND v.is_active=1 "
+//					+ "LEFT JOIN PYM_department_lookup d ON d.id = v.department "
+//					+ "WHERE ac.staff_id IS NULL "
+//					+ " AND ( LOWER(u.name) LIKE LOWER('%' || :params || '%') "
+//					+ "OR LOWER(u.icnumber) LIKE LOWER('%' || :params || '%') OR LOWER(u.passportnumber) LIKE LOWER('%' || :params || '%') "
+//					+ "OR LOWER(u.staffid) LIKE LOWER('%' || :params || '%') OR LOWER(u.mobileno) LIKE LOWER('%' || :params || '%')"
+//					+ "OR LOWER(v.visitororvip) LIKE LOWER('%' || :params || '%') OR LOWER(d.name) LIKE LOWER('%' || :params || '%') ) ", nativeQuery = true)
+//	Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
+//			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable, @Param("params") String params,@Param("mainBuilding") List<String> mainBuilding);
+
+	
 	@Query(value = "SELECT * FROM PYM_User where id = :id", nativeQuery = true)
 	Map<String, Object> findByUserId(@Param("id") Long id);
 
@@ -364,5 +420,6 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			
 			,nativeQuery = true)
 	List<Map<String, Object>> findHeadCount(@Param("params") List<String> params);
+
 
 }

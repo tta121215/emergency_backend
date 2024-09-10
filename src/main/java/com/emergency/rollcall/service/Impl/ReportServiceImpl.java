@@ -174,7 +174,7 @@ public class ReportServiceImpl implements ReportService {
 						pageRequest);
 			} else {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						pageRequest, params);
+						pageRequest,buildingNames);
 			}
 			if (!usersNotCheckedInPage.isEmpty()) {
 				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
