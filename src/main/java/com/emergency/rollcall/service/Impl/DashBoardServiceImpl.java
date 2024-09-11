@@ -50,7 +50,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
-	
+
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
 
@@ -63,7 +63,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
 		List<Map<String, Object>> headCountList = new ArrayList<>();
-		
+
 		List<String> buildingNames = new ArrayList<>();
 		List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 
@@ -77,15 +77,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
 
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
-		
-		List<Long> mainIds =new ArrayList<>();
-		if(emergencyActivate.getMainBuilding()!=null && emergencyActivate.getMainBuilding()!="") {
+
+		List<Long> mainIds = new ArrayList<>();
+		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
 					.map(Long::parseLong).collect(Collectors.toList());
 			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-			
+
 			for (Object[] row : mainBuilding) {
-			    buildingNames.add((String) row[1]);
+				buildingNames.add((String) row[1]);
 			}
 			headCountList = assemblyCheckInDao.findHeadCount(buildingNames);
 		}
@@ -184,7 +184,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
 
 				Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
-	
+
 				long avghours = averageDuration1.toHours() % 24;
 				long avgminutes = averageDuration1.toMinutes() % 60;
 				long avgseconds = averageDuration1.getSeconds() % 60;
@@ -395,50 +395,35 @@ public class DashBoardServiceImpl implements DashBoardService {
 	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction,
 			String params) {
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(activateId).orElse(null);
-		List<String> buildingNames=new ArrayList<>();
-		List<Long> mainIds =new ArrayList<>();
-		if(emergencyActivate.getMainBuilding()!=null && emergencyActivate.getMainBuilding()!="") {
+		List<String> buildingNames = new ArrayList<>();
+		List<Long> mainIds = new ArrayList<>();
+		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
 					.map(Long::parseLong).collect(Collectors.toList());
 			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-			
+
 			for (Object[] row : mainBuilding) {
-			    buildingNames.add((String) row[1]);
+				buildingNames.add((String) row[1]);
 			}
 		}
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(sortDirection, sortBy);
-//		if (sortBy.equals("name")) {
-//			sort = Sort.by(sortDirection, "name");
-//		} else if (sortBy.equals("username")) {
-//			sort = Sort.by(sortDirection, "username");
-//		} else if (sortBy.equals("staffid")) {
-//			sort = Sort.by(sortDirection, "staffid");
-//		} else if (sortBy.equals("mobileno")) {
-//			sort = Sort.by(sortDirection, "mobileno");
-//		} else if (sortBy.equals("type")) {
-//			sort = Sort.by(sortDirection, "v.visitororvip");
-//		} else if (sortBy.equals("department")) {
-//			sort = Sort.by(sortDirection, "d.name");
-//		} else {
-//			sort = Sort.by(sortDirection, "name");
-//		}
+
 		PageRequest pageRequest = PageRequest.of(page, size);
 		List<StaffDto> staffDtoList = new ArrayList<>();
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
-		System.out.println("ID " + activateId);
 
 		try {
 			if (params == null || params.isEmpty()) {
-			
-				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,buildingNames,
-						pageRequest);
-			}	else {
+
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						pageRequest,buildingNames);
+						buildingNames, pageRequest);
+			} else {
+				usersNotCheckedInPage = assemblyCheckInDao.findNotCheckIn(activateId,
+						pageRequest, buildingNames, params);
 			}
-			System.out.println("user not check " + usersNotCheckedInPage);
+
 			if (!usersNotCheckedInPage.isEmpty()) {
 				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();
@@ -463,9 +448,59 @@ public class DashBoardServiceImpl implements DashBoardService {
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
+			if ("name".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getUsername().isEmpty() ? null : dto.getUsername(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("type".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getType().isEmpty() ? null : dto.getType(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<StaffDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("staffid".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getStaffId().isEmpty() ? null : dto.getStaffId(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("department".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("mobileno".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getMobileNo().isEmpty() ? null : dto.getMobileNo(), // Treat empty strings as null
 						Comparator.nullsLast(String::compareTo));
 
 				if (sortDirection.isDescending()) {
@@ -499,14 +534,14 @@ public class DashBoardServiceImpl implements DashBoardService {
 		logger.info("Retrieving photo: " + staffNo);
 		try {
 			Blob blob = assemblyCheckInDao.findStaffPhoto(staffNo);
-			
-			if(blob != null) {
+
+			if (blob != null) {
 				byte[] blobBytes = blob.getBytes(1, (int) blob.length());
-	            // Encode byte array to Base64 string
-	            base64String = Base64.getEncoder().encodeToString(blobBytes);	            
-	         // Output the Base64 string
-	            System.out.println("Base64 Encoded String: " + base64String);
-	            logger.info("Successfully retrieving photo : " + base64String);
+				// Encode byte array to Base64 string
+				base64String = Base64.getEncoder().encodeToString(blobBytes);
+				// Output the Base64 string
+				System.out.println("Base64 Encoded String: " + base64String);
+				logger.info("Successfully retrieving photo : " + base64String);
 			}
 		} catch (DataAccessException dae) {
 			logger.info("Error retrieving photo : " + dae.getMessage());

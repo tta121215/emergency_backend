@@ -201,7 +201,7 @@ public class ReportController {
 	@GetMapping("totalheadcountreport")
 	public ResponseEntity<ResponseList<HeadCountDto>> getTotalHeadCountReport(@RequestParam("activateId") Long activateId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "syskey") String sortBy, @RequestParam(defaultValue = "asc") String direction,
+			@RequestParam(defaultValue = "fullname") String sortBy, @RequestParam(defaultValue = "asc") String direction,
 			@RequestParam("params") String params) {
 		ResponseList<HeadCountDto> response = new ResponseList<>();
 		Message message = new Message();

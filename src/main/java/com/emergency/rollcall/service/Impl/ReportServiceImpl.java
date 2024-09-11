@@ -19,6 +19,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
@@ -42,10 +43,10 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	private NotiReadLogDao notiReadLogDao;
-	
+
 	@Autowired
 	private EmergencyActivateDao emergencyActivateDao;
-	
+
 	@Autowired
 	private LocEmergencyDao locEmergencyDao;
 
@@ -135,46 +136,46 @@ public class ReportServiceImpl implements ReportService {
 	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction,
 			String params) {
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(activateId).orElse(null);
-		List<String> buildingNames=new ArrayList<>();
-		List<Long> mainIds =new ArrayList<>();
-		if(emergencyActivate.getMainBuilding()!=null && emergencyActivate.getMainBuilding()!="") {
+		List<String> buildingNames = new ArrayList<>();
+		List<Long> mainIds = new ArrayList<>();
+		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
 					.map(Long::parseLong).collect(Collectors.toList());
 			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-			
+
 			for (Object[] row : mainBuilding) {
-			    buildingNames.add((String) row[1]);
+				buildingNames.add((String) row[1]);
 			}
 		}
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		Sort sort = Sort.by(sortDirection, sortBy);
-		if (sortBy.equals("name")) {
-			sort = Sort.by(sortDirection, "name");
-		} else if (sortBy.equals("username")) {
-			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffid");
-		} else if (sortBy.equals("mobileno")) {
-			sort = Sort.by(sortDirection, "mobileno");
-		} else if (sortBy.equals("type")) {
-			sort = Sort.by(sortDirection, "v.visitororvip");
-		} else if (sortBy.equals("department")) {
-			sort = Sort.by(sortDirection, "d.name");
-		} else {
-			sort = Sort.by(sortDirection, "name");
-		}
-		PageRequest pageRequest = PageRequest.of(page, size, sort);
+//		Sort sort = Sort.by(sortDirection, sortBy);
+//		if (sortBy.equals("name")) {
+//			sort = Sort.by(sortDirection, "name");
+//		} else if (sortBy.equals("username")) {
+//			sort = Sort.by(sortDirection, "username");
+//		} else if (sortBy.equals("staffid")) {
+//			sort = Sort.by(sortDirection, "staffid");
+//		} else if (sortBy.equals("mobileno")) {
+//			sort = Sort.by(sortDirection, "mobileno");
+//		} else if (sortBy.equals("type")) {
+//			sort = Sort.by(sortDirection, "v.visitororvip");
+//		} else if (sortBy.equals("department")) {
+//			sort = Sort.by(sortDirection, "d.name");
+//		} else {
+//			sort = Sort.by(sortDirection, "name");
+//		}
+		PageRequest pageRequest = PageRequest.of(page, size);
 		List<StaffDto> staffDtoList = new ArrayList<>();
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
 
 		try {
 			if (params == null || params.isEmpty()) {
-				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,buildingNames,
-						pageRequest);
-			} else {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						pageRequest,buildingNames);
+						buildingNames, pageRequest);
+			} else {
+				usersNotCheckedInPage = assemblyCheckInDao.findNotCheckIn(activateId,
+						pageRequest, buildingNames,params);
 			}
 			if (!usersNotCheckedInPage.isEmpty()) {
 				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
@@ -199,9 +200,60 @@ public class ReportServiceImpl implements ReportService {
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
+			
+			if ("name".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getUsername().isEmpty() ? null : dto.getUsername(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("type".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getType().isEmpty() ? null : dto.getType(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
 			if ("icnumber".equalsIgnoreCase(sortBy)) {
 				Comparator<StaffDto> comparator = Comparator.comparing(
 						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("staffid".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getStaffId().isEmpty() ? null : dto.getStaffId(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("department".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				staffDtoList.sort(comparator);
+			}
+			if ("mobileno".equalsIgnoreCase(sortBy)) {
+				Comparator<StaffDto> comparator = Comparator.comparing(
+						dto -> dto.getMobileNo().isEmpty() ? null : dto.getMobileNo(), // Treat empty strings as null
 						Comparator.nullsLast(String::compareTo));
 
 				if (sortDirection.isDescending()) {
@@ -450,12 +502,11 @@ public class ReportServiceImpl implements ReportService {
 		List<Map<String, Object>> readNotiAllList;
 		logger.info("Searching noti read log entity: ");
 		try {
-			if(params == null || params.isEmpty()) {
+			if (params == null || params.isEmpty()) {
 				readNotiAllList = notiReadLogDao.findByUserNameExcel(activateId);
-			}else {
+			} else {
 				readNotiAllList = notiReadLogDao.findByUserNameExcel(activateId, params);
 			}
-			
 
 			if (!readNotiAllList.isEmpty()) {
 				readNotiList = readNotiAllList.stream().map(readNoti -> {
@@ -511,64 +562,66 @@ public class ReportServiceImpl implements ReportService {
 		}
 
 	}
-	
+
 	@Override
-	public Page<HeadCountDto> getTotalHeadCountReport(Long activateId, int page, int size, String sortBy, String direction,
-			String params) {
-		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		Sort sort = Sort.by(sortDirection, sortBy);
-//		if (sortBy.equals("name")) {
-//			sort = Sort.by(sortDirection, "name");
-//		} else if (sortBy.equals("username")) {
-//			sort = Sort.by(sortDirection, "username");
-//		} else if (sortBy.equals("staffid")) {
-//			sort = Sort.by(sortDirection, "staffid");
-//		} else if (sortBy.equals("mobileno")) {
-//			sort = Sort.by(sortDirection, "mobileno");
-//		} else if (sortBy.equals("type")) {
-//			sort = Sort.by(sortDirection, "v.visitororvip");
-//		} else if (sortBy.equals("department")) {
-//			sort = Sort.by(sortDirection, "d.name");
-//		} else {
-//			sort = Sort.by(sortDirection, "name");
+	public Page<HeadCountDto> getTotalHeadCountReport(Long activateId, int page, int size, String sortBy,
+			String direction, String params) {
+
+//		String sortColumn;
+//		switch (sortBy.toLowerCase()) {
+//		case "fullname":
+//			sortColumn = "FULLNAME";
+//			break;
+//		case "department":
+//			sortColumn = "NAME";
+//			break;
+//		case "staffid":
+//			sortColumn = "STAFFNO";
+//			break;
+//		case "type":
+//			sortColumn = "VISITORORVIP";
+//			break;
+//		default:
+//			sortColumn = "FULLNAME"; // Default to fullname if no valid sortBy
 //		}
+		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+		//Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortColumn));
+		
+		//String sortDirection = direction.equalsIgnoreCase("asc") ? "ASC" : "DESC";
+		
 		PageRequest pageRequest = PageRequest.of(page, size);
+
 		List<HeadCountDto> headCountList = new ArrayList<>();
 		EmergencyActivate eActivate = new EmergencyActivate();
 		Page<Map<String, Object>> usersNotCheckedInPage;
 		String mainString = "";
 		List<String> buildingNames = new ArrayList<>();
-		//List<Map<String, Object>> usersNotCheckedInPage;
-//		Calendar dateFromCalMinusOne = Calendar.getInstance();
-//		dateFromCalMinusOne.add(Calendar.DAY_OF_MONTH, -1);
-//		dateFromCalMinusOne.set(Calendar.HOUR_OF_DAY, 0);
-//		dateFromCalMinusOne.set(Calendar.MINUTE, 0);
-//		dateFromCalMinusOne.set(Calendar.SECOND, 0);
-//		dateFromCalMinusOne.set(Calendar.MILLISECOND, 0);
-//		System.out.println("Date Minus ONe " + dateFromCalMinusOne);
-//		Date dateFromMinusOne = dateFromCalMinusOne.getTime();
 
 		try {
-				Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
-				if(emergencyOptional.isPresent()) {
-					eActivate = emergencyOptional.get();
-					List<Long> mainIds =new ArrayList<>();
-					if(eActivate.getMainBuilding()!=null && eActivate.getMainBuilding()!="") {
-						mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
-								.map(Long::parseLong).collect(Collectors.toList());
-						List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-						
-						for (Object[] row : mainBuilding) {
-						    buildingNames.add((String) row[1]);
-						}
+			Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
+			if (emergencyOptional.isPresent()) {
+				eActivate = emergencyOptional.get();
+				List<Long> mainIds = new ArrayList<>();
+				if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
+					mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
+							.map(Long::parseLong).collect(Collectors.toList());
+					List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+
+					for (Object[] row : mainBuilding) {
+						buildingNames.add((String) row[1]);
 					}
 				}
-				
-				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest,buildingNames);
+			}
+			if(params == null || params.isEmpty()) {
+				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames);
+			} else {				
+				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames, params);
+			}
 			
 			if (!usersNotCheckedInPage.isEmpty()) {
 				headCountList = usersNotCheckedInPage.stream().map(headCount -> {
-					HeadCountDto headCountDto = new HeadCountDto();		
+					HeadCountDto headCountDto = new HeadCountDto();
 					headCountDto.setDepartment((String) headCount.get("NAME"));
 					headCountDto.setUsername((String) headCount.get("FULLNAME"));
 					headCountDto.setType((String) headCount.get("VISITORORVIP"));
@@ -579,16 +632,68 @@ public class ReportServiceImpl implements ReportService {
 					return headCountDto;
 				}).collect(Collectors.toList());
 			}
-//			if ("icnumber".equalsIgnoreCase(sortBy)) {
-//				Comparator<StaffDto> comparator = Comparator.comparing(
-//						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
-//						Comparator.nullsLast(String::compareTo));
-//
-//				if (sortDirection.isDescending()) {
-//					comparator = comparator.reversed();
-//				}
-//				staffDtoList.sort(comparator);
-//			}
+			if ("name".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getUsername().isEmpty() ? null : dto.getUsername(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+			if ("type".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getType().isEmpty() ? null : dto.getType(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+			if ("icnumber".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+			if ("staffid".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getStaffId().isEmpty() ? null : dto.getStaffId(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+			if ("department".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+			if ("mobileno".equalsIgnoreCase(sortBy)) {
+				Comparator<HeadCountDto> comparator = Comparator.comparing(
+						dto -> dto.getMobileNo().isEmpty() ? null : dto.getMobileNo(), // Treat empty strings as null
+						Comparator.nullsLast(String::compareTo));
+
+				if (sortDirection.isDescending()) {
+					comparator = comparator.reversed();
+				}
+				headCountList.sort(comparator);
+			}
+
+
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -598,9 +703,8 @@ public class ReportServiceImpl implements ReportService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		//return staffDtoList;
+		// return staffDtoList;
 		return new PageImpl<>(headCountList, pageRequest, usersNotCheckedInPage.getTotalElements());
 	}
-	
 
 }
