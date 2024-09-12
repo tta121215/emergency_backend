@@ -1,5 +1,6 @@
 package com.emergency.rollcall.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
+import com.emergency.rollcall.dto.MalaysiaCalendarDto;
 import com.emergency.rollcall.dto.Message;
 import com.emergency.rollcall.dto.Response;
 import com.emergency.rollcall.dto.ResponseList;
@@ -190,4 +193,22 @@ public class DashBoardController {
 		response.setData(staffPhoto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("/dates")
+    public List<LocalDate> getDatesInRange(
+            @RequestParam("fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam("toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+        return dashboardService.getWeekendsAndWeekdays(fromDate, toDate);
+    }
+	
+	@GetMapping("/calendar/malaysia")
+    public MalaysiaCalendarDto getMalaysiaCalendar(
+        @RequestParam("fromDate") String fromDateStr,
+        @RequestParam("toDate") String toDateStr) {
+
+        LocalDate fromDate = LocalDate.parse(fromDateStr);
+        LocalDate toDate = LocalDate.parse(toDateStr);
+
+        return dashboardService.getMalaysiaCalendar(fromDate, toDate);
+    }
 }

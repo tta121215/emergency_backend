@@ -2,7 +2,9 @@ package com.emergency.rollcall.service.Impl;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +15,8 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -23,7 +27,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
 import com.emergency.rollcall.dao.AssemblyDao;
 import com.emergency.rollcall.dao.EmergencyActivateDao;
@@ -31,7 +34,7 @@ import com.emergency.rollcall.dao.LocEmergencyDao;
 import com.emergency.rollcall.dto.AssemblyPointCheckInDto;
 import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.DashboardResponseDto;
-import com.emergency.rollcall.dto.HeadCountDto;
+import com.emergency.rollcall.dto.MalaysiaCalendarDto;
 import com.emergency.rollcall.dto.StaffDto;
 import com.emergency.rollcall.entity.Assembly;
 import com.emergency.rollcall.entity.EmergencyActivate;
@@ -52,9 +55,19 @@ public class DashBoardServiceImpl implements DashBoardService {
 	private EmergencyActivateDao emergencyActivateDao;
 
 	@Autowired
-	private LocEmergencyDao locEmergencyDao;
+	private LocEmergencyDao locEmergencyDao;	
+	
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
+//	private final List<LocalDate> publicHolidays = List.of(
+//	        LocalDate.of(2024, 1, 1),  // New Year's Day
+//	        LocalDate.of(2024, 2, 10), // Chinese New Year
+//	        LocalDate.of(2024, 5, 1),  // Labour Day
+//	        LocalDate.of(2024, 8, 31), // Merdeka Day
+//	        LocalDate.of(2024, 12, 25) // Christmas
+//	        // Add more holidays as required
+//	    );
 
 	@Override
 	public DashboardResponseDto getCheckInCountsByAssemblyPoint(Long emergencyActivateId) {
@@ -63,6 +76,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
 		List<Map<String, Object>> headCountList = new ArrayList<>();
+		long totalUnCheckInCount = 0;
 
 		List<String> buildingNames = new ArrayList<>();
 		List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
@@ -210,9 +224,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 				dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 			}
 		}
-
-		long totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
-
+		if(headCountList.size() > 0) {
+			totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
+		}
 		dashboardDto.setCheckInCounts(checkInCounts);
 		dashboardDto.setTotalCheckInCount(totalCheckInCount);
 		dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
@@ -556,4 +570,58 @@ public class DashBoardServiceImpl implements DashBoardService {
 		return base64String;
 	}
 
+	@Override
+	public List<LocalDate> getWeekendsAndWeekdays(LocalDate fromDate, LocalDate toDate) {
+		// TODO Auto-generated method stub
+		List<LocalDate> weekends = new ArrayList<>();
+        List<LocalDate> weekdays = new ArrayList<>();
+        
+        LocalDate currentDate = fromDate;
+        
+        while (!currentDate.isAfter(toDate)) {
+            DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                weekends.add(currentDate);
+            } else {
+                weekdays.add(currentDate);
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+                
+        List<LocalDate> result = new ArrayList<>();
+        result.addAll(weekends);
+        result.addAll(weekdays);
+        return result;
+    
+	}
+
+	
+	
+	@Override
+	public MalaysiaCalendarDto getMalaysiaCalendar(LocalDate fromDate, LocalDate toDate) {
+		// TODO Auto-generated method stub
+		List<LocalDate> weekends = new ArrayList<>();
+        List<LocalDate> weekdays = new ArrayList<>();
+        List<LocalDate> holidays = new ArrayList<>();
+
+        // Loop through each day between fromDate and toDate
+        long numOfDays = ChronoUnit.DAYS.between(fromDate, toDate);
+
+        for (int i = 0; i <= numOfDays; i++) {
+            LocalDate currentDate = fromDate.plusDays(i);
+            DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+
+//            if (publicHolidays.contains(currentDate)) {
+//                holidays.add(currentDate);
+//            } else if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+//                weekends.add(currentDate);
+//            } else {
+//                weekdays.add(currentDate);
+//            }
+        }
+
+        return new MalaysiaCalendarDto(weekdays, weekends, holidays);
+	}
+	
+	
 }
