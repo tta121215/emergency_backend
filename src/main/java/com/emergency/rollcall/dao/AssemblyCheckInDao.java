@@ -364,7 +364,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
-			+ "AND ps.NAME <> 'Rejected' AND pwa.current_location IN (:params) "
+			+ "AND ps.NAME <> 'Rejected' AND (pwa.current_location IN (:params) OR pwa.DOOR_NAME IN (:doors)) "
 			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location "
 //			+ "ORDER BY CASE WHEN :sortColumn = 'FULLNAME' THEN pvp.FULLNAME" 
 //	        + "WHEN :sortColumn = 'DEPARTMENT' THEN pdl.NAME "
@@ -393,7 +393,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
-					+ "AND ps.NAME <> 'Rejected' AND pwa.current_location IN (:params) "
+					+ "AND ps.NAME <> 'Rejected' AND (pwa.current_location IN (:params) OR pwa.DOOR_NAME IN (:doors))"
 					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location "
 //					+ "ORDER BY CASE WHEN :sortColumn = 'FULLNAME' THEN pvp.FULLNAME" 
 //			        + "WHEN :sortColumn = 'DEPARTMENT' THEN pdl.NAME "
@@ -401,7 +401,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 //			        + "WHEN :sortColumn = 'VISITORORVIP' THEN pvp.VISITORORVIP END ,"
 //			        + "DECODE(:sortDirection, 'ASC', 1, 'DESC', -1) "
 					,nativeQuery = true)
-	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params);
+	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors);
 	
 	@Query(value = "SELECT icnumber FROM PYM_User where staffid =:staffid", nativeQuery = true)
 	String findICByUser(@Param("staffid") String staffid );
@@ -458,7 +458,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
-			+ "AND ps.NAME <> 'Rejected' AND pwa.current_location IN (:params) "
+			+ "AND ps.NAME <> 'Rejected' AND (pwa.current_location IN (:params) OR pwa.DOOR_NAME IN (:doors)) "
 			+ "AND ( LOWER(pvp.FULLNAME) LIKE LOWER('%' || :search || '%') OR LOWER(pvp.VISITORORVIP) LIKE LOWER('%' || :search || '%')"
 			+ "OR LOWER(pvp.ICNO) LIKE LOWER('%' || :search || '%') OR LOWER(pdl.NAME) LIKE LOWER('%' || :search || '%') "
 			+ "OR LOWER(pvp.STAFFNO) LIKE LOWER('%' || :search || '%') OR LOWER(pvp.CONTACTNO) LIKE LOWER('%' || :search || '%') )"			
@@ -486,14 +486,14 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
-					+ "AND ps.NAME <> 'Rejected' AND pwa.current_location IN (:params) "
+					+ "AND ps.NAME <> 'Rejected' AND (pwa.current_location IN (:params) OR pwa.DOOR_NAME IN (:doors)) "
 					+ "AND ( LOWER(pvp.FULLNAME) LIKE LOWER('%' || :search || '%') OR LOWER(pvp.VISITORORVIP) LIKE LOWER('%' || :search || '%')"
 					+ "OR LOWER(pvp.ICNO) LIKE LOWER('%' || :search || '%') OR LOWER(pdl.NAME) LIKE LOWER('%' || :search || '%') "
 					+ "OR LOWER(pvp.STAFFNO) LIKE LOWER('%' || :search || '%') OR LOWER(pvp.CONTACTNO) LIKE LOWER('%' || :search || '%')) "			
 					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO "
 
 					,nativeQuery = true)
-	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params, @Param("search") String search);
+	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors, @Param("search") String search);
 
 
 }
