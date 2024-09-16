@@ -2,9 +2,12 @@ package com.emergency.rollcall.service.Impl;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -598,11 +601,15 @@ public class ReportServiceImpl implements ReportService {
 		String mainString = "";
 		List<String> buildingNames = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
-
+		Calendar calendar = Calendar.getInstance();
 		try {
 			Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
 			if (emergencyOptional.isPresent()) {
 				eActivate = emergencyOptional.get();
+				String dateTimeString =  eActivate.getActivateDate()+" "+ eActivate.getActivateTime();
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+		        Date date = sdf.parse(dateTimeString);
+		        calendar.setTime(date);
 				List<Long> mainIds = new ArrayList<>();
 				if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
 					mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
@@ -656,9 +663,9 @@ public class ReportServiceImpl implements ReportService {
 		
 			System.out.println(doorNames.size()+" 1st room "+doorNames.get(0));
 			if(params == null || params.isEmpty()) {
-				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames,doorNames);
+				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames,doorNames,calendar);
 			} else {				
-				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames,doorNames, params);
+				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames,doorNames,calendar, params);
 			}
 			
 			if (!usersNotCheckedInPage.isEmpty()) {
