@@ -2,6 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -12,7 +13,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -55,11 +58,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 	private EmergencyActivateDao emergencyActivateDao;
 
 	@Autowired
-	private LocEmergencyDao locEmergencyDao;	
-	
+	private LocEmergencyDao locEmergencyDao;
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	
+
 //	private final List<LocalDate> publicHolidays = List.of(
 //	        LocalDate.of(2024, 1, 1),  // New Year's Day
 //	        LocalDate.of(2024, 2, 10), // Chinese New Year
@@ -76,163 +78,217 @@ public class DashBoardServiceImpl implements DashBoardService {
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
 		List<Map<String, Object>> headCountList = new ArrayList<>();
+		List<String> doorNames = new ArrayList<>();
 		long totalUnCheckInCount = 0;
+		Calendar calendar = Calendar.getInstance();
+		try {
+			List<String> buildingNames = new ArrayList<>();
+			List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 
-		List<String> buildingNames = new ArrayList<>();
-		List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
+			List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
+			Map<Long, Long> checkInCountMap = results.stream()
+					.collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
 
-		List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
-		Map<Long, Long> checkInCountMap = results.stream()
-				.collect(Collectors.toMap(result -> (Long) result[0], result -> (Long) result[1]));
+			List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
+			Map<Long, ZonedDateTime> maxCheckInTimeMap = maxCheckInTimes.stream()
+					.collect(Collectors.toMap(result -> (Long) result[0],
+							result -> ZonedDateTime.parse((String) result[1], DateTimeFormatter
+									.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
 
-		List<Object[]> maxCheckInTimes = assemblyCheckInDao.findMaxCheckInTimesByAssemblyPoint(emergencyActivateId);
-		Map<Long, ZonedDateTime> maxCheckInTimeMap = maxCheckInTimes.stream()
-				.collect(Collectors.toMap(result -> (Long) result[0], result -> ZonedDateTime.parse((String) result[1],
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
+			EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
 
-		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+			List<Long> mainIds = new ArrayList<>();
+			if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
+				mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
+						.map(Long::parseLong).collect(Collectors.toList());
+				List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
 
-		List<Long> mainIds = new ArrayList<>();
-		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
-			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
-					.map(Long::parseLong).collect(Collectors.toList());
-			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-
-			for (Object[] row : mainBuilding) {
-				buildingNames.add((String) row[1]);
+				for (Object[] row : mainBuilding) {
+					buildingNames.add((String) row[1]);
+					if (row[1].toString().contains("WMC")) {
+						doorNames.add("WMC");
+						doorNames.add("1.0.1 - GUARD HOUSE");
+						doorNames.add("1.0.2 - CCTV ROOM");
+						doorNames.add("1.0.3 - ADMIN POST CANTEEN");
+						doorNames.add("1.0.4 - ADMIN LOBBY");
+						doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
+						doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
+						doorNames.add("1.0.7 - OFFICE ADMIN");
+						doorNames.add("1.0.8 - OFFICE HSSE");
+						doorNames.add("1.0.9 - SERVER ROOM");
+						doorNames.add("1.0.10 - OFFICE RIGHT WING");
+						doorNames.add("1.0.11 - OFFICE ENG/OPS");
+						doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
+						doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
+						doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
+						doorNames.add("1.0.15 - MCC ROOM");
+						doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+						doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+						doorNames.add("1.0.17 - MAINTENANCE STORE");
+					}
+					if (row[1].toString().contains("EPIC")) {
+						doorNames.add("2.0.1 - GF RECEPTION AREA");
+						doorNames.add("2.0.2 - SERVER ROOM EPIC");
+						doorNames.add("2.0.3 - L1 SAFETY");
+						doorNames.add("2.0.4 - L1 SUSTAINABILITY");
+					}
+					if (row[1].toString().contains("Mercu")) {
+						doorNames.add("3.0.1 - LVL 12");
+						doorNames.add("3.0.2 - LVL 13");
+					}
+					if (row[1].toString().contains("Lok Kawi")) {
+						doorNames.add("4.0.1 - LOK KAWI - TA");
+					}
+					if (row[1].toString().contains("KKIP")) {
+						doorNames.add("5.0.1 - KKIP TA");
+						doorNames.add("5.0.2 - KKIP DA");
+						doorNames.add("5.0.3 - KKIP WAREHOUSE");
+					}
+				}
+				String dateTimeString = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+				Date date = sdf.parse(dateTimeString);
+				calendar.setTime(date);
+				headCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames, calendar);
 			}
-			headCountList = assemblyCheckInDao.findHeadCount(buildingNames);
-		}
-		if (emergencyActivate.getStartTime() != null) {
-			ZonedDateTime emergencyStartTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
-					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
-			checkInCounts = allAssemblies.stream().map(assembly -> {
-				Long assemblyPointId = assembly.getSyskey();
-
-				ZonedDateTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId,
-						ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur")));
-
-				Duration duration = Duration.between(emergencyStartTime, maxCheckInTime);
-//				long hours = duration.toHoursPart();
-//				long minutes = duration.toMinutesPart();
-//				long seconds = duration.toSecondsPart();
-
-//				long hoursNew = duration.toHours();
-//				long minutesNew = duration.toMinutes() % 60;
-//				long secondsNew = duration.toSeconds() % 60;
-
-				long days = ChronoUnit.DAYS.between(emergencyStartTime, maxCheckInTime);
-				long hoursNew = ChronoUnit.HOURS.between(emergencyStartTime, maxCheckInTime) % 24;
-				long minutesNew = ChronoUnit.MINUTES.between(emergencyStartTime, maxCheckInTime) % 60;
-				long secondsNew = ChronoUnit.SECONDS.between(emergencyStartTime, maxCheckInTime) % 60;
-				if (days > 0) {
-					hoursNew += days * 24;
-				}
-
-//				 long totalSeconds = duration.getSeconds();
-//			        long hoursNew = totalSeconds / 3600; // Calculate hours
-//			        long minutesNew = (totalSeconds % 3600) / 60; // Calculate minutes part
-//			        long secondsNew = totalSeconds % 60; // Calculate seconds part
-
-				String totalTimeTaken = String.format("%02d:%02d:%02d", hoursNew, minutesNew, secondsNew);
-				Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
-				if (checkInCount == 0) {
-					totalTimeTaken = "00:00:00";
-				}
-				return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),
-						totalTimeTaken);
-			}).collect(Collectors.toList());
-		}
-
-		List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
-
-		List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
-				.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
-
-		long totalCheckInCount = (long) checkedInUsers.size();
-		dashboardDto.setAverageTime("00: 00 : 00");
-		dashboardDto.setTotalTime("00 : 00 : 00");
-
-		if (emergencyActivate != null) {
-			if (emergencyActivate.getActivateStatus() == 2) {
-				ZonedDateTime startTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
+			if (emergencyActivate.getStartTime() != null) {
+				ZonedDateTime emergencyStartTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
-				ZonedDateTime endTime = ZonedDateTime.parse(emergencyActivate.getEndTime(),
-						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
-				Duration duration = Duration.between(startTime, endTime);
-				long totalTimeInMinutes = duration.toMinutes();
-				long days = duration.toDays();
-				long hours = duration.toHours() % 24;
-				long minutes = duration.toMinutes() % 60;
-				long seconds = duration.getSeconds() % 60;
+				checkInCounts = allAssemblies.stream().map(assembly -> {
+					Long assemblyPointId = assembly.getSyskey();
 
-				if (days > 0) {
-					days = days * 24;
-				}
-				hours = hours + days;
-				String hoursstr = "";
-				if (hours < 10) {
-					hoursstr = "0" + hours;
-				} else {
-					hoursstr = "" + hours;
-				}
-				String minutesstr = "";
-				if (minutes < 10) {
-					minutesstr = "0" + minutes;
-				} else {
-					minutesstr = "" + minutes;
-				}
-				String secondstr = "";
-				if (seconds < 10) {
-					secondstr = "0" + seconds;
-				} else {
-					secondstr = "" + seconds;
-				}
-				dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
-				long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+					ZonedDateTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId,
+							ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur")));
 
-				Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+					Duration duration = Duration.between(emergencyStartTime, maxCheckInTime);
+//					long hours = duration.toHoursPart();
+//					long minutes = duration.toMinutesPart();
+//					long seconds = duration.toSecondsPart();
 
-				long totalTimeInSeconds = totalTimeInMinutes * 60;
+//					long hoursNew = duration.toHours();
+//					long minutesNew = duration.toMinutes() % 60;
+//					long secondsNew = duration.toSeconds() % 60;
 
-				long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
+					long days = ChronoUnit.DAYS.between(emergencyStartTime, maxCheckInTime);
+					long hoursNew = ChronoUnit.HOURS.between(emergencyStartTime, maxCheckInTime) % 24;
+					long minutesNew = ChronoUnit.MINUTES.between(emergencyStartTime, maxCheckInTime) % 60;
+					long secondsNew = ChronoUnit.SECONDS.between(emergencyStartTime, maxCheckInTime) % 60;
+					if (days > 0) {
+						hoursNew += days * 24;
+					}
 
-				Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
+//					 long totalSeconds = duration.getSeconds();
+//				        long hoursNew = totalSeconds / 3600; // Calculate hours
+//				        long minutesNew = (totalSeconds % 3600) / 60; // Calculate minutes part
+//				        long secondsNew = totalSeconds % 60; // Calculate seconds part
 
-				long avghours = averageDuration1.toHours() % 24;
-				long avgminutes = averageDuration1.toMinutes() % 60;
-				long avgseconds = averageDuration1.getSeconds() % 60;
-
-				String avghoursstr = "";
-				if (avghours < 10) {
-					avghoursstr = "0" + avghours;
-				} else {
-					avghoursstr = "" + avghours;
-				}
-				String avgminutesstr = "";
-				if (avgminutes < 10) {
-					avgminutesstr = "0" + avgminutes;
-				} else {
-					avgminutesstr = "" + avgminutes;
-				}
-				String avgsecondstr = "";
-				if (avgseconds < 10) {
-					avgsecondstr = "0" + avgseconds;
-				} else {
-					avgsecondstr = "" + avgseconds;
-				}
-				dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
+					String totalTimeTaken = String.format("%02d:%02d:%02d", hoursNew, minutesNew, secondsNew);
+					Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
+					if (checkInCount == 0) {
+						totalTimeTaken = "00:00:00";
+					}
+					return new AssemblyPointCheckInDto(assembly.getName(), checkInCount, assembly.getSyskey(),
+							totalTimeTaken);
+				}).collect(Collectors.toList());
 			}
+
+			List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
+
+			List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
+					.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
+
+			long totalCheckInCount = (long) checkedInUsers.size();
+			dashboardDto.setAverageTime("00: 00 : 00");
+			dashboardDto.setTotalTime("00 : 00 : 00");
+
+			if (emergencyActivate != null) {
+				if (emergencyActivate.getActivateStatus() == 2) {
+					ZonedDateTime startTime = ZonedDateTime.parse(emergencyActivate.getStartTime(), DateTimeFormatter
+							.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
+					ZonedDateTime endTime = ZonedDateTime.parse(emergencyActivate.getEndTime(), DateTimeFormatter
+							.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
+					Duration duration = Duration.between(startTime, endTime);
+					long totalTimeInMinutes = duration.toMinutes();
+					long days = duration.toDays();
+					long hours = duration.toHours() % 24;
+					long minutes = duration.toMinutes() % 60;
+					long seconds = duration.getSeconds() % 60;
+
+					if (days > 0) {
+						days = days * 24;
+					}
+					hours = hours + days;
+					String hoursstr = "";
+					if (hours < 10) {
+						hoursstr = "0" + hours;
+					} else {
+						hoursstr = "" + hours;
+					}
+					String minutesstr = "";
+					if (minutes < 10) {
+						minutesstr = "0" + minutes;
+					} else {
+						minutesstr = "" + minutes;
+					}
+					String secondstr = "";
+					if (seconds < 10) {
+						secondstr = "0" + seconds;
+					} else {
+						secondstr = "" + seconds;
+					}
+					dashboardDto.setTotalTime(hoursstr + ":" + minutesstr + ":" + secondstr);
+					long averageTimePerCheckIn = totalCheckInCount > 0 ? totalTimeInMinutes / totalCheckInCount : 0;
+
+					Duration averageDuration = Duration.ofMinutes((long) averageTimePerCheckIn);
+
+					long totalTimeInSeconds = totalTimeInMinutes * 60;
+
+					long averageTimeInSeconds = totalCheckInCount > 0 ? totalTimeInSeconds / totalCheckInCount : 0;
+
+					Duration averageDuration1 = Duration.ofSeconds(averageTimeInSeconds);
+
+					long avghours = averageDuration1.toHours() % 24;
+					long avgminutes = averageDuration1.toMinutes() % 60;
+					long avgseconds = averageDuration1.getSeconds() % 60;
+
+					String avghoursstr = "";
+					if (avghours < 10) {
+						avghoursstr = "0" + avghours;
+					} else {
+						avghoursstr = "" + avghours;
+					}
+					String avgminutesstr = "";
+					if (avgminutes < 10) {
+						avgminutesstr = "0" + avgminutes;
+					} else {
+						avgminutesstr = "" + avgminutes;
+					}
+					String avgsecondstr = "";
+					if (avgseconds < 10) {
+						avgsecondstr = "0" + avgseconds;
+					} else {
+						avgsecondstr = "" + avgseconds;
+					}
+					dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
+				}
+			}
+			if (headCountList.size() > 0) {
+				totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
+			}
+			dashboardDto.setCheckInCounts(checkInCounts);
+			dashboardDto.setTotalCheckInCount(totalCheckInCount);
+			dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
+			dashboardDto.setTotalHeadCount((long) headCountList.size());
+			dashboardDto.setStartTime(emergencyActivate.getStartTime());
+			return dashboardDto;
+		} catch (DataAccessException dae) {
+			System.err.println("Database error occurred: " + dae.getMessage());
+			throw new RuntimeException("Database error occurred, please try again later.", dae);
+		} catch (Exception e) {
+			System.err.println("An unexpected error occurred: " + e.getMessage());
+			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
-		if(headCountList.size() > 0) {
-			totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
-		}
-		dashboardDto.setCheckInCounts(checkInCounts);
-		dashboardDto.setTotalCheckInCount(totalCheckInCount);
-		dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
-		dashboardDto.setTotalHeadCount((long) headCountList.size());
-		dashboardDto.setStartTime(emergencyActivate.getStartTime());
-		return dashboardDto;
+
 	}
 
 	@Override
@@ -410,7 +466,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 			String params) {
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(activateId).orElse(null);
 		List<String> buildingNames = new ArrayList<>();
+		List<String> doorNames = new ArrayList<>();
 		List<Long> mainIds = new ArrayList<>();
+		Calendar calendar = Calendar.getInstance();
+
 		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
 					.map(Long::parseLong).collect(Collectors.toList());
@@ -418,6 +477,45 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 			for (Object[] row : mainBuilding) {
 				buildingNames.add((String) row[1]);
+				if (row[1].toString().contains("WMC")) {
+					doorNames.add("WMC");
+					doorNames.add("1.0.1 - GUARD HOUSE");
+					doorNames.add("1.0.2 - CCTV ROOM");
+					doorNames.add("1.0.3 - ADMIN POST CANTEEN");
+					doorNames.add("1.0.4 - ADMIN LOBBY");
+					doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
+					doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
+					doorNames.add("1.0.7 - OFFICE ADMIN");
+					doorNames.add("1.0.8 - OFFICE HSSE");
+					doorNames.add("1.0.9 - SERVER ROOM");
+					doorNames.add("1.0.10 - OFFICE RIGHT WING");
+					doorNames.add("1.0.11 - OFFICE ENG/OPS");
+					doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
+					doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
+					doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
+					doorNames.add("1.0.15 - MCC ROOM");
+					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+					doorNames.add("1.0.17 - MAINTENANCE STORE");
+				}
+				if (row[1].toString().contains("EPIC")) {
+					doorNames.add("2.0.1 - GF RECEPTION AREA");
+					doorNames.add("2.0.2 - SERVER ROOM EPIC");
+					doorNames.add("2.0.3 - L1 SAFETY");
+					doorNames.add("2.0.4 - L1 SUSTAINABILITY");
+				}
+				if (row[1].toString().contains("Mercu")) {
+					doorNames.add("3.0.1 - LVL 12");
+					doorNames.add("3.0.2 - LVL 13");
+				}
+				if (row[1].toString().contains("Lok Kawi")) {
+					doorNames.add("4.0.1 - LOK KAWI - TA");
+				}
+				if (row[1].toString().contains("KKIP")) {
+					doorNames.add("5.0.1 - KKIP TA");
+					doorNames.add("5.0.2 - KKIP DA");
+					doorNames.add("5.0.3 - KKIP WAREHOUSE");
+				}
 			}
 		}
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -427,15 +525,19 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<StaffDto> staffDtoList = new ArrayList<>();
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
-
 		try {
+			String dateTimeString = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+			Date date = sdf.parse(dateTimeString);
+			calendar.setTime(date);
+
 			if (params == null || params.isEmpty()) {
 
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						buildingNames, pageRequest);
+						buildingNames, pageRequest, doorNames, calendar);
 			} else {
-				usersNotCheckedInPage = assemblyCheckInDao.findNotCheckIn(activateId,
-						pageRequest, buildingNames, params);
+				usersNotCheckedInPage = assemblyCheckInDao.findNotCheckIn(activateId, pageRequest, buildingNames,
+						params, doorNames, calendar);
 			}
 
 			if (!usersNotCheckedInPage.isEmpty()) {
@@ -504,7 +606,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 			}
 			if ("department".equalsIgnoreCase(sortBy)) {
 				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as null
+						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as
+																							// null
 						Comparator.nullsLast(String::compareTo));
 
 				if (sortDirection.isDescending()) {
@@ -574,42 +677,40 @@ public class DashBoardServiceImpl implements DashBoardService {
 	public List<LocalDate> getWeekendsAndWeekdays(LocalDate fromDate, LocalDate toDate) {
 		// TODO Auto-generated method stub
 		List<LocalDate> weekends = new ArrayList<>();
-        List<LocalDate> weekdays = new ArrayList<>();
-        
-        LocalDate currentDate = fromDate;
-        
-        while (!currentDate.isAfter(toDate)) {
-            DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
-            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
-                weekends.add(currentDate);
-            } else {
-                weekdays.add(currentDate);
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-                
-        List<LocalDate> result = new ArrayList<>();
-        result.addAll(weekends);
-        result.addAll(weekdays);
-        return result;
-    
+		List<LocalDate> weekdays = new ArrayList<>();
+
+		LocalDate currentDate = fromDate;
+
+		while (!currentDate.isAfter(toDate)) {
+			DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+			if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+				weekends.add(currentDate);
+			} else {
+				weekdays.add(currentDate);
+			}
+			currentDate = currentDate.plusDays(1);
+		}
+
+		List<LocalDate> result = new ArrayList<>();
+		result.addAll(weekends);
+		result.addAll(weekdays);
+		return result;
+
 	}
 
-	
-	
 	@Override
 	public MalaysiaCalendarDto getMalaysiaCalendar(LocalDate fromDate, LocalDate toDate) {
 		// TODO Auto-generated method stub
 		List<LocalDate> weekends = new ArrayList<>();
-        List<LocalDate> weekdays = new ArrayList<>();
-        List<LocalDate> holidays = new ArrayList<>();
+		List<LocalDate> weekdays = new ArrayList<>();
+		List<LocalDate> holidays = new ArrayList<>();
 
-        // Loop through each day between fromDate and toDate
-        long numOfDays = ChronoUnit.DAYS.between(fromDate, toDate);
+		// Loop through each day between fromDate and toDate
+		long numOfDays = ChronoUnit.DAYS.between(fromDate, toDate);
 
-        for (int i = 0; i <= numOfDays; i++) {
-            LocalDate currentDate = fromDate.plusDays(i);
-            DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+		for (int i = 0; i <= numOfDays; i++) {
+			LocalDate currentDate = fromDate.plusDays(i);
+			DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
 
 //            if (publicHolidays.contains(currentDate)) {
 //                holidays.add(currentDate);
@@ -618,10 +719,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 //            } else {
 //                weekdays.add(currentDate);
 //            }
-        }
+		}
 
-        return new MalaysiaCalendarDto(weekdays, weekends, holidays);
+		return new MalaysiaCalendarDto(weekdays, weekends, holidays);
 	}
-	
-	
+
 }
