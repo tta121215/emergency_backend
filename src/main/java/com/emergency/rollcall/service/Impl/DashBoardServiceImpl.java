@@ -80,7 +80,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<Map<String, Object>> headCountList = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
 		long totalUnCheckInCount = 0;
-		Calendar calendar = Calendar.getInstance();
+		String calendar = "";
 		try {
 			List<String> buildingNames = new ArrayList<>();
 			List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
@@ -145,10 +145,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 						doorNames.add("5.0.3 - KKIP WAREHOUSE");
 					}
 				}
-				String dateTimeString = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-				Date date = sdf.parse(dateTimeString);
-				calendar.setTime(date);
+				calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+//				Date date = sdf.parse(dateTimeString);
+			//	calendar.setTime(date);
 				headCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames, calendar);
 			}
 			if (emergencyActivate.getStartTime() != null) {
@@ -272,9 +272,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 				}
 			}
-			if (headCountList.size() > 0) {
+		//	if (headCountList.size() > 0) {
 				totalUnCheckInCount = headCountList.size() - checkedInUsers.size();
-			}
+		//	}
 			dashboardDto.setCheckInCounts(checkInCounts);
 			dashboardDto.setTotalCheckInCount(totalCheckInCount);
 			dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
@@ -468,7 +468,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<String> buildingNames = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
 		List<Long> mainIds = new ArrayList<>();
-		Calendar calendar = Calendar.getInstance();
+		String calendar = "";
 
 		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
@@ -526,10 +526,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
 		try {
-			String dateTimeString = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-			Date date = sdf.parse(dateTimeString);
-			calendar.setTime(date);
+			 calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+//			Date date = sdf.parse(dateTimeString);
+//			calendar.setTime(date);
 
 			if (params == null || params.isEmpty()) {
 

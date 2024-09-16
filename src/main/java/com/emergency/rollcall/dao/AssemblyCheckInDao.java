@@ -78,7 +78,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			+ "WHERE ("
 			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 			+ "    OR "
-			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
@@ -103,7 +103,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 					+ "WHERE ("
 					+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 					+ "    OR "
-					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
@@ -112,7 +112,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 					
 					,nativeQuery = true)
 Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
-	@Param("emergencyActivateId") Long emergencyActivateId,@Param("params") List<String> params, Pageable pageable,@Param("doors") List<String> doors,@Param("calendar")Calendar calendar);
+	@Param("emergencyActivateId") Long emergencyActivateId,@Param("params") List<String> params, Pageable pageable,@Param("doors") List<String> doors,@Param("calendar")String calendar);
 	
 	@Query(value = "SELECT distinct pdl.NAME AS deptName ,pvp.FULLNAME AS username, pvp.VISITORORVIP AS visitor,pvp.CONTACTNO AS mobileNo ,pvp.COMPANYNAME,pvp.STAFFNO AS staffid,pvp.ICNO AS icnumber, pvp.ID,pvp.email AS Email "
 			+ "FROM PYM_VENDOR_PASS pvp "
@@ -133,7 +133,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ "WHERE ("
 			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 			+ "    OR "
-			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
@@ -161,7 +161,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ "WHERE ("
 					+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 					+ "    OR "
-					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
@@ -173,7 +173,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					
 					,nativeQuery = true)
 	Page<Map<String, Object>> findNotCheckIn(
-			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable,@Param("mainBuilding") List<String> mainBuilding,@Param("search") String search,@Param("doors") List<String> doors,@Param("calendar")Calendar calendar);
+			@Param("emergencyActivateId") Long emergencyActivateId, Pageable pageable,@Param("mainBuilding") List<String> mainBuilding,@Param("search") String search,@Param("doors") List<String> doors,@Param("calendar")String calendar);
 
 //	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 //			+ "AND ac.emergency_syskey = :emergencyActivateId " 
@@ -361,7 +361,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ "WHERE ("
 			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 			+ "    OR "
-			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
@@ -390,7 +390,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ "WHERE ("
 					+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 					+ "    OR "
-					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
@@ -402,13 +402,12 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 //			        + "WHEN :sortColumn = 'VISITORORVIP' THEN pvp.VISITORORVIP END ,"
 //			        + "DECODE(:sortDirection, 'ASC', 1, 'DESC', -1) "
 					,nativeQuery = true)
-	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")Calendar calendar);
+	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")String calendar);
 	
 	@Query(value = "SELECT icnumber FROM PYM_User where staffid =:staffid", nativeQuery = true)
 	String findICByUser(@Param("staffid") String staffid );
 	
-	@Query(value = "SELECT distinct pwa.CHECKIN , pwa.CHECKOUT , pdl.NAME , PVP.DEPARTMENT , pvpc.COLLECT_DATE , pvpc.RETURNCARDDATE,pvp.NAMEOFPERSONVISITED ,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO  ,pvp.COMPANYNAME,pvp.STAFFNO,pvp.REASON ,pvp.ID,pwa.DOOR_NAME "
-			+ ",LISTAGG(PLAL.NAME, ', ') WITHIN GROUP (ORDER BY PLAL.NAME) as locName,pwa.current_location FROM PYM_VENDOR_PASS pvp "
+	@Query(value = "SELECT distinct pwa.CHECKIN FROM PYM_VENDOR_PASS pvp "
 			+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
 			+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
 			+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
@@ -426,7 +425,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ "WHERE ("
 			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 			+ "    OR "
-			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
@@ -434,7 +433,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location "
 			
 			,nativeQuery = true)
-	List<Map<String, Object>> findHeadCount(@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")Calendar calendar);
+	List<Map<String, Object>> findHeadCount(@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")String calendar);
 	
 	@Query(value = "SELECT distinct pwa.CHECKIN , pwa.CHECKOUT , pdl.NAME , PVP.DEPARTMENT , pvpc.COLLECT_DATE , pvpc.RETURNCARDDATE,pvp.NAMEOFPERSONVISITED ,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO  ,pvp.COMPANYNAME,pvp.STAFFNO,pvp.REASON ,pvp.ID,pwa.DOOR_NAME "
 			+ ",LISTAGG(PLAL.NAME, ', ') WITHIN GROUP (ORDER BY PLAL.NAME) as locName,pwa.current_location,pvp.ICNO FROM PYM_VENDOR_PASS pvp "
@@ -455,7 +454,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 			+ "WHERE ("
 			+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 			+ "    OR "
-			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+			+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 			+ " OR "
 			+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 			+ " ) "
@@ -483,7 +482,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ "WHERE ("
 					+ "    (pvp.VISITORORVIP LIKE '%VISITOR%' AND PVPC.RETURNCARDDATE IS NULL AND PVPC.COLLECT_DATE IS NOT NULL AND  PVPC.COLLECT_DATE IS NOT null) "
 					+ "    OR "
-					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN >:calendar) "
+					+ "    (pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) and pwa.INPREMESIS = 1 AND pwa.CHECKIN <TO_TIMESTAMP(:calendar, 'YYYYMMDD HH24:MI')) "
 					+ " OR "
 					+ " (pwa.SOURCE = 'Mobile' AND pwa.current_location IS NOT NULL  AND pvp.VISITORORVIP LIKE '%STAFF%' AND pwa.CHECKIN IS NOT NULL AND (pwa.CHECKOUT IS NULL OR pwa.CHECKOUT = pwa.CHECKIN) AND  pwa.CHECKIN > trunc(SYSDATE)) "
 					+ " ) "
@@ -494,7 +493,7 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 					+ "GROUP BY pwa.CHECKIN, pwa.CHECKOUT, pdl.NAME, PVP.DEPARTMENT, pvpc.COLLECT_DATE, pvpc.RETURNCARDDATE, pvp.NAMEOFPERSONVISITED, pvp.FULLNAME, pvp.VISITORORVIP, pvp.CONTACTNO, pvp.COMPANYNAME, pvp.STAFFNO, pvp.REASON, pvp.ID, pwa.DOOR_NAME,pwa.current_location,pvp.ICNO "
 
 					,nativeQuery = true)
-	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")Calendar calendar, @Param("search") String search);
+	Page<Map<String, Object>> findHeadCountReport(Pageable pageable,@Param("params") List<String> params,@Param("doors") List<String> doors,@Param("calendar")String calendar, @Param("search") String search);
 
 
 }

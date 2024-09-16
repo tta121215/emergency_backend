@@ -142,7 +142,7 @@ public class ReportServiceImpl implements ReportService {
 		List<String> buildingNames = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
 		List<Long> mainIds = new ArrayList<>();
-		Calendar calendar = Calendar.getInstance();
+		String calendar = "";
 		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
 					.map(Long::parseLong).collect(Collectors.toList());
@@ -213,10 +213,10 @@ public class ReportServiceImpl implements ReportService {
 
 		Page<Map<String, Object>> usersNotCheckedInPage;
 		try {
-			String dateTimeString = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-			Date date = sdf.parse(dateTimeString);
-			calendar.setTime(date);
+			 calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+//			Date date = sdf.parse(dateTimeString);
+//			calendar.setTime(date);
 
 			if (params == null || params.isEmpty()) {
 				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
@@ -633,6 +633,7 @@ public class ReportServiceImpl implements ReportService {
 //		default:
 //			sortColumn = "FULLNAME"; // Default to fullname if no valid sortBy
 //		}
+		
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
 		// Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection,
@@ -648,15 +649,14 @@ public class ReportServiceImpl implements ReportService {
 		String mainString = "";
 		List<String> buildingNames = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
-		Calendar calendar = Calendar.getInstance();
+		String calendar = "";
 		try {
 			Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
 			if (emergencyOptional.isPresent()) {
 				eActivate = emergencyOptional.get();
-				String dateTimeString = eActivate.getActivateDate() + " " + eActivate.getActivateTime();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-				Date date = sdf.parse(dateTimeString);
-				calendar.setTime(date);
+				calendar = eActivate.getActivateDate() + " " + eActivate.getActivateTime();
+//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
+//				Date date = sdf.parse(dateTimeString);
 				List<Long> mainIds = new ArrayList<>();
 				if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
 					mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
