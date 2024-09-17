@@ -309,7 +309,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "ic_number");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staff_Or_Visitor");
+			sort = Sort.by(sortDirection, "staff_no");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -340,7 +340,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setMobileNo((String) staff.get("contact_Number"));
 					detailDto.setIcnumber((String) staff.get("ic_number"));
-					detailDto.setStaffId((String) staff.get("staff_or_visitor"));
+					detailDto.setStaffId((String) staff.get("staff_no"));
 					detailDto.setDepartment((String) staff.get("department"));
 					detailDto.setType((String) staff.get("type"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -374,7 +374,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "ic_number");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staff_Or_Visitor");
+			sort = Sort.by(sortDirection, "staff_no");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -408,7 +408,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setMobileNo((String) staff.get("contact_Number"));
 					detailDto.setIcnumber((String) staff.get("ic_number"));
-					detailDto.setStaffId((String) staff.get("staff_or_visitor"));
+					detailDto.setStaffId((String) staff.get("staff_no"));
 					detailDto.setDepartment((String) staff.get("department"));
 					detailDto.setType((String) staff.get("type"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -445,7 +445,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "icNumber");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffOrVisitor");
+			sort = Sort.by(sortDirection, "staffNo");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -475,7 +475,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					staffDto.setIcnumber((String) staff.getIcNumber());
 					staffDto.setDepartment(staff.getDepartment());
 					staffDto.setType(staff.getType());
-					staffDto.setStaffId(staff.getStaffOrVisitor());
+					staffDto.setStaffId(staff.getStaffNo());
 					// staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());

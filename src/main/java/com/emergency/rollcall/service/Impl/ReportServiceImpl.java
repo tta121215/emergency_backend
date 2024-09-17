@@ -60,7 +60,7 @@ public class ReportServiceImpl implements ReportService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "ic_number");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staff_Or_Visitor");
+			sort = Sort.by(sortDirection, "staff_no");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -89,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
 					detailDto.setName((String) staff.get("name"));
 					detailDto.setMobileNo((String) staff.get("contact_Number"));
 					detailDto.setIcnumber((String) staff.get("ic_number"));
-					detailDto.setStaffId((String) staff.get("staff_or_visitor"));
+					detailDto.setStaffId((String) staff.get("staff_no"));
 					detailDto.setDepartment((String) staff.get("department"));
 					detailDto.setType((String) staff.get("type"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
@@ -126,7 +126,7 @@ public class ReportServiceImpl implements ReportService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "icNumber");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffOrVisitor");
+			sort = Sort.by(sortDirection, "staffNo");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -155,7 +155,7 @@ public class ReportServiceImpl implements ReportService {
 					staffDto.setIcnumber((String) staff.getIcNumber());
 					staffDto.setDepartment(staff.getDepartment());
 					staffDto.setType(staff.getType());
-					staffDto.setStaffId(staff.getStaffOrVisitor());
+					staffDto.setStaffId(staff.getStaffNo());
 					// staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());
@@ -196,7 +196,7 @@ public class ReportServiceImpl implements ReportService {
 					staffDto.setIcnumber((String) staff.getIcNumber());
 					staffDto.setDepartment(staff.getDepartment());
 					staffDto.setType(staff.getType());
-					staffDto.setStaffId(staff.getStaffOrVisitor());
+					staffDto.setStaffId(staff.getStaffNo());
 					// staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());
@@ -271,7 +271,7 @@ public class ReportServiceImpl implements ReportService {
 					detailDto.setIcnumber((String) staff.getIcNumber());
 					detailDto.setDepartment(staff.getDepartment());
 					detailDto.setType(staff.getType());
-					detailDto.setStaffId(staff.getStaffOrVisitor());
+					detailDto.setStaffId(staff.getStaffNo());
 					return detailDto;
 				}).collect(Collectors.toList());
 			}
@@ -454,7 +454,7 @@ public class ReportServiceImpl implements ReportService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "icNumber");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffOrVisitor");
+			sort = Sort.by(sortDirection, "staffNo");
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -486,7 +486,7 @@ public class ReportServiceImpl implements ReportService {
 					headCountDto.setUsername((String) headCount.getName());
 					headCountDto.setType((String) headCount.getType());
 					headCountDto.setMobileNo((String) headCount.getContactNumber());
-					headCountDto.setStaffId((String) headCount.getStaffOrVisitor());
+					headCountDto.setStaffId((String) headCount.getStaffNo());
 					headCountDto.setIcnumber(assemblyCheckInDao.findICByUser(headCountDto.getStaffId()));
 					return headCountDto;
 				}).collect(Collectors.toList());

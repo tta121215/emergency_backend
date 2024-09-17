@@ -30,7 +30,7 @@ public class AssemblyCheckIn {
 	private String name;
 	private String type;
 	private String icNumber;
-	private String staffOrVisitor;
+	private String staffNo;
 	private String department;
 	private String contactNumber;
 	private String location;
@@ -156,12 +156,12 @@ public class AssemblyCheckIn {
 		this.icNumber = icNumber;
 	}
 
-	public String getStaffOrVisitor() {
-		return staffOrVisitor;
+	public String getStaffNo() {
+		return staffNo;
 	}
 
-	public void setStaffOrVisitor(String staffOrVisitor) {
-		this.staffOrVisitor = staffOrVisitor;
+	public void setStaffNo(String staffNo) {
+		this.staffNo = staffNo;
 	}
 
 	public String getDepartment() {

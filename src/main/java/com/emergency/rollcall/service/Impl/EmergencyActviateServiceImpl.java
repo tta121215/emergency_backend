@@ -1254,7 +1254,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	                checkIn.setName((String) entry.get("FULLNAME"));
 	                checkIn.setType((String) entry.get("VISITORORVIP"));
 	                checkIn.setContactNumber((String) entry.get("CONTACTNO"));	                
-	                checkIn.setStaffOrVisitor((String) entry.get("STAFFNO"));
+	                checkIn.setStaffNo((String) entry.get("STAFFNO"));
 	                checkIn.setIcNumber((String) entry.get("ICNO"));
 	                checkIn.setEmergencySyskey(emergencyActivate.getSyskey());
 	                checkIn.setCheckInStatus(0);
