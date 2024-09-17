@@ -112,7 +112,7 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
 			+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.check_in_status = 1 ", countQuery = "SELECT COUNT(*) FROM Erc_assembly_check_in ac "
 					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
-					+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId AND ac.check_in_status = 1 ", nativeQuery = true)
+					+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.check_in_status = 1 ", nativeQuery = true)
 	Page<Map<String, Object>> findCheckedInByEmergency(@Param("emergencyActivateId") Long emergencyActivateId,
 			Pageable pageable);
 

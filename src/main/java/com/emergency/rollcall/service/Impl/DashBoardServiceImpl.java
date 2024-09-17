@@ -402,7 +402,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				// pageRequest,
 				// params);
 			}
-			if (!checkInPage.isEmpty()) {
+			if (!checkInPage.isEmpty()) {				
 				dashboardDetailDtoList = checkInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
 					detailDto.setUsername((String) staff.get("name"));
