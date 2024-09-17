@@ -48,7 +48,7 @@ public class AssemblyCheckInServiceImpl implements AssemblyCheckInService {
 		entity.setCurrenttime(strCurrentTime);
 		entity.setCheckInStatus(1);
 		logger.info("Saving assembly check in entity: " + entity);
-		if(entity.getSyskey() >0) {
+		if(data.getSyskey() >0 ) {
 			Optional<AssemblyCheckIn> checkInOptional = assemblyCheckInDao.findById(data.getSyskey());
 			if(checkInOptional.isPresent()) {
 				entity = checkInOptional.get();
@@ -57,7 +57,6 @@ public class AssemblyCheckInServiceImpl implements AssemblyCheckInService {
 				entity.setCurrenttime(strCurrentTime);
 				entity.setCheckInStatus(1);
 				entity.setAssemblyPoint(data.getAssemblyPoint());
-				
 				
 			}
 		}

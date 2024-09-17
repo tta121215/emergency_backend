@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -323,10 +324,12 @@ public class DashBoardServiceImpl implements DashBoardService {
 		Page<Map<String, Object>> usersCheckedInPage;
 		try {
 			if (params == null || params.isEmpty()) {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
+//				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
+//						pageRequest);
+				usersCheckedInPage = assemblyCheckInDao.findCheckedInByEmergencyAndAssembly(activateId, assemblyId,
 						pageRequest);
 			} else {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyAndAssembly(activateId, assemblyId,
+				usersCheckedInPage = assemblyCheckInDao.findCheckedInByEmergencyAndAssembly(activateId, assemblyId,
 						pageRequest, params);
 			}
 			if (!usersCheckedInPage.isEmpty()) {
@@ -381,58 +384,56 @@ public class DashBoardServiceImpl implements DashBoardService {
 	@Override
 	public Page<DashboardDetailDto> getByActivateId(Long activateId, int page, int size, String sortBy,
 			String direction, String params) {
+		
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(sortDirection, sortBy);
 		if (sortBy.equals("name")) {
 			sort = Sort.by(sortDirection, "name");
-		} else if (sortBy.equals("username")) {
-			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffid");
-		} else if (sortBy.equals("mobileno")) {
-			sort = Sort.by(sortDirection, "mobileno");
-		} else if (sortBy.equals("assemblyname")) {
-			sort = Sort.by(sortDirection, "a.name");
 		} else if (sortBy.equals("type")) {
-			sort = Sort.by(sortDirection, "v.visitororvip");
+			sort = Sort.by(sortDirection, "type");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icNumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffOrVisitor");			
 		} else if (sortBy.equals("department")) {
-			sort = Sort.by(sortDirection, "d.name");
+			sort = Sort.by(sortDirection, "department");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "contactNumber");
 		} else {
 			sort = Sort.by(sortDirection, "name");
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		Page<Map<String, Object>> usersCheckedInPage;
+		Page<AssemblyCheckIn> checkInPage;
 		try {
 			if (params == null || params.isEmpty()) {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest);
+				checkInPage = assemblyCheckInDao.getCheckInPage(activateId,pageRequest);
+				//usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest);
 			} else {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest,
-						params);
+				checkInPage = assemblyCheckInDao.getCheckInPage(activateId,pageRequest,params);
+				//usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest,
+				//		params);
 			}
-			if (!usersCheckedInPage.isEmpty()) {
-				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
+			if (!checkInPage.isEmpty()) {
+				dashboardDetailDtoList = checkInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
-					detailDto.setId((BigDecimal) staff.get("id"));
-					detailDto.setUsername((String) staff.get("username"));
-					detailDto.setEmail((String) staff.get("email"));
-					detailDto.setMobileNo((String) staff.get("mobileno"));
-					String icNumber = (String) staff.get("icnumber");
-					String passportNumber = (String) staff.get("passportnumber");
-					if (icNumber != null && !icNumber.isEmpty()) {
-						detailDto.setIcnumber(icNumber);
-					} else if (passportNumber != null && !passportNumber.isEmpty()) {
-						detailDto.setIcnumber(passportNumber);
-					} else {
-						detailDto.setIcnumber(" ");
+					
+					detailDto.setUsername(staff.getName());
+					
+					detailDto.setMobileNo(staff.getContactNumber());
+					detailDto.setIcnumber(staff.getIcNumber());
+					
+					detailDto.setStaffId(staff.getStaffOrVisitor());
+					detailDto.setName(staff.getName());
+					detailDto.setDepartment(staff.getDepartment());
+					detailDto.setType(staff.getType());
+					detailDto.setCheckInDate(staff.getCurrentdate());
+					detailDto.setCheckInTime(staff.getCurrenttime());
+					Optional<Assembly> assemblyOptional = assemblyDao.findById(staff.getAssemblyPoint());
+					if(assemblyOptional.isPresent()) {
+						detailDto.setAssemblyName(assemblyOptional.get().getName());
 					}
-					detailDto.setStaffId((String) staff.get("staffid"));
-					detailDto.setName((String) staff.get("name"));
-					detailDto.setDepartment((String) staff.get("deptName"));
-					detailDto.setType((String) staff.get("visitor"));
-					detailDto.setCheckInDate((String) staff.get("currentdate"));
-					detailDto.setCheckInTime((String) staff.get("currenttime"));
-					detailDto.setAssemblyName((String) staff.get("assembly"));
 					return detailDto;
 				}).collect(Collectors.toList());
 			}
@@ -442,9 +443,9 @@ public class DashBoardServiceImpl implements DashBoardService {
 //								: dto2.getIcnumber().compareTo(dto1.getIcnumber()));
 //			}
 //			
-			if ("icnumber".equalsIgnoreCase(sortBy)) {
+			if ("assemblyname".equalsIgnoreCase(sortBy)) {
 				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
-						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
+						dto -> dto.getAssemblyName().isEmpty() ? null : dto.getAssemblyName(), // Treat empty strings as null
 						Comparator.nullsLast(String::compareTo));
 
 				if (sortDirection.isDescending()) {
@@ -462,7 +463,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(dashboardDetailDtoList, pageRequest, usersCheckedInPage.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, checkInPage.getTotalElements());
 
 	}
 	
@@ -481,8 +482,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		} else if (sortBy.equals("icnumber")) {
 			sort = Sort.by(sortDirection, "icNumber");
 		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffOrVisitor");
-			System.out.println("staff " + sort.toString());
+			sort = Sort.by(sortDirection, "staffOrVisitor");			
 		} else if (sortBy.equals("department")) {
 			sort = Sort.by(sortDirection, "department");
 		} else if (sortBy.equals("mobileno")) {
@@ -499,7 +499,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 			if(params == null || params.isEmpty()) {
 				unCheckInPage = assemblyCheckInDao.getUnCheckInList(activateId, pageRequest);
 			}else {
-				unCheckInPage = assemblyCheckInDao.getUnCheckInList(activateId, pageRequest);
+				unCheckInPage = assemblyCheckInDao.getUnCheckInList(activateId, pageRequest, params);
 			}
 			System.out.println("Uncheck in " + unCheckInPage.getSize());
 			if(!unCheckInPage.isEmpty()) {

@@ -31,11 +31,20 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 1")
 	List<AssemblyCheckIn> getCheckInList(@Param("id") Long id);
 	
+	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 1")
+	Page<AssemblyCheckIn> getCheckInPage(@Param("id") Long id, Pageable pageable);
+	
+	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 1 AND (LOWER(a.name) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.icNumber) LIKE LOWER(CONCAT('%', :params, '%'))"
+			+ " OR LOWER(a.type) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.staffOrVisitor) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.department) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.contactNumber) LIKE LOWER(CONCAT('%', :params, '%')))")
+	Page<AssemblyCheckIn> getCheckInPage(@Param("id") Long id, Pageable pageable,@Param("params") String params);
+	
 	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 0")
 	Page<AssemblyCheckIn> getUnCheckInList(@Param("id") Long id, Pageable pageable);
 	
-
-
+	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 0 AND (LOWER(a.name) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.icNumber) LIKE LOWER(CONCAT('%', :params, '%'))"
+			+ " OR LOWER(a.type) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.staffOrVisitor) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.department) LIKE LOWER(CONCAT('%', :params, '%')) OR LOWER(a.contactNumber) LIKE LOWER(CONCAT('%', :params, '%')))")
+	Page<AssemblyCheckIn> getUnCheckInList(@Param("id") Long id, Pageable pageable,@Param("params") String params);
+	
 	@Query("SELECT a.assemblyPoint, COUNT(a) FROM AssemblyCheckIn a WHERE a.emergencySyskey = :emergencyActivateSyskey GROUP BY a.assemblyPoint")
 	List<Object[]> findCheckInCountsByAssemblyPoint(@Param("emergencyActivateSyskey") Long emergencyActivateSyskey);
 
@@ -55,6 +64,36 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 	@Query(value = "SELECT u.* FROM PYM_User u JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id WHERE ac.emergency_syskey = :emergencyActivateId", nativeQuery = true)
 	List<Map<String, Object>> findCheckedInUsersByEmergencyActivate(
 			@Param("emergencyActivateId") Long emergencyActivateId);
+	
+	@Query(value = "SELECT ac.* "
+			+ "FROM Erc_assembly_check_in ac "			
+			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId AND ac.check_in_status = 1 ", countQuery = "SELECT COUNT(*) FROM Erc_assembly_check_in ac "
+					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+					+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId AND ac.check_in_status = 1 ", nativeQuery = true)
+	Page<Map<String, Object>> findCheckedInByEmergencyAndAssembly(
+			@Param("emergencyActivateId") Long emergencyActivateId,@Param("assemblyId") Long assemblyId, Pageable pageable);
+	
+	@Query(value = "SELECT ac.* "
+			+ "FROM erc_assembly_check_in ac "			
+			+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "
+			+ "WHERE  ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId AND ac.check_in_status = 1 "
+			+ "AND ( LOWER(ac.name) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(ac.ic_number) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(ac.staff_or_visitor) LIKE LOWER('%' || :params || '%') OR LOWER(ac.contact_number) LIKE LOWER('%' || :params || '%') "
+			+ "OR LOWER(ac.department) LIKE LOWER('%' || :params || '%') OR LOWER(ac.type) LIKE LOWER('%' || :params || '%') "
+			+ " ) "
+			, countQuery = "SELECT COUNT(*) FROM erc_assembly_check_in ac "					
+					+ "LEFT JOIN Erc_Assembly a ON ac.assembly_point = a.syskey "					
+					+ "WHERE ac.emergency_syskey = :emergencyActivateId AND ac.assembly_point = :assemblyId AND ac.check_in_status = 1 "
+					+ "AND ( LOWER(ac.name) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(ac.ic_number) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(ac.staff_or_visitor) LIKE LOWER('%' || :params || '%') OR LOWER(ac.contact_number) LIKE LOWER('%' || :params || '%') "
+					+ "OR LOWER(ac.department) LIKE LOWER('%' || :params || '%') OR LOWER(ac.type) LIKE LOWER('%' || :params || '%') "
+					+ " )", nativeQuery = true)
+	Page<Map<String, Object>> findCheckedInByEmergencyAndAssembly(
+			@Param("emergencyActivateId") Long emergencyActivateId,@Param("assemblyId") Long assemblyId, Pageable pageable, @Param("params") String params);
+	
 
 //	@Query(value = "SELECT u.*,v.visitororvip AS visitor,d.name AS deptName FROM PYM_User u " + "LEFT JOIN Erc_assembly_check_in ac ON u.id = ac.staff_id "
 //			+ "AND ac.emergency_syskey = :emergencyActivateId "

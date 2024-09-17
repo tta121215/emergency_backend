@@ -20,6 +20,7 @@ public class DashboardDetailDto {
 	private String deviceType;
 	private String department;
 	private String type;
+	private long syskey;
 
 	public BigDecimal getId() {
 		return id;
@@ -147,6 +148,14 @@ public class DashboardDetailDto {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public long getSyskey() {
+		return syskey;
+	}
+
+	public void setSyskey(long syskey) {
+		this.syskey = syskey;
 	}
 
 }
