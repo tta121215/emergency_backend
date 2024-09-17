@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.modelmapper.ModelMapper;
@@ -45,7 +46,21 @@ public class AssemblyCheckInServiceImpl implements AssemblyCheckInService {
 		entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));		
 		entity.setCurrentdate(strCreatedDate);
 		entity.setCurrenttime(strCurrentTime);
+		entity.setCheckInStatus(1);
 		logger.info("Saving assembly check in entity: " + entity);
+		if(entity.getSyskey() >0) {
+			Optional<AssemblyCheckIn> checkInOptional = assemblyCheckInDao.findById(data.getSyskey());
+			if(checkInOptional.isPresent()) {
+				entity = checkInOptional.get();
+				entity.setCreateddate(this.yyyyMMddFormat(strCreatedDate));		
+				entity.setCurrentdate(strCreatedDate);
+				entity.setCurrenttime(strCurrentTime);
+				entity.setCheckInStatus(1);
+				entity.setAssemblyPoint(data.getAssemblyPoint());
+				
+				
+			}
+		}
 
 		try {
 			if (entity.getSyskey() == 0) {

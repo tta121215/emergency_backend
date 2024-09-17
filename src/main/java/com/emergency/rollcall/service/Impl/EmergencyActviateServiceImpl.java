@@ -59,6 +59,7 @@ import com.emergency.rollcall.dao.ModeNotiDao;
 import com.emergency.rollcall.dao.NotiTemplateDao;
 import com.emergency.rollcall.dao.RouteDao;
 import com.emergency.rollcall.dao.SubjectNotiDao;
+import com.emergency.rollcall.dto.AssemblyCheckInDto;
 import com.emergency.rollcall.dto.AssemblyDto;
 import com.emergency.rollcall.dto.ConditionDto;
 import com.emergency.rollcall.dto.EActivateSubjectDto;
@@ -74,6 +75,7 @@ import com.emergency.rollcall.dto.ModeNotiDto;
 import com.emergency.rollcall.dto.ResponseDto;
 import com.emergency.rollcall.dto.RouteDto;
 import com.emergency.rollcall.entity.Assembly;
+import com.emergency.rollcall.entity.AssemblyCheckIn;
 import com.emergency.rollcall.entity.Condition;
 import com.emergency.rollcall.entity.ContentNoti;
 import com.emergency.rollcall.entity.Emergency;
@@ -698,6 +700,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	public EActivationDto emergencyActivate(long id) {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
+		ResponseDto res = new ResponseDto();
 		logger.info("Searching emergency activate entity: " + id);		
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
@@ -731,6 +734,8 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					}
 					JSONObject response = sendEmergencyMessage(modeNotiMessage, eActivate.getSyskey());
 				}
+				res = saveHeadCountReport(eActivate);
+				System.out.println("res " + res.getMessage());
 
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
@@ -1171,5 +1176,101 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //            return null;
 //        }
 //    }
+	
+	public ResponseDto saveHeadCountReport(EmergencyActivate emergencyActivate) {
+		ResponseDto res = new ResponseDto();
+		
+		List<String> buildingNames = new ArrayList<>();
+		List<String> doorNames = new ArrayList<>();
+		List<Long> mainIds = new ArrayList<>();
+		List<AssemblyCheckIn> savedEntities = new ArrayList<>();
+		String calendar = "";
+		List<Map<String, Object>> totalHeadCountList;		
+		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
+		ZonedDateTime dateTime = ZonedDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String strCreatedDate = dateTime.format(formatter);
+		String strCurrentTime = malaysiaDateTime.format(timeformatter);
+		calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
+		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
+			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
+					.map(Long::parseLong).collect(Collectors.toList());
+			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
+
+			for (Object[] row : mainBuilding) {
+				buildingNames.add((String) row[1]);
+				if (row[1].toString().contains("WMC")) {
+					doorNames.add("WMC");
+					doorNames.add("1.0.1 - GUARD HOUSE");
+					doorNames.add("1.0.2 - CCTV ROOM");
+					doorNames.add("1.0.3 - ADMIN POST CANTEEN");
+					doorNames.add("1.0.4 - ADMIN LOBBY");
+					doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
+					doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
+					doorNames.add("1.0.7 - OFFICE ADMIN");
+					doorNames.add("1.0.8 - OFFICE HSSE");
+					doorNames.add("1.0.9 - SERVER ROOM");
+					doorNames.add("1.0.10 - OFFICE RIGHT WING");
+					doorNames.add("1.0.11 - OFFICE ENG/OPS");
+					doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
+					doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
+					doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
+					doorNames.add("1.0.15 - MCC ROOM");
+					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
+					doorNames.add("1.0.17 - MAINTENANCE STORE");
+				}
+				if (row[1].toString().contains("EPIC")) {
+					doorNames.add("2.0.1 - GF RECEPTION AREA");
+					doorNames.add("2.0.2 - SERVER ROOM EPIC");
+					doorNames.add("2.0.3 - L1 SAFETY");
+					doorNames.add("2.0.4 - L1 SUSTAINABILITY");
+				}
+				if (row[1].toString().contains("Mercu")) {
+					doorNames.add("3.0.1 - LVL 12");
+					doorNames.add("3.0.2 - LVL 13");
+				}
+				if (row[1].toString().contains("Lok Kawi")) {
+					doorNames.add("4.0.1 - LOK KAWI - TA");
+				}
+				if (row[1].toString().contains("KKIP")) {
+					doorNames.add("5.0.1 - KKIP TA");
+					doorNames.add("5.0.2 - KKIP DA");
+					doorNames.add("5.0.3 - KKIP WAREHOUSE");
+				}
+			}
+		}
+			totalHeadCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames,
+					calendar);
+			if(!totalHeadCountList.isEmpty() && totalHeadCountList!= null) {
+			totalHeadCountList.forEach(entry -> {
+	                AssemblyCheckIn checkIn = new AssemblyCheckIn();
+	                checkIn.setCreateddate(strCreatedDate);
+	                checkIn.setCurrentdate(strCreatedDate);
+	                checkIn.setCurrenttime(strCurrentTime);
+	                checkIn.setDepartment((String) entry.get("NAME"));
+	                checkIn.setName((String) entry.get("FULLNAME"));
+	                checkIn.setType((String) entry.get("VISITORORVIP"));
+	                checkIn.setContactNumber((String) entry.get("CONTACTNO"));	                
+	                checkIn.setStaffOrVisitor((String) entry.get("STAFFNO"));
+	                checkIn.setIcNumber((String) entry.get("ICNO"));
+	                checkIn.setEmergencySyskey(emergencyActivate.getSyskey());
+	                checkIn.setCheckInStatus(0);
+	                AssemblyCheckIn entityres = assemblyCheckInDao.save(checkIn);
+	                savedEntities.add(entityres);
+	            });
+			}
+			if(!savedEntities.isEmpty()) {
+				res.setStatus_code(200);
+				res.setMessage("Successfully Saved.");
+			}else {
+				res.setStatus_code(400);
+				res.setMessage("Error Saving assemlby check in");
+			}
+		
+		return res;
+	}
 
 }

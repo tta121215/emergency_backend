@@ -27,6 +27,14 @@ public class AssemblyCheckIn {
 	private String currentdate;
 	private String currenttime;
 	private int status;
+	private String name;
+	private String type;
+	private String icNumber;
+	private String staffOrVisitor;
+	private String department;
+	private String contactNumber;
+	private String location;
+	private int checkInStatus;
 
 	public long getSyskey() {
 		return syskey;
@@ -122,6 +130,70 @@ public class AssemblyCheckIn {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getIcNumber() {
+		return icNumber;
+	}
+
+	public void setIcNumber(String icNumber) {
+		this.icNumber = icNumber;
+	}
+
+	public String getStaffOrVisitor() {
+		return staffOrVisitor;
+	}
+
+	public void setStaffOrVisitor(String staffOrVisitor) {
+		this.staffOrVisitor = staffOrVisitor;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getContactNumber() {
+		return contactNumber;
+	}
+
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public int getCheckInStatus() {
+		return checkInStatus;
+	}
+
+	public void setCheckInStatus(int checkInStatus) {
+		this.checkInStatus = checkInStatus;
 	}
 
 }

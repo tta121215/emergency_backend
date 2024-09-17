@@ -24,6 +24,17 @@ public interface AssemblyCheckInDao extends JpaRepository<AssemblyCheckIn, Long>
 
 	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
 	List<AssemblyCheckIn> getAllListByActivationId(@Param("id") Long id);
+	
+	@Query("SELECT COUNT(a) FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id")
+	Long countByEmergencyId(@Param("id") Long id);
+	
+	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 1")
+	List<AssemblyCheckIn> getCheckInList(@Param("id") Long id);
+	
+	@Query("SELECT a FROM AssemblyCheckIn a WHERE a.emergencySyskey = :id AND a.checkInStatus = 0")
+	Page<AssemblyCheckIn> getUnCheckInList(@Param("id") Long id, Pageable pageable);
+	
+
 
 	@Query("SELECT a.assemblyPoint, COUNT(a) FROM AssemblyCheckIn a WHERE a.emergencySyskey = :emergencyActivateSyskey GROUP BY a.assemblyPoint")
 	List<Object[]> findCheckInCountsByAssemblyPoint(@Param("emergencyActivateSyskey") Long emergencyActivateSyskey);
@@ -407,7 +418,8 @@ Page<Map<String, Object>> findUsersNotCheckedInByEmergencyActivate(
 	@Query(value = "SELECT icnumber FROM PYM_User where staffid =:staffid", nativeQuery = true)
 	String findICByUser(@Param("staffid") String staffid );
 	
-	@Query(value = "SELECT distinct pwa.CHECKIN FROM PYM_VENDOR_PASS pvp "
+	@Query(value = "SELECT distinct pwa.CHECKIN , pwa.CHECKOUT , pdl.NAME , PVP.DEPARTMENT , pvpc.COLLECT_DATE , pvpc.RETURNCARDDATE,pvp.NAMEOFPERSONVISITED ,pvp.FULLNAME, pvp.VISITORORVIP,pvp.CONTACTNO  ,pvp.COMPANYNAME,pvp.STAFFNO,pvp.REASON ,pvp.ID,pwa.DOOR_NAME "
+			+ ",LISTAGG(PLAL.NAME, ', ') WITHIN GROUP (ORDER BY PLAL.NAME) as locName,pwa.current_location FROM PYM_VENDOR_PASS pvp "
 			+ "LEFT JOIN (select pwa.* from PYM_WORKER_ATT pwa join (select vp_id, max(CHECKIN) as checkin from PYM_WORKER_ATT "
 			+ "group by vp_id) pwa1 on pwa.VP_ID = pwa1.VP_ID and pwa.CHECKIN = pwa1.checkin ) pwa ON pvp.id = pwa.VP_ID "
 			+ "LEFT JOIN PYM_VENDOR_PASS_CARD pvpc ON pvp.id = pvpc.VP_ID "
