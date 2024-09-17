@@ -386,7 +386,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		//Page<AssemblyCheckIn> checkInPage;
+		// Page<AssemblyCheckIn> checkInPage;
 		Page<Map<String, Object>> checkInPage;
 		try {
 			if (params == null || params.isEmpty()) {
@@ -416,7 +416,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 					detailDto.setAssemblyName((String) staff.get("AssemblyName"));
 					return detailDto;
 				}).collect(Collectors.toList());
-			}			
+			}
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());

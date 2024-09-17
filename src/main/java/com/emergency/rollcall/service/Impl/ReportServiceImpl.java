@@ -2,12 +2,7 @@ package com.emergency.rollcall.service.Impl;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +17,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.emergency.rollcall.dao.AssemblyCheckInDao;
@@ -33,6 +27,7 @@ import com.emergency.rollcall.dto.DashboardDetailDto;
 import com.emergency.rollcall.dto.HeadCountDto;
 import com.emergency.rollcall.dto.NotiReadLogDto;
 import com.emergency.rollcall.dto.StaffDto;
+import com.emergency.rollcall.entity.AssemblyCheckIn;
 import com.emergency.rollcall.entity.EmergencyActivate;
 import com.emergency.rollcall.service.ReportService;
 
@@ -60,67 +55,48 @@ public class ReportServiceImpl implements ReportService {
 		Sort sort = Sort.by(sortDirection, sortBy);
 		if (sortBy.equals("name")) {
 			sort = Sort.by(sortDirection, "name");
-		} else if (sortBy.equals("username")) {
-			sort = Sort.by(sortDirection, "username");
-		} else if (sortBy.equals("staffid")) {
-			sort = Sort.by(sortDirection, "staffid");
-		} else if (sortBy.equals("mobileno")) {
-			sort = Sort.by(sortDirection, "mobileno");
-		} else if (sortBy.equals("assemblyname")) {
-			sort = Sort.by(sortDirection, "a.name");
 		} else if (sortBy.equals("type")) {
-			sort = Sort.by(sortDirection, "v.visitororvip");
+			sort = Sort.by(sortDirection, "type");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "ic_number");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staff_Or_Visitor");
 		} else if (sortBy.equals("department")) {
-			sort = Sort.by(sortDirection, "d.name");
+			sort = Sort.by(sortDirection, "department");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "contact_Number");
+		} else if (sortBy.equals("assembly")) {
+			sort = Sort.by(sortDirection, "a.name");
 		} else {
 			sort = Sort.by(sortDirection, "name");
 		}
 		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
-		Page<Map<String, Object>> usersCheckedInPage;
+
+		Page<Map<String, Object>> checkInPage;
 		try {
 			if (params == null || params.isEmpty()) {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest);
+				checkInPage = assemblyCheckInDao.findCheckedInByEmergency(activateId, pageRequest);
+
 			} else {
-				usersCheckedInPage = assemblyCheckInDao.findUsersCheckedInByEmergencyActivate(activateId, pageRequest,
-						params);
+				checkInPage = assemblyCheckInDao.findCheckedInByEmergency(activateId, pageRequest, params);
+
 			}
-			if (!usersCheckedInPage.isEmpty()) {
-				dashboardDetailDtoList = usersCheckedInPage.stream().map(staff -> {
+			if (!checkInPage.isEmpty()) {
+				dashboardDetailDtoList = checkInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
-					detailDto.setId((BigDecimal) staff.get("id"));
-					detailDto.setUsername((String) staff.get("username"));
-					detailDto.setEmail((String) staff.get("email"));
-					detailDto.setMobileNo((String) staff.get("mobileno"));
-					String icNumber = (String) staff.get("icnumber");
-					String passportNumber = (String) staff.get("passportnumber");
-					if (icNumber != null && !icNumber.isEmpty()) {
-						detailDto.setIcnumber(icNumber);
-					} else if (passportNumber != null && !passportNumber.isEmpty()) {
-						detailDto.setIcnumber(passportNumber);
-					} else {
-						detailDto.setIcnumber(" ");
-					}
-					detailDto.setStaffId((String) staff.get("staffid"));
+					detailDto.setUsername((String) staff.get("name"));
 					detailDto.setName((String) staff.get("name"));
-					detailDto.setDepartment((String) staff.get("deptName"));
-					detailDto.setType((String) staff.get("visitor"));
+					detailDto.setMobileNo((String) staff.get("contact_Number"));
+					detailDto.setIcnumber((String) staff.get("ic_number"));
+					detailDto.setStaffId((String) staff.get("staff_or_visitor"));
+					detailDto.setDepartment((String) staff.get("department"));
+					detailDto.setType((String) staff.get("type"));
 					detailDto.setCheckInDate((String) staff.get("currentdate"));
 					detailDto.setCheckInTime((String) staff.get("currenttime"));
-					detailDto.setAssemblyName((String) staff.get("assembly"));
+					detailDto.setAssemblyName((String) staff.get("AssemblyName"));
 					return detailDto;
 				}).collect(Collectors.toList());
-			}
-			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				Comparator<DashboardDetailDto> comparator = Comparator.comparing(
-						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-
-				dashboardDetailDtoList.sort(comparator);
 			}
 
 		} catch (DataAccessException dae) {
@@ -131,7 +107,7 @@ public class ReportServiceImpl implements ReportService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(dashboardDetailDtoList, pageRequest, usersCheckedInPage.getTotalElements());
+		return new PageImpl<>(dashboardDetailDtoList, pageRequest, checkInPage.getTotalElements());
 
 	}
 
@@ -139,177 +115,52 @@ public class ReportServiceImpl implements ReportService {
 	public Page<StaffDto> getAllUnCheckInList(Long activateId, int page, int size, String sortBy, String direction,
 			String params) {
 		EmergencyActivate emergencyActivate = emergencyActivateDao.findById(activateId).orElse(null);
-		List<String> buildingNames = new ArrayList<>();
-		List<String> doorNames = new ArrayList<>();
-		List<Long> mainIds = new ArrayList<>();
-		String calendar = "";
-		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
-			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
-					.map(Long::parseLong).collect(Collectors.toList());
-			List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
 
-			for (Object[] row : mainBuilding) {
-				buildingNames.add((String) row[1]);
-				if (row[1].toString().contains("WMC")) {
-					doorNames.add("WMC");
-					doorNames.add("1.0.1 - GUARD HOUSE");
-					doorNames.add("1.0.2 - CCTV ROOM");
-					doorNames.add("1.0.3 - ADMIN POST CANTEEN");
-					doorNames.add("1.0.4 - ADMIN LOBBY");
-					doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
-					doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
-					doorNames.add("1.0.7 - OFFICE ADMIN");
-					doorNames.add("1.0.8 - OFFICE HSSE");
-					doorNames.add("1.0.9 - SERVER ROOM");
-					doorNames.add("1.0.10 - OFFICE RIGHT WING");
-					doorNames.add("1.0.11 - OFFICE ENG/OPS");
-					doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
-					doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
-					doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
-					doorNames.add("1.0.15 - MCC ROOM");
-					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-					doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-					doorNames.add("1.0.17 - MAINTENANCE STORE");
-				}
-				if (row[1].toString().contains("EPIC")) {
-					doorNames.add("2.0.1 - GF RECEPTION AREA");
-					doorNames.add("2.0.2 - SERVER ROOM EPIC");
-					doorNames.add("2.0.3 - L1 SAFETY");
-					doorNames.add("2.0.4 - L1 SUSTAINABILITY");
-				}
-				if (row[1].toString().contains("Mercu")) {
-					doorNames.add("3.0.1 - LVL 12");
-					doorNames.add("3.0.2 - LVL 13");
-				}
-				if (row[1].toString().contains("Lok Kawi")) {
-					doorNames.add("4.0.1 - LOK KAWI - TA");
-				}
-				if (row[1].toString().contains("KKIP")) {
-					doorNames.add("5.0.1 - KKIP TA");
-					doorNames.add("5.0.2 - KKIP DA");
-					doorNames.add("5.0.3 - KKIP WAREHOUSE");
-				}
-			}
-		}
+		Page<AssemblyCheckIn> unCheckInPage;
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-//		Sort sort = Sort.by(sortDirection, sortBy);
-//		if (sortBy.equals("name")) {
-//			sort = Sort.by(sortDirection, "name");
-//		} else if (sortBy.equals("username")) {
-//			sort = Sort.by(sortDirection, "username");
-//		} else if (sortBy.equals("staffid")) {
-//			sort = Sort.by(sortDirection, "staffid");
-//		} else if (sortBy.equals("mobileno")) {
-//			sort = Sort.by(sortDirection, "mobileno");
-//		} else if (sortBy.equals("type")) {
-//			sort = Sort.by(sortDirection, "v.visitororvip");
-//		} else if (sortBy.equals("department")) {
-//			sort = Sort.by(sortDirection, "d.name");
-//		} else {
-//			sort = Sort.by(sortDirection, "name");
-//		}
-		PageRequest pageRequest = PageRequest.of(page, size);
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "name");
+		} else if (sortBy.equals("type")) {
+			sort = Sort.by(sortDirection, "type");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icNumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffOrVisitor");
+		} else if (sortBy.equals("department")) {
+			sort = Sort.by(sortDirection, "department");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "contactNumber");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<StaffDto> staffDtoList = new ArrayList<>();
 
-		Page<Map<String, Object>> usersNotCheckedInPage;
 		try {
-			 calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-//			Date date = sdf.parse(dateTimeString);
-//			calendar.setTime(date);
-
 			if (params == null || params.isEmpty()) {
-				usersNotCheckedInPage = assemblyCheckInDao.findUsersNotCheckedInByEmergencyActivate(activateId,
-						buildingNames, pageRequest, doorNames, calendar);
+				unCheckInPage = assemblyCheckInDao.getUnCheckInList(activateId, pageRequest);
 			} else {
-				usersNotCheckedInPage = assemblyCheckInDao.findNotCheckIn(activateId, pageRequest, buildingNames,
-						params, doorNames, calendar);
+				unCheckInPage = assemblyCheckInDao.getUnCheckInList(activateId, pageRequest, params);
 			}
-			if (!usersNotCheckedInPage.isEmpty()) {
-				staffDtoList = usersNotCheckedInPage.stream().map(staff -> {
+
+			if (!unCheckInPage.isEmpty()) {
+				staffDtoList = unCheckInPage.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();
-					staffDto.setId((BigDecimal) staff.get("id"));
-					staffDto.setUsername((String) staff.get("username"));
-					staffDto.setEmail((String) staff.get("email"));
-					staffDto.setMobileNo((String) staff.get("mobileNo"));
-					staffDto.setName((String) staff.get("name"));
-					String icNumber = (String) staff.get("icnumber");
-					String passportNumber = (String) staff.get("passportnumber");
-					if (icNumber != null && !icNumber.isEmpty()) {
-						staffDto.setIcnumber(icNumber);
-					} else if (passportNumber != null && !passportNumber.isEmpty()) {
-						staffDto.setIcnumber(passportNumber);
-					} else {
-						staffDto.setIcnumber(" ");
-					}
-					staffDto.setStaffId((String) staff.get("staffid"));
-					staffDto.setDepartment((String) staff.get("deptName"));
-					staffDto.setType((String) staff.get("visitor"));
+					staffDto.setSyskey(staff.getSyskey());
+					staffDto.setUsername((String) staff.getName());
+					staffDto.setMobileNo((String) staff.getContactNumber());
+					staffDto.setName((String) staff.getName());
+					staffDto.setIcnumber((String) staff.getIcNumber());
+					staffDto.setDepartment(staff.getDepartment());
+					staffDto.setType(staff.getType());
+					staffDto.setStaffId(staff.getStaffOrVisitor());
+					// staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
-
-			if ("name".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getUsername().isEmpty() ? null : dto.getUsername(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
-			if ("type".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getType().isEmpty() ? null : dto.getType(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
-			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
-			if ("staffid".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getStaffId().isEmpty() ? null : dto.getStaffId(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
-			if ("department".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as
-																							// null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
-			if ("mobileno".equalsIgnoreCase(sortBy)) {
-				Comparator<StaffDto> comparator = Comparator.comparing(
-						dto -> dto.getMobileNo().isEmpty() ? null : dto.getMobileNo(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				staffDtoList.sort(comparator);
-			}
+			System.out.println("List " + staffDtoList.size());
 
 		} catch (DataAccessException dae) {
 			System.err.println("Database error occurred: " + dae.getMessage());
@@ -319,7 +170,7 @@ public class ReportServiceImpl implements ReportService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		return new PageImpl<>(staffDtoList, pageRequest, usersNotCheckedInPage.getTotalElements());
+		return new PageImpl<>(staffDtoList, pageRequest, unCheckInPage.getTotalElements());
 	}
 
 	@Override
@@ -327,34 +178,26 @@ public class ReportServiceImpl implements ReportService {
 
 		List<StaffDto> staffDtoList = new ArrayList<>();
 		List<Map<String, Object>> usersNotChekedInList;
-
+		List<AssemblyCheckIn> unCheckInList = new ArrayList<>();
 		try {
 			if (params == null || params.isEmpty()) {
-				usersNotChekedInList = assemblyCheckInDao.findUsersNotCheckedInByExcel(activateId);
+				unCheckInList = assemblyCheckInDao.getUnCheckInExcel(activateId);
 			} else {
-				usersNotChekedInList = assemblyCheckInDao.findUsersNotCheckedInByExcel(activateId, params);
+				unCheckInList = assemblyCheckInDao.getUnCheckInExcel(activateId, params);
 			}
 
-			if (!usersNotChekedInList.isEmpty()) {
-				staffDtoList = usersNotChekedInList.stream().map(staff -> {
+			if (!unCheckInList.isEmpty()) {
+				staffDtoList = unCheckInList.stream().map(staff -> {
 					StaffDto staffDto = new StaffDto();
-					staffDto.setId((BigDecimal) staff.get("id"));
-					staffDto.setUsername((String) staff.get("username"));
-					staffDto.setEmail((String) staff.get("email"));
-					staffDto.setMobileNo((String) staff.get("mobileNo"));
-					staffDto.setName((String) staff.get("name"));
-					String icNumber = (String) staff.get("icnumber");
-					String passportNumber = (String) staff.get("passportnumber");
-					if (icNumber != null && !icNumber.isEmpty()) {
-						staffDto.setIcnumber(icNumber);
-					} else if (passportNumber != null && !passportNumber.isEmpty()) {
-						staffDto.setIcnumber(passportNumber);
-					} else {
-						staffDto.setIcnumber(" ");
-					}
-					staffDto.setStaffId((String) staff.get("staffid"));
-					staffDto.setDepartment((String) staff.get("deptName"));
-					staffDto.setType((String) staff.get("visitor"));
+
+					staffDto.setUsername((String) staff.getName());
+					staffDto.setMobileNo((String) staff.getContactNumber());
+					staffDto.setName((String) staff.getName());
+					staffDto.setIcnumber((String) staff.getIcNumber());
+					staffDto.setDepartment(staff.getDepartment());
+					staffDto.setType(staff.getType());
+					staffDto.setStaffId(staff.getStaffOrVisitor());
+					// staffDto.setLastEntryPoint(assemblyCheckInDao.getlocationVisited(staffDto.getStaffId()));
 					return staffDto;
 				}).collect(Collectors.toList());
 			}
@@ -363,28 +206,26 @@ public class ReportServiceImpl implements ReportService {
 			Sheet sheet = workbook.createSheet("UnCheckInList");
 
 			Row headerRow = sheet.createRow(0);
-			headerRow.createCell(0).setCellValue("ID");
-			headerRow.createCell(1).setCellValue("Username");
-			headerRow.createCell(2).setCellValue("Email");
-			headerRow.createCell(3).setCellValue("Mobile No");
-			headerRow.createCell(4).setCellValue("Name");
-			headerRow.createCell(5).setCellValue("IC/Passport Number");
-			headerRow.createCell(6).setCellValue("Staff ID");
-			headerRow.createCell(7).setCellValue("Department");
-			headerRow.createCell(8).setCellValue("Type");
+			headerRow.createCell(0).setCellValue("Username");
+			headerRow.createCell(1).setCellValue("Email");
+			headerRow.createCell(2).setCellValue("Mobile No");
+			headerRow.createCell(3).setCellValue("Name");
+			headerRow.createCell(4).setCellValue("IC/Passport Number");
+			headerRow.createCell(5).setCellValue("Staff ID");
+			headerRow.createCell(6).setCellValue("Department");
+			headerRow.createCell(7).setCellValue("Type");
 
 			int rowNum = 1;
 			for (StaffDto staffDto : staffDtoList) {
 				Row row = sheet.createRow(rowNum++);
-				row.createCell(0).setCellValue(staffDto.getId().toString());
-				row.createCell(1).setCellValue(staffDto.getUsername());
-				row.createCell(2).setCellValue(staffDto.getEmail());
-				row.createCell(3).setCellValue(staffDto.getMobileNo());
-				row.createCell(4).setCellValue(staffDto.getName());
-				row.createCell(5).setCellValue(staffDto.getIcnumber());
-				row.createCell(6).setCellValue(staffDto.getStaffId());
-				row.createCell(7).setCellValue(staffDto.getDepartment());
-				row.createCell(8).setCellValue(staffDto.getType());
+				row.createCell(0).setCellValue(staffDto.getUsername());
+				row.createCell(1).setCellValue(staffDto.getEmail());
+				row.createCell(2).setCellValue(staffDto.getMobileNo());
+				row.createCell(3).setCellValue(staffDto.getName());
+				row.createCell(4).setCellValue(staffDto.getIcnumber());
+				row.createCell(5).setCellValue(staffDto.getStaffId());
+				row.createCell(6).setCellValue(staffDto.getDepartment());
+				row.createCell(7).setCellValue(staffDto.getType());
 			}
 
 			for (int i = 0; i < 9; i++) {
@@ -412,36 +253,25 @@ public class ReportServiceImpl implements ReportService {
 
 		List<DashboardDetailDto> dashboardDetailDtoList = new ArrayList<>();
 		List<Map<String, Object>> usersCheckedInList;
+		List<AssemblyCheckIn> checkInList = new ArrayList<>();
 		try {
 			if (params == null || params.isEmpty()) {
-				usersCheckedInList = assemblyCheckInDao.findUsersCheckedInByExcel(activateId);
-			} else {
-				usersCheckedInList = assemblyCheckInDao.findUsersCheckedInByExcel(activateId, params);
-			}
+				checkInList = assemblyCheckInDao.getCheckInList(activateId);
 
-			if (!usersCheckedInList.isEmpty()) {
-				dashboardDetailDtoList = usersCheckedInList.stream().map(staff -> {
+			} else {
+				checkInList = assemblyCheckInDao.getCheckInList(activateId, params);
+
+			}
+			if (!checkInList.isEmpty()) {
+				dashboardDetailDtoList = checkInList.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
-					detailDto.setId((BigDecimal) staff.get("id"));
-					detailDto.setUsername((String) staff.get("username"));
-					detailDto.setEmail((String) staff.get("email"));
-					detailDto.setMobileNo((String) staff.get("mobileno"));
-					String icNumber = (String) staff.get("icnumber");
-					String passportNumber = (String) staff.get("passportnumber");
-					if (icNumber != null && !icNumber.isEmpty()) {
-						detailDto.setIcnumber(icNumber);
-					} else if (passportNumber != null && !passportNumber.isEmpty()) {
-						detailDto.setIcnumber(passportNumber);
-					} else {
-						detailDto.setIcnumber(" ");
-					}
-					detailDto.setStaffId((String) staff.get("staffid"));
-					detailDto.setName((String) staff.get("name"));
-					detailDto.setDepartment((String) staff.get("deptName"));
-					detailDto.setType((String) staff.get("visitor"));
-					detailDto.setCheckInDate((String) staff.get("currentdate"));
-					detailDto.setCheckInTime((String) staff.get("currenttime"));
-					detailDto.setAssemblyName((String) staff.get("assembly"));
+					detailDto.setUsername((String) staff.getName());
+					detailDto.setMobileNo((String) staff.getContactNumber());
+					detailDto.setName((String) staff.getName());
+					detailDto.setIcnumber((String) staff.getIcNumber());
+					detailDto.setDepartment(staff.getDepartment());
+					detailDto.setType(staff.getType());
+					detailDto.setStaffId(staff.getStaffOrVisitor());
 					return detailDto;
 				}).collect(Collectors.toList());
 			}
@@ -450,28 +280,28 @@ public class ReportServiceImpl implements ReportService {
 			Sheet sheet = workbook.createSheet("UnCheckInList");
 
 			Row headerRow = sheet.createRow(0);
-			headerRow.createCell(0).setCellValue("ID");
-			headerRow.createCell(1).setCellValue("Username");
-			headerRow.createCell(2).setCellValue("Email");
-			headerRow.createCell(3).setCellValue("Mobile No");
-			headerRow.createCell(4).setCellValue("Name");
-			headerRow.createCell(5).setCellValue("IC/Passport Number");
-			headerRow.createCell(6).setCellValue("Staff ID");
-			headerRow.createCell(7).setCellValue("Department");
-			headerRow.createCell(8).setCellValue("Type");
+
+			headerRow.createCell(0).setCellValue("Username");
+			headerRow.createCell(1).setCellValue("Email");
+			headerRow.createCell(2).setCellValue("Mobile No");
+			headerRow.createCell(3).setCellValue("Name");
+			headerRow.createCell(4).setCellValue("IC/Passport Number");
+			headerRow.createCell(5).setCellValue("Staff ID");
+			headerRow.createCell(6).setCellValue("Department");
+			headerRow.createCell(7).setCellValue("Type");
 
 			int rowNum = 1;
 			for (DashboardDetailDto staffDto : dashboardDetailDtoList) {
 				Row row = sheet.createRow(rowNum++);
-				row.createCell(0).setCellValue(staffDto.getId().toString());
-				row.createCell(1).setCellValue(staffDto.getUsername());
-				row.createCell(2).setCellValue(staffDto.getEmail());
-				row.createCell(3).setCellValue(staffDto.getMobileNo());
-				row.createCell(4).setCellValue(staffDto.getName());
-				row.createCell(5).setCellValue(staffDto.getIcnumber());
-				row.createCell(6).setCellValue(staffDto.getStaffId());
-				row.createCell(7).setCellValue(staffDto.getDepartment());
-				row.createCell(8).setCellValue(staffDto.getType());
+
+				row.createCell(0).setCellValue(staffDto.getUsername());
+				row.createCell(1).setCellValue(staffDto.getEmail());
+				row.createCell(2).setCellValue(staffDto.getMobileNo());
+				row.createCell(3).setCellValue(staffDto.getName());
+				row.createCell(4).setCellValue(staffDto.getIcnumber());
+				row.createCell(5).setCellValue(staffDto.getStaffId());
+				row.createCell(6).setCellValue(staffDto.getDepartment());
+				row.createCell(7).setCellValue(staffDto.getType());
 			}
 
 			for (int i = 0; i < 9; i++) {
@@ -615,182 +445,51 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Page<HeadCountDto> getTotalHeadCountReport(Long activateId, int page, int size, String sortBy,
 			String direction, String params) {
-
-//		String sortColumn;
-//		switch (sortBy.toLowerCase()) {
-//		case "fullname":
-//			sortColumn = "FULLNAME";
-//			break;
-//		case "department":
-//			sortColumn = "NAME";
-//			break;
-//		case "staffid":
-//			sortColumn = "STAFFNO";
-//			break;
-//		case "type":
-//			sortColumn = "VISITORORVIP";
-//			break;
-//		default:
-//			sortColumn = "FULLNAME"; // Default to fullname if no valid sortBy
-//		}
-		
 		Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-
-		// Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection,
-		// sortColumn));
-
-		// String sortDirection = direction.equalsIgnoreCase("asc") ? "ASC" : "DESC";
-
-		PageRequest pageRequest = PageRequest.of(page, size);
-
+		Sort sort = Sort.by(sortDirection, sortBy);
+		if (sortBy.equals("name")) {
+			sort = Sort.by(sortDirection, "name");
+		} else if (sortBy.equals("type")) {
+			sort = Sort.by(sortDirection, "type");
+		} else if (sortBy.equals("icnumber")) {
+			sort = Sort.by(sortDirection, "icNumber");
+		} else if (sortBy.equals("staffid")) {
+			sort = Sort.by(sortDirection, "staffOrVisitor");
+		} else if (sortBy.equals("department")) {
+			sort = Sort.by(sortDirection, "department");
+		} else if (sortBy.equals("mobileno")) {
+			sort = Sort.by(sortDirection, "contactNumber");
+		} else {
+			sort = Sort.by(sortDirection, "name");
+		}
+		PageRequest pageRequest = PageRequest.of(page, size, sort);
 		List<HeadCountDto> headCountList = new ArrayList<>();
 		EmergencyActivate eActivate = new EmergencyActivate();
 		Page<Map<String, Object>> usersNotCheckedInPage;
-		String mainString = "";
-		List<String> buildingNames = new ArrayList<>();
-		List<String> doorNames = new ArrayList<>();
-		String calendar = "";
+		Page<AssemblyCheckIn> headCountPage;
+
 		try {
 			Optional<EmergencyActivate> emergencyOptional = emergencyActivateDao.findById(activateId);
 			if (emergencyOptional.isPresent()) {
 				eActivate = emergencyOptional.get();
-				calendar = eActivate.getActivateDate() + " " + eActivate.getActivateTime();
-//				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-//				Date date = sdf.parse(dateTimeString);
-				List<Long> mainIds = new ArrayList<>();
-				if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
-					mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
-							.map(Long::parseLong).collect(Collectors.toList());
-					List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-
-					for (Object[] row : mainBuilding) {
-						buildingNames.add((String) row[1]);
-						if (row[1].toString().contains("WMC")) {
-							doorNames.add("WMC");
-							doorNames.add("1.0.1 - GUARD HOUSE");
-							doorNames.add("1.0.2 - CCTV ROOM");
-							doorNames.add("1.0.3 - ADMIN POST CANTEEN");
-							doorNames.add("1.0.4 - ADMIN LOBBY");
-							doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
-							doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
-							doorNames.add("1.0.7 - OFFICE ADMIN");
-							doorNames.add("1.0.8 - OFFICE HSSE");
-							doorNames.add("1.0.9 - SERVER ROOM");
-							doorNames.add("1.0.10 - OFFICE RIGHT WING");
-							doorNames.add("1.0.11 - OFFICE ENG/OPS");
-							doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
-							doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
-							doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
-							doorNames.add("1.0.15 - MCC ROOM");
-							doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-							doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-							doorNames.add("1.0.17 - MAINTENANCE STORE");
-						}
-						if (row[1].toString().contains("EPIC")) {
-							doorNames.add("2.0.1 - GF RECEPTION AREA");
-							doorNames.add("2.0.2 - SERVER ROOM EPIC");
-							doorNames.add("2.0.3 - L1 SAFETY");
-							doorNames.add("2.0.4 - L1 SUSTAINABILITY");
-						}
-						if (row[1].toString().contains("Mercu")) {
-							doorNames.add("3.0.1 - LVL 12");
-							doorNames.add("3.0.2 - LVL 13");
-						}
-						if (row[1].toString().contains("Lok Kawi")) {
-							doorNames.add("4.0.1 - LOK KAWI - TA");
-						}
-						if (row[1].toString().contains("KKIP")) {
-							doorNames.add("5.0.1 - KKIP TA");
-							doorNames.add("5.0.2 - KKIP DA");
-							doorNames.add("5.0.3 - KKIP WAREHOUSE");
-						}
-					}
-				}
 			}
-
-			System.out.println(doorNames.size() + " 1st room " + doorNames.get(0));
-			System.out.println("Calendar " + calendar);
 			if (params == null || params.isEmpty()) {
-				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames, doorNames,
-						calendar);
+				headCountPage = assemblyCheckInDao.getAllHeadCountReport(activateId, pageRequest);
 			} else {
-				usersNotCheckedInPage = assemblyCheckInDao.findHeadCountReport(pageRequest, buildingNames, doorNames,
-						calendar, params);
+				headCountPage = assemblyCheckInDao.getAllHeadCountReport(activateId, pageRequest, params);
 			}
 
-			if (!usersNotCheckedInPage.isEmpty()) {
-				headCountList = usersNotCheckedInPage.stream().map(headCount -> {
+			if (!headCountPage.isEmpty()) {
+				headCountList = headCountPage.stream().map(headCount -> {
 					HeadCountDto headCountDto = new HeadCountDto();
-					headCountDto.setDepartment((String) headCount.get("NAME"));
-					headCountDto.setUsername((String) headCount.get("FULLNAME"));
-					headCountDto.setType((String) headCount.get("VISITORORVIP"));
-					headCountDto.setMobileNo((String) headCount.get("CONTACTNO"));
-					headCountDto.setCompany((String) headCount.get("COMPANYNAME"));
-					headCountDto.setStaffId((String) headCount.get("STAFFNO"));
+					headCountDto.setDepartment((String) headCount.getDepartment());
+					headCountDto.setUsername((String) headCount.getName());
+					headCountDto.setType((String) headCount.getType());
+					headCountDto.setMobileNo((String) headCount.getContactNumber());
+					headCountDto.setStaffId((String) headCount.getStaffOrVisitor());
 					headCountDto.setIcnumber(assemblyCheckInDao.findICByUser(headCountDto.getStaffId()));
 					return headCountDto;
 				}).collect(Collectors.toList());
-			}
-			if ("name".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getUsername().isEmpty() ? null : dto.getUsername(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
-			}
-			if ("type".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getType().isEmpty() ? null : dto.getType(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
-			}
-			if ("icnumber".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getIcnumber().isEmpty() ? null : dto.getIcnumber(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
-			}
-			if ("staffid".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getStaffId().isEmpty() ? null : dto.getStaffId(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
-			}
-			if ("department".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getDepartment().isEmpty() ? null : dto.getDepartment(), // Treat empty strings as
-																							// null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
-			}
-			if ("mobileno".equalsIgnoreCase(sortBy)) {
-				Comparator<HeadCountDto> comparator = Comparator.comparing(
-						dto -> dto.getMobileNo().isEmpty() ? null : dto.getMobileNo(), // Treat empty strings as null
-						Comparator.nullsLast(String::compareTo));
-
-				if (sortDirection.isDescending()) {
-					comparator = comparator.reversed();
-				}
-				headCountList.sort(comparator);
 			}
 
 		} catch (DataAccessException dae) {
@@ -801,8 +500,7 @@ public class ReportServiceImpl implements ReportService {
 			throw new RuntimeException("An unexpected error occurred, please try again later.", e);
 		}
 
-		// return staffDtoList;
-		return new PageImpl<>(headCountList, pageRequest, usersNotCheckedInPage.getTotalElements());
+		return new PageImpl<>(headCountList, pageRequest, headCountPage.getTotalElements());
 	}
 
 }
