@@ -3,6 +3,7 @@ package com.emergency.rollcall.service.Impl;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,7 +97,6 @@ import reactor.core.publisher.Mono;
 public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	private final Logger logger = Logger.getLogger(EmergencyActivateService.class.getName());
-	
 
 	private static WebClient webClient = null;
 
@@ -131,7 +132,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private AssemblyCheckInDao assemblyCheckInDao;
-	
+
 	@Autowired
 	private MainBuildingDao mainBuildingDao;
 
@@ -140,8 +141,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	
 
 	@Value("${emergency.message.url}")
 	private String emergencyMessageUrl;
@@ -163,11 +162,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		List<MainBuilding> mainBuildingList = new ArrayList<>();
 		logger.info("Saving Emergency entity: " + eActivateDto);
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String strCreatedDate = malaysiaDateTime.format(formatter);
-		String strDatetime = malaysiaDateTime.format(timeformatter);		
+		String strDatetime = malaysiaDateTime.format(timeformatter);
 		try {
 			eActivate = modelMapper.map(eActivateDto, EmergencyActivate.class);
 
@@ -211,7 +210,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 				eActivate.setLocEmergencyList(locEmergencyList);
 			}
-			
+
 			if (eActivateDto.getEmergency_syskey() != 0) {
 				Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 				if (emergencyOptional.isPresent()) {
@@ -291,7 +290,6 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<Route> routes = routeDao.findByEmergencyActivateId(eActivate.getSyskey());
 				List<LocEmergency> locEmergency = locEmergencyDao.findByEmergencyActivateId(eActivate.getSyskey());
-				
 
 				List<AssemblyDto> assemblyDtos = assemblies.stream()
 						.map(assembly -> modelMapper.map(assembly, AssemblyDto.class)).collect(Collectors.toList());
@@ -301,18 +299,18 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				List<LocEmergencyDto> locEmergencyDtos = locEmergency.stream()
 						.map(locemergency -> modelMapper.map(locemergency, LocEmergencyDto.class))
 						.collect(Collectors.toList());
-				
+
 				emergencyAcivateDto.setAssemblyDtoList(assemblyDtos);
 				emergencyAcivateDto.setRouteDtoList(routeDtos);
 				emergencyAcivateDto.setLocEmergencyDtoList(locEmergencyDtos);
-				
+
 				List<Long> locemergency = new ArrayList<>();
 				for (LocEmergencyDto loce : locEmergencyDtos) {
 					locemergency.add(loce.getSyskey());
 				}
 				emergencyAcivateDto.setLocemrgency_syskey(locemergency);
-				
-				if(eActivate.getMainBuilding()!=null && eActivate.getMainBuilding()!="") {
+
+				if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
 					List<Long> mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
 							.map(Long::parseLong).collect(Collectors.toList());
 					List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
@@ -323,8 +321,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //				    String name = (String) row[1];  
 //				    System.out.println("Id , name" + ids + name);
 //				}				    
-				    
-				
+
 			}
 			logger.info("Retrieving emergency activate entity: " + emergencyAcivateDto);
 			return emergencyAcivateDto;
@@ -350,11 +347,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivate eActivate = new EmergencyActivate();
 		String createdDate;
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String strCreatedDate = malaysiaDateTime.format(formatter);
-		String strDatetime = malaysiaDateTime.format(timeformatter);	
+		String strDatetime = malaysiaDateTime.format(timeformatter);
 		logger.info("Updating emergency activate entity: " + eActivateDto);
 		try {
 			Optional<EmergencyActivate> eActivateOptional = emergencyActivateDao.findById(eActivateDto.getSyskey());
@@ -404,7 +401,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					}
 					eActivate.setLocEmergencyList(locEmergencyList);
 				}
-				
+
 				if (eActivateDto.getEmergency_syskey() != 0) {
 					Optional<Emergency> emergencyOptional = emergencyDao.findById(eActivateDto.getEmergency_syskey());
 					if (emergencyOptional.isPresent()) {
@@ -544,16 +541,16 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					List<Long> mainIds =new ArrayList<>();
-					if(eActivate.getMainBuilding()!=null && eActivate.getMainBuilding()!="") {
+					List<Long> mainIds = new ArrayList<>();
+					if (eActivate.getMainBuilding() != null && eActivate.getMainBuilding() != "") {
 						mainIds = Arrays.stream(eActivate.getMainBuilding().split(",")).map(String::trim)
 								.map(Long::parseLong).collect(Collectors.toList());
 						List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
 						String mainString = "";
 						for (Object[] row : mainBuilding) {
 							mainString += (String) row[1] + ",";
-						}		
-						eActivateDto.setMainBuilding(mainString.substring(0, mainString.length() -1));
+						}
+						eActivateDto.setMainBuilding(mainString.substring(0, mainString.length() - 1));
 					}
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
@@ -614,7 +611,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					
+
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
@@ -637,12 +634,13 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		logger.info("Searching emergency activate entity: ");
 		List<EmergencyActivate> emergencyActivateList = new ArrayList<>();
 		List<EmergencyActivateDto> emergencyActivateDtoList = new ArrayList<>();
-		
+
 		try {
 			if (fromDate != null && toDate != null) {
 				emergencyActivateList = emergencyActivateDao.findAllByDateRange(fromDate, toDate);
 			} else {
-				emergencyActivateList = emergencyActivateDao.findAllByActivateStatusNot(0,Sort.by(Sort.Direction.DESC, "syskey"));
+				emergencyActivateList = emergencyActivateDao.findAllByActivateStatusNot(0,
+						Sort.by(Sort.Direction.DESC, "syskey"));
 			}
 
 			if (!emergencyActivateList.isEmpty()) {
@@ -678,7 +676,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 						}
 						eActivateDto.setEmergency_location(locem.substring(0, locem.length() - 1));
 					}
-					
+
 					emergencyActivateDtoList.add(eActivateDto);
 					logger.info("Successfully searching emergency activate entity: " + emergencyActivateDtoList);
 				}
@@ -701,9 +699,9 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		EmergencyActivateDto emergencyAcivateDto = new EmergencyActivateDto();
 		EActivationDto eActivationDto = new EActivationDto();
 		ResponseDto res = new ResponseDto();
-		logger.info("Searching emergency activate entity: " + id);		
+		logger.info("Searching emergency activate entity: " + id);
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String strCreatedDate = malaysiaDateTime.format(formatter);
@@ -725,12 +723,11 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 					if (notiTemplate.getNoti_mode() != null) {
 						List<Long> modeIds = Arrays.stream(notiTemplate.getNoti_mode().split(",")).map(String::trim)
 								.map(Long::parseLong).collect(Collectors.toList());
-						List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);						
+						List<ModeNoti> modeNotiList = modeNotiDao.findAllById(modeIds);
 						if (!modeNotiList.isEmpty()) {
-							modeNotiMessage = modeNotiList.stream()
-			                           .map(ModeNoti::getName)
-			                           .collect(Collectors.joining(","));
-						}						
+							modeNotiMessage = modeNotiList.stream().map(ModeNoti::getName)
+									.collect(Collectors.joining(","));
+						}
 					}
 					JSONObject response = sendEmergencyMessage(modeNotiMessage, eActivate.getSyskey());
 				}
@@ -760,7 +757,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		ResponseDto responseDto = new ResponseDto();
 
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
-		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);		
+		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String strCreatedDate = malaysiaDateTime.format(formatter);
@@ -908,7 +905,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 
 //			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 //			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
-			
+
 			ZonedDateTime startTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
 			ZonedDateTime endTime = ZonedDateTime.parse(emergencyActivate.getEndTime(),
@@ -925,7 +922,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //			long avghours = averageDuration1.toHours();
 //			long avgminutes = averageDuration1.toMinutesPart();
 //			long avgseconds = averageDuration1.toSecondsPart();
-			
+
 			long avghours = averageDuration1.toHours() % 24;
 			long avgminutes = averageDuration1.toMinutes() % 60;
 			long avgseconds = averageDuration1.getSeconds() % 60;
@@ -1095,34 +1092,36 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 	}
 
 	public JSONObject sendEmergencyMessage(String modeMessage, Long activateSyskey) {
-		
+
 		MessageRequestDto request = new MessageRequestDto();
 		request.setSubject(modeMessage);
-		request.setContent(Arrays.asList("Dear All, there is an emergency now. Please click on the link below to see the detail"));		
+		request.setContent(
+				Arrays.asList("Dear All, there is an emergency now. Please click on the link below to see the detail"));
 		request.setLink(emergencyMessageUrl + "?eActivate=" + activateSyskey);
 		request.setEmergancyId(activateSyskey);
 		System.out.println("Success");
 		JSONObject obj = null;
-		
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("http://cenvirotrial.cenviro.com:8080/api/email/sendEmergancyAlert");
-        String resultMap = new Gson().toJson(request, MessageRequestDto.class);
-        StringEntity stringEntity = new StringEntity(resultMap,ContentType.APPLICATION_JSON);
-        httpPost.setEntity(stringEntity);
-        CloseableHttpResponse httpResponse;
-        try {
-            httpResponse = httpClient.execute(httpPost);
-            //System.out.println("POST Response Status:: "+ httpResponse.getStatusLine().getStatusCode());
-            
-            org.apache.http.HttpEntity responseBodyentity = httpResponse.getEntity();
-            
-            String responseBodyString = EntityUtils.toString(responseBodyentity);
-            
-            obj=new JSONObject(responseBodyString);
-            System.out.println("Response " + obj.get("status"));
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+		HttpPost httpPost = new HttpPost("http://cenvirotrial.cenviro.com:8080/api/email/sendEmergancyAlert");
+		String resultMap = new Gson().toJson(request, MessageRequestDto.class);
+		StringEntity stringEntity = new StringEntity(resultMap, ContentType.APPLICATION_JSON);
+		httpPost.setEntity(stringEntity);
+		CloseableHttpResponse httpResponse;
+		try {
+			httpResponse = httpClient.execute(httpPost);
+			// System.out.println("POST Response Status:: "+
+			// httpResponse.getStatusLine().getStatusCode());
+
+			org.apache.http.HttpEntity responseBodyentity = httpResponse.getEntity();
+
+			String responseBodyString = EntityUtils.toString(responseBodyentity);
+
+			obj = new JSONObject(responseBodyString);
+			System.out.println("Response " + obj.get("status"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return obj;
 
 //		return webClient.post()
@@ -1146,7 +1145,7 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //
 //        return response.block();
 //    }
-	
+
 //	public EmailResponse sendEmergencyMessageUpdate(String modeMessage, Long activateSyskey) {
 //
 //        MessageRequestDto request = new MessageRequestDto();
@@ -1176,16 +1175,16 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 //            return null;
 //        }
 //    }
-	
+
 	public ResponseDto saveHeadCountReport(EmergencyActivate emergencyActivate) {
 		ResponseDto res = new ResponseDto();
-		
+
 		List<String> buildingNames = new ArrayList<>();
 		List<String> doorNames = new ArrayList<>();
 		List<Long> mainIds = new ArrayList<>();
 		List<AssemblyCheckIn> savedEntities = new ArrayList<>();
 		String calendar = "";
-		List<Map<String, Object>> totalHeadCountList;		
+		List<Map<String, Object>> totalHeadCountList;
 		ZoneId malaysiaZoneId = ZoneId.of("Asia/Kuala_Lumpur");
 		ZonedDateTime malaysiaDateTime = ZonedDateTime.now(malaysiaZoneId);
 		ZonedDateTime dateTime = ZonedDateTime.now();
@@ -1193,6 +1192,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 		DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String strCreatedDate = dateTime.format(formatter);
 		String strCurrentTime = malaysiaDateTime.format(timeformatter);
+		Calendar dateFromCalMinusOne = Calendar.getInstance();
+		dateFromCalMinusOne.add(Calendar.DAY_OF_MONTH, -1);
+		dateFromCalMinusOne.set(Calendar.HOUR_OF_DAY, 0);
+		dateFromCalMinusOne.set(Calendar.MINUTE, 0);
+		dateFromCalMinusOne.set(Calendar.SECOND, 0);
+		dateFromCalMinusOne.set(Calendar.MILLISECOND, 0);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm");
+		String formattedDate = dateFormat.format(dateFromCalMinusOne.getTime());
 		calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
 		if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
 			mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
@@ -1242,34 +1249,33 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 				}
 			}
 		}
-			totalHeadCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames,
-					calendar);
-			if(!totalHeadCountList.isEmpty() && totalHeadCountList!= null) {
+		totalHeadCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames, formattedDate);
+		if (!totalHeadCountList.isEmpty() && totalHeadCountList != null) {
 			totalHeadCountList.forEach(entry -> {
-	                AssemblyCheckIn checkIn = new AssemblyCheckIn();
-	                checkIn.setCreateddate(strCreatedDate);
-	                checkIn.setCurrentdate(strCreatedDate);
-	                checkIn.setCurrenttime(strCurrentTime);
-	                checkIn.setDepartment((String) entry.get("NAME"));
-	                checkIn.setName((String) entry.get("FULLNAME"));
-	                checkIn.setType((String) entry.get("VISITORORVIP"));
-	                checkIn.setContactNumber((String) entry.get("CONTACTNO"));	                
-	                checkIn.setStaffNo((String) entry.get("STAFFNO"));
-	                checkIn.setIcNumber((String) entry.get("ICNO"));
-	                checkIn.setEmergencySyskey(emergencyActivate.getSyskey());
-	                checkIn.setCheckInStatus(0);
-	                AssemblyCheckIn entityres = assemblyCheckInDao.save(checkIn);
-	                savedEntities.add(entityres);
-	            });
-			}
-			if(!savedEntities.isEmpty()) {
-				res.setStatus_code(200);
-				res.setMessage("Successfully Saved.");
-			}else {
-				res.setStatus_code(400);
-				res.setMessage("Error Saving assemlby check in");
-			}
-		
+				AssemblyCheckIn checkIn = new AssemblyCheckIn();
+				checkIn.setCreateddate(strCreatedDate);
+				checkIn.setCurrentdate(strCreatedDate);
+				checkIn.setCurrenttime(strCurrentTime);
+				checkIn.setDepartment((String) entry.get("NAME"));
+				checkIn.setName((String) entry.get("FULLNAME"));
+				checkIn.setType((String) entry.get("VISITORORVIP"));
+				checkIn.setContactNumber((String) entry.get("CONTACTNO"));
+				checkIn.setStaffNo((String) entry.get("STAFFNO"));
+				checkIn.setIcNumber((String) entry.get("ICNO"));
+				checkIn.setEmergencySyskey(emergencyActivate.getSyskey());
+				checkIn.setCheckInStatus(0);
+				AssemblyCheckIn entityres = assemblyCheckInDao.save(checkIn);
+				savedEntities.add(entityres);
+			});
+		}
+		if (!savedEntities.isEmpty()) {
+			res.setStatus_code(200);
+			res.setMessage("Successfully Saved.");
+		} else {
+			res.setStatus_code(400);
+			res.setMessage("Error Saving assemlby check in");
+		}
+
 		return res;
 	}
 

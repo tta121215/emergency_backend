@@ -83,6 +83,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<String> doorNames = new ArrayList<>();
 		long totalUnCheckInCount = 0;
 		String calendar = "";
+		
 		try {
 			List<String> buildingNames = new ArrayList<>();
 			List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
