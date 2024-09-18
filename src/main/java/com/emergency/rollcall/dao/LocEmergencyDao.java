@@ -39,7 +39,7 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 	@Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP WHERE id IN (:mainIds)", nativeQuery = true)
     List<Object[]> findByMainIds(@Param("mainIds") List<Long> mainIds);
     
-    @Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP pla WHERE pla.id NOT IN "
+    @Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP pla WHERE pla.statusId = 100001 AND pla.id NOT IN "
     		+ "(SELECT location_Id FROM ERC_Main_Building eml WHERE eml.is_delete = 0 and eml.status = 1)", nativeQuery = true)
 	List<Object[]> findAllMainBuildingList();
 

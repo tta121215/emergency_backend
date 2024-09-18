@@ -900,8 +900,14 @@ public class EmergencyActviateServiceImpl implements EmergencyActivateService {
 			List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
 					.findCheckedInUsersByEmergencyActivate(emergencySyskey);
 
-			long totalCheckInCount = (long) checkedInUsers.size();
-			long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
+//			long totalCheckInCount = (long) checkedInUsers.size();
+//			long totalUnCheckInCount = allUsers.size() - checkedInUsers.size();
+			
+			List<AssemblyCheckIn> checkInList = assemblyCheckInDao.getCheckInList(emergencySyskey);
+			long totalCheckInCount = (long) checkInList.size();
+			
+			List<AssemblyCheckIn> unCheckInList = assemblyCheckInDao.getUnCheckInExcel(emergencySyskey);
+			long totalUnCheckInCount = (long) unCheckInList.size();
 
 //			LocalDateTime startTime = LocalDateTime.parse(emergencyActivate.getStartTime(), formatter);
 //			LocalDateTime endTime = LocalDateTime.parse(emergencyActivate.getEndTime(), formatter);
