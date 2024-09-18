@@ -79,14 +79,10 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		DashboardResponseDto dashboardDto = new DashboardResponseDto();
 		List<AssemblyPointCheckInDto> checkInCounts = new ArrayList<>();
-		List<Map<String, Object>> headCountList = new ArrayList<>();
-		List<String> doorNames = new ArrayList<>();
 		long totalUnCheckInCount = 0;
-		String calendar = "";
-		
 		try {
-			List<String> buildingNames = new ArrayList<>();
-			List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
+
+			//List<Assembly> allAssemblies = assemblyDao.findAllByStatusAndIsDelete(1, 0);
 
 			List<Object[]> results = assemblyCheckInDao.findCheckInCountsByAssemblyPoint(emergencyActivateId);
 			Map<Long, Long> checkInCountMap = results.stream()
@@ -99,80 +95,19 @@ public class DashBoardServiceImpl implements DashBoardService {
 									.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")))));
 
 			EmergencyActivate emergencyActivate = emergencyActivateDao.findById(emergencyActivateId).orElse(null);
+			List<Assembly> assemblies = assemblyDao.findByEmergencyActivateId(emergencyActivate.getSyskey());
 
-			List<Long> mainIds = new ArrayList<>();
-//			if (emergencyActivate.getMainBuilding() != null && emergencyActivate.getMainBuilding() != "") {
-//				mainIds = Arrays.stream(emergencyActivate.getMainBuilding().split(",")).map(String::trim)
-//						.map(Long::parseLong).collect(Collectors.toList());
-//				List<Object[]> mainBuilding = locEmergencyDao.findByMainIds(mainIds);
-//
-//				for (Object[] row : mainBuilding) {
-//					buildingNames.add((String) row[1]);
-//					if (row[1].toString().contains("WMC")) {
-//						doorNames.add("WMC");
-//						doorNames.add("1.0.1 - GUARD HOUSE");
-//						doorNames.add("1.0.2 - CCTV ROOM");
-//						doorNames.add("1.0.3 - ADMIN POST CANTEEN");
-//						doorNames.add("1.0.4 - ADMIN LOBBY");
-//						doorNames.add("1.0.5 - ENTRANCE TO LAB AREA");
-//						doorNames.add("1.0.6 - LAB SAMPLE SLIDING DOOR");
-//						doorNames.add("1.0.7 - OFFICE ADMIN");
-//						doorNames.add("1.0.8 - OFFICE HSSE");
-//						doorNames.add("1.0.9 - SERVER ROOM");
-//						doorNames.add("1.0.10 - OFFICE RIGHT WING");
-//						doorNames.add("1.0.11 - OFFICE ENG/OPS");
-//						doorNames.add("1.0.12 - OFFICE CREDIT/SUPPLY");
-//						doorNames.add("1.0.13 - ENTRANCE CONTROL ROOM");
-//						doorNames.add("1.0.14 - ENTRANCE TO CR - GLASS");
-//						doorNames.add("1.0.15 - MCC ROOM");
-//						doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-//						doorNames.add("1.0.16 - PLANT & ASSET MAINTENANCE");
-//						doorNames.add("1.0.17 - MAINTENANCE STORE");
-//					}
-//					if (row[1].toString().contains("EPIC")) {
-//						doorNames.add("2.0.1 - GF RECEPTION AREA");
-//						doorNames.add("2.0.2 - SERVER ROOM EPIC");
-//						doorNames.add("2.0.3 - L1 SAFETY");
-//						doorNames.add("2.0.4 - L1 SUSTAINABILITY");
-//					}
-//					if (row[1].toString().contains("Mercu")) {
-//						doorNames.add("3.0.1 - LVL 12");
-//						doorNames.add("3.0.2 - LVL 13");
-//					}
-//					if (row[1].toString().contains("Lok Kawi")) {
-//						doorNames.add("4.0.1 - LOK KAWI - TA");
-//					}
-//					if (row[1].toString().contains("KKIP")) {
-//						doorNames.add("5.0.1 - KKIP TA");
-//						doorNames.add("5.0.2 - KKIP DA");
-//						doorNames.add("5.0.3 - KKIP WAREHOUSE");
-//					}
-//				}
-//				calendar = emergencyActivate.getActivateDate() + " " + emergencyActivate.getActivateTime();
-////				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HH:mm");
-////				Date date = sdf.parse(dateTimeString);
-//			//	calendar.setTime(date);
-//				headCountList = assemblyCheckInDao.findHeadCount(buildingNames, doorNames, calendar);
-//			}
 			Long headCount = assemblyCheckInDao.countByEmergencyId(emergencyActivate.getSyskey());
-			System.out.println("Head count " + headCount);
 			if (emergencyActivate.getStartTime() != null) {
 				ZonedDateTime emergencyStartTime = ZonedDateTime.parse(emergencyActivate.getStartTime(),
 						DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Kuala_Lumpur")));
-				checkInCounts = allAssemblies.stream().map(assembly -> {
+				checkInCounts = assemblies.stream().map(assembly -> {
 					Long assemblyPointId = assembly.getSyskey();
 
 					ZonedDateTime maxCheckInTime = maxCheckInTimeMap.getOrDefault(assemblyPointId,
 							ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur")));
 
 					Duration duration = Duration.between(emergencyStartTime, maxCheckInTime);
-//					long hours = duration.toHoursPart();
-//					long minutes = duration.toMinutesPart();
-//					long seconds = duration.toSecondsPart();
-
-//					long hoursNew = duration.toHours();
-//					long minutesNew = duration.toMinutes() % 60;
-//					long secondsNew = duration.toSeconds() % 60;
 
 					long days = ChronoUnit.DAYS.between(emergencyStartTime, maxCheckInTime);
 					long hoursNew = ChronoUnit.HOURS.between(emergencyStartTime, maxCheckInTime) % 24;
@@ -181,11 +116,6 @@ public class DashBoardServiceImpl implements DashBoardService {
 					if (days > 0) {
 						hoursNew += days * 24;
 					}
-
-//					 long totalSeconds = duration.getSeconds();
-//				        long hoursNew = totalSeconds / 3600; // Calculate hours
-//				        long minutesNew = (totalSeconds % 3600) / 60; // Calculate minutes part
-//				        long secondsNew = totalSeconds % 60; // Calculate seconds part
 
 					String totalTimeTaken = String.format("%02d:%02d:%02d", hoursNew, minutesNew, secondsNew);
 					Long checkInCount = checkInCountMap.getOrDefault(assembly.getSyskey(), 0L);
@@ -197,12 +127,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 				}).collect(Collectors.toList());
 			}
 
-			List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
+//			List<Map<String, Object>> allUsers = assemblyCheckInDao.findAllUsers();
+//
+//			List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
+//					.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
 
-			List<Map<String, Object>> checkedInUsers = assemblyCheckInDao
-					.findCheckedInUsersByEmergencyActivate(emergencyActivateId);
-
-			// long totalCheckInCount = (long) checkedInUsers.size();
 			List<AssemblyCheckIn> checkInList = assemblyCheckInDao.getCheckInList(emergencyActivateId);
 			long totalCheckInCount = (long) checkInList.size();
 			dashboardDto.setAverageTime("00: 00 : 00");
@@ -279,9 +208,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 					dashboardDto.setAverageTime(avghoursstr + ":" + avgminutesstr + ":" + avgsecondstr);
 				}
 			}
-			// if (headCountList.size() > 0) {
+
 			totalUnCheckInCount = headCount - checkInList.size();
-			// }
 			dashboardDto.setCheckInCounts(checkInCounts);
 			dashboardDto.setTotalCheckInCount(totalCheckInCount);
 			dashboardDto.setTotalNotCheckInCount(totalUnCheckInCount);
@@ -402,7 +330,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 				// pageRequest,
 				// params);
 			}
-			if (!checkInPage.isEmpty()) {				
+			if (!checkInPage.isEmpty()) {
 				dashboardDetailDtoList = checkInPage.stream().map(staff -> {
 					DashboardDetailDto detailDto = new DashboardDetailDto();
 					detailDto.setUsername((String) staff.get("name"));
