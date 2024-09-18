@@ -30,7 +30,7 @@ public interface LocEmergencyDao extends JpaRepository<LocEmergency, Long> {
 	@Query("SELECT a FROM LocEmergency a JOIN a.emergencyActivatesList e WHERE e.syskey = :emergencyActivateId and a.isDelete = 0")
     List<LocEmergency> findByEmergencyActivateId(@Param("emergencyActivateId") Long emergencyActivateId);
 	
-	@Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP", nativeQuery = true)
+	@Query(value = "SELECT id, name FROM PYM_LOCATION_ACCESS_LOOKUP WHERE statusid = '100001'", nativeQuery = true)
 	List<Object[]> findAllLocationList();
 	
 	@Query("SELECT COUNT(e) FROM LocEmergency l JOIN l.emergencyActivatesList e WHERE l.syskey = :syskey and e.isDelete = 0")
